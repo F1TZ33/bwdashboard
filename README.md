@@ -1,2 +1,0 @@
-# bwdashboard
-dashboard project
