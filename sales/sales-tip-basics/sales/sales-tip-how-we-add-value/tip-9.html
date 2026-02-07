@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<title>Sales Tip – How We Add Value — Tip 9</title>
+<link href="../../assets/css/style.css" rel="stylesheet"/>
+</head>
+<body data-page="page">
+<div class="container">
+<div class="siteHeader"><img alt="Bearing Wholesalers" class="siteLogo" src="../../assets/img/logo.png"/></div>
+<div class="topbar">
+<div class="leftBtns">
+<a class="btn" href="../../index.html">← Back</a>
+<a class="btn" href="../../index.html">⤒ Intro</a>
+</div>
+<div class="rightBtns">
+<button class="btn" data-action="suggest" type="button">Suggest edit</button>
+<button class="btn" data-action="devnote" data-editor-only="1" style="display:none" type="button">Dev notes</button>
+<button class="btn" data-action="admin" title="Admin" type="button">Admin</button>
+</div>
+</div>
+<div class="meta">Version: <strong>1.28.2</strong> • Last updated: <strong>2026-02-07</strong></div>
+<h1>Sales Tip – How We Add Value</h1>
+<p class="subtitle">Phrases That Kill Trust After the Sale</p>
+<div class="card">
+<p style="white-space:pre-wrap">(Used when issues arise)</p>
+<p style="white-space:pre-wrap">❌ “No one else has complained.”</p>
+<p style="white-space:pre-wrap">❌ “That’s never happened before.”</p>
+<p style="white-space:pre-wrap">❌ “It must’ve been installed wrong.”</p>
+<p style="white-space:pre-wrap">Why to avoid:</p>
+<p style="white-space:pre-wrap">They escalate frustration immediately.</p>
+<p style="white-space:pre-wrap">Say instead:</p>
+<p style="white-space:pre-wrap">✔ “Let’s work through what happened.”</p>
+<p style="white-space:pre-wrap">✔ “We’ll figure out why it failed.”</p>
+<p style="white-space:pre-wrap">✔ “Let’s check the application again.”</p>
+</div>
+<div class="navpair"><a class="btn" href="tip-8.html">← Previous</a><a class="btn" href="tip-10.html">Next →</a></div>
+</div>
+<div class="modalBack" id="suggestModal">
+<div class="modal">
+<h3>Suggest edit</h3>
+<p class="subtitle" style="margin:0 0 10px">This creates an email draft to the manual admin. You’ll still click Send in your email app.</p>
+<div class="row">
+<div class="field">
+<label>Your name (required)</label>
+<input id="se_name" placeholder="e.g., Jordan"/>
+</div>
+<div class="field">
+<label>Urgency (optional)</label>
+<select id="se_urgency">
+<option value="">—</option>
+<option>Low</option><option>Medium</option><option>High</option>
+</select>
+</div>
+</div>
+<div class="field">
+<label>Suggestion (required)</label>
+<textarea id="se_suggestion" placeholder="What should change? Be specific if possible."></textarea>
+</div>
+<div class="field" data-editor-field="1" style="display:none">
+<label>Section / location (optional)</label>
+<input id="se_section" placeholder="Where on the page does this apply?"/>
+</div>
+<div class="field" data-editor-field="1" style="display:none">
+<label>Proposed replacement wording (optional)</label>
+<textarea id="se_replacement" placeholder="Paste the new wording here (optional)."></textarea>
+</div>
+<div class="field" data-editor-field="1" style="display:none">
+<label>Reason / context (optional)</label>
+<textarea id="se_reason" placeholder="Why should this change? Any customer context?"></textarea>
+</div>
+<input id="se_page" type="hidden"/>
+<input id="se_path" type="hidden"/>
+<input id="se_time" type="hidden"/>
+<div class="actions">
+<button class="btn" id="se_send" type="button">Confirm &amp; create email</button>
+<button class="smallbtn" data-close="suggestModal" type="button">Cancel</button>
+</div>
+</div>
+</div>
+<div class="modalBack" id="devNoteModal">
+<div class="modal">
+<h3>Developer notes (private)</h3>
+<p class="subtitle" style="margin:0 0 10px">Saved locally on this computer/browser. Not visible to normal users.</p>
+<div class="field">
+<label>Page</label>
+<input id="dn_path" readonly=""/>
+</div>
+<div class="field">
+<label>Notes</label>
+<textarea id="dn_note" placeholder="Private admin notes for this page…"></textarea>
+</div>
+<div class="actions">
+<button class="btn" id="dn_save" type="button">Save notes</button>
+<button class="smallbtn" data-close="devNoteModal" type="button">Close</button>
+</div>
+</div>
+</div>
+<script src="../../assets/js/app.js"></script>
+<script>
+    (function(){
+      try{
+        const raw = localStorage.getItem('bwproguide.settings');
+        const s = raw ? JSON.parse(raw) : {};
+        const v = s.version || 'v3';
+        const lu = s.lastUpdated || '';
+        document.querySelectorAll('[data-meta="version"]').forEach(el=>el.textContent=v);
+        document.querySelectorAll('[data-meta="lastUpdated"]').forEach(el=>el.textContent=lu || '—');
+      }catch(e){}
+    })();
+  </script>
+</body>
+</html>
