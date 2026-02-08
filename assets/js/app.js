@@ -22,9 +22,10 @@ const subject=`${s.subjectTag} [${s.version}] [${path}] [${time}]`;
 let body='';body+=`Manual version: ${s.version}\n`;if(s.lastUpdated)body+=`Last updated: ${s.lastUpdated}\n`;body+=`Page: ${page}\n`;body+=`Path: ${path}\n`;body+=`Submitted: ${time}\n`;body+=`Contributor: ${name}\n`;if(urg)body+=`Urgency: ${urg}\n`;body+=`\nSuggestion:\n${sugg}\n`;
 if(getEditorMode()){if(section)body+=`\nSection / location:\n${section}\n`;if(repl)body+=`\nProposed replacement:\n${repl}\n`;if(reason)body+=`\nReason / context:\n${reason}\n`;}
 window.location.href=buildMailto(subject,body,s.toEmail);closeModal('suggestModal');}
-function openDevNote(){ /* disabled */ }
+function openDevNote(){const m=pageMeta();const key=`bwproguide.devnote.${m.href}`;const ex=localStorage.getItem(key)||'';document.getElementById('dn_path').value=m.href;document.getElementById('dn_note').value=ex;openModal('devNoteModal');}
 function saveDevNote(){const path=document.getElementById('dn_path').value;const note=document.getElementById('dn_note').value||'';localStorage.setItem(`bwproguide.devnote.${path}`,note);closeModal('devNoteModal');}
-function openAdmin(){ /* disabled - admin via dashboard tile only */ }
+function openAdmin(){if(isAdminAuthed()){window.location.href='admin.html';return;}const s=loadSettings();const pw=prompt('Admin password:');if(pw===null)return;
+if(pw===s.adminPassword){setAdminAuthed(true);window.location.href='admin.html';}else alert('Incorrect password.');}
 function adminInit(){const s=loadSettings();if(!isAdminAuthed()){const pw=prompt('Admin password:');if(pw===null){window.location.href='index.html';return;}
 if(pw!==s.adminPassword){alert('Incorrect password.');window.location.href='index.html';return;}setAdminAuthed(true);}
 document.getElementById('ad_to').value=s.toEmail;document.getElementById('ad_tag').value=s.subjectTag;document.getElementById('ad_version').value=s.version;document.getElementById('ad_last').value=s.lastUpdated;
@@ -44,8 +45,8 @@ async function setupSearch(){const input=document.getElementById('q');if(!input)
 const hits=idx.filter(p=>norm(p.text).includes(q)||norm(p.title).includes(q));const results=hits.map(h=>({...h,snippet:h.text.slice(0,140)+'…'}));renderResults(results);});}
 function globalInit(){setEditorMode(getEditorMode());
 document.querySelectorAll('[data-action="suggest"]').forEach(b=>b.addEventListener('click',openSuggestEdit));
-/* devnote nav removed (disabled) */
-/* admin nav removed (dashboard tile only) */
+document.querySelectorAll('[data-action="devnote"]').forEach(b=>b.addEventListener('click',openDevNote));
+document.querySelectorAll('[data-action="admin"]').forEach(b=>b.addEventListener('click',openAdmin));
 const sendBtn=document.getElementById('se_send');if(sendBtn)sendBtn.addEventListener('click',sendSuggestion);
 const dnSave=document.getElementById('dn_save');if(dnSave)dnSave.addEventListener('click',saveDevNote);
 document.querySelectorAll('[data-close]').forEach(btn=>btn.addEventListener('click',()=>closeModal(btn.dataset.close)));
@@ -218,7 +219,14 @@ document.addEventListener('DOMContentLoaded',()=>{globalInit();setupSearch();if(
     if(openId){ openModal(openId); return; }
     const closeId = t.getAttribute('data-close');
     if(closeId){ closeModal(closeId); return; }
-  // Admin button handler removed (dashboard tile only)
+
+    // Admin button: go to admin page
+    if(t.matches('[data-action="admin"]')){
+      // keep relative navigation: always from current folder
+      const up = location.pathname.includes('/products/') || location.pathname.includes('/sales/') ? '../admin.html' : 'admin.html';
+      location.href = up;
+      return;
+    }
   });
 
   // Admin page logic
@@ -762,6 +770,36 @@ document.addEventListener('DOMContentLoaded',()=>{globalInit();setupSearch();if(
 
 
 
+/* suggest-edit-dynamic */
+(function(){
+  function getSlugAndType(){
+    var p = (location.pathname || "").split("/").pop() || "";
+    var m = p.match(/^(.+)-(brief|detailed)\.html$/);
+    if(!m) return null;
+    return { slug: m[1], type: m[2] };
+  }
+
+  function stampNow(){
+    var now = new Date();
+    return now.getFullYear() + "-" +
+      String(now.getMonth()+1).padStart(2,'0') + "-" +
+      String(now.getDate()).padStart(2,'0') + "_" +
+      String(now.getHours()).padStart(2,'0') + "-" +
+      String(now.getMinutes()).padStart(2,'0');
+  }
+
+  document.addEventListener("DOMContentLoaded", function(){
+    var btn = document.getElementById("suggestEditBtn");
+    if(!btn) return;
+    var info = getSlugAndType();
+    btn.addEventListener("click", function(e){
+      e.preventDefault();
+      var email = localStorage.getItem("supportEmail") || "support@yourcompany.com";
+      var subj = "[edit]-[" + (info?info.slug:"unknown") + "]-[" + (info?info.type:"page") + "]-[" + stampNow() + "]";
+      location.href = "mailto:" + email + "?subject=" + encodeURIComponent(subj);
+    });
+  });
+})();
 
 
 
@@ -860,9 +898,8 @@ document.addEventListener('DOMContentLoaded',()=>{globalInit();setupSearch();if(
 
   function buildCandidates(slug, i){
     var n = String(i).padStart(2,'0');
-    // IMPORTANT: use relative URLs so GitHub Pages subpath works (/bwdashboard/)
-    function u(ext){ return new URL("../assets/img/galleries/" + slug + "/" + n + ext, document.baseURI).href; }
-    return [u(".jpg"), u(".png"), u(".webp"), u(".jpeg")];
+    var base = "/assets/img/galleries/" + slug + "/" + n;
+    return [base + ".jpg", base + ".png", base + ".webp", base + ".jpeg"];
   }
 
   function addThumb(grid, src){
@@ -1271,31 +1308,68 @@ document.addEventListener('DOMContentLoaded',()=>{globalInit();setupSearch();if(
 
 
 
-/* nav-enforcer-v1 */
+
+
+
+/* pwa-register */
 (function(){
-  function pageName(){
-    var p = (location.pathname || "").split("/").pop() || "index.html";
-    return p;
-  }
-  function isDashboard(p){ return p === "index.html" || p === ""; }
+  if(!("serviceWorker" in navigator)) return;
+  window.addEventListener("load", function(){
+    // Use a stable root-relative path for GitHub Pages
+    navigator.serviceWorker.register("./service-worker.js").catch(function(e){
+      console.warn("SW register failed", e);
+    });
+  });
+})();
 
-  function isSecondary(p){
-    return ["product-guide.html","resources.html","sops.html","sales.html","admin.html"].includes(p);
+
+/* nav-enforcer-v2 */
+(function(){
+  function pathSegments(){
+    // e.g. /bwdashboard/sales/sales-tip-basics/index.html -> ["bwdashboard","sales","sales-tip-basics","index.html"]
+    return (location.pathname || "").split("/").filter(Boolean);
+  }
+  function fileName(){
+    var seg = pathSegments();
+    return seg.length ? seg[seg.length-1] : "index.html";
+  }
+  function isDashboard(){
+    var seg = pathSegments();
+    // Dashboard is ONLY the root index.html (repo subpath + index.html)
+    return fileName() === "index.html" && seg.length <= 2;
+  }
+  function isSecondary(){
+    return ["product-guide.html","resources.html","sops.html","sales.html","admin.html"].includes(fileName());
+  }
+  function isProductPage(){
+    return /^.+-(brief|detailed)\.html$/.test(fileName()) && (location.pathname || "").includes("/products/");
   }
 
-  function isProductPage(p){
-    return /^.+-(brief|detailed)\.html$/.test(p) && (location.pathname || "").includes("/products/");
+  function hrefFromHere(rel){
+    return new URL(rel, document.baseURI).href;
   }
 
-  function backTarget(p){
-    if(isProductPage(p)) return "../product-guide.html";
-    if(p.startsWith("sales-")) return "sales.html";
-    if(p.startsWith("resources-")) return "resources.html";
-    if(p.startsWith("sop-")) return "sops.html";
-    if(p === "photos.html") return "product-guide.html";
-    if(p === "supplier-directory.html") return "resources.html";
-    if(p === "account-applications.html") return "resources.html";
-    return "index.html";
+  function backTarget(){
+    var seg = pathSegments();
+    var file = fileName();
+
+    // Nested sales tips like /sales/<tip>/index.html  -> back to /sales.html
+    if(seg.includes("sales") && file === "index.html" && seg.length > 2){
+      return hrefFromHere("../../sales.html");
+    }
+
+    if(isProductPage()) return hrefFromHere("../product-guide.html");
+
+    // Flat sales pages e.g. sales-*.html at root or in /sales/
+    if(file.startsWith("sales-") || seg.includes("sales")) return hrefFromHere("../sales.html");
+
+    if(file.startsWith("resources-") || seg.includes("resources")) return hrefFromHere("../resources.html");
+    if(file.startsWith("sop-") || seg.includes("sops")) return hrefFromHere("../sops.html");
+
+    if(file === "supplier-directory.html" || file === "account-applications.html") return hrefFromHere("../resources.html");
+    if(file === "photos.html") return hrefFromHere("../product-guide.html");
+
+    return hrefFromHere("../index.html");
   }
 
   function ensureTopbar(){
@@ -1333,7 +1407,6 @@ document.addEventListener('DOMContentLoaded',()=>{globalInit();setupSearch();if(
   }
 
   function keepExistingDownload(right){
-    // If a download button exists elsewhere in DOM (from product templates), keep its href.
     var existing = document.querySelector('a.btn[href*="downloads/"]');
     if(existing){
       right.appendChild(makeBtn("⬇ Download", existing.getAttribute("href")));
@@ -1343,27 +1416,26 @@ document.addEventListener('DOMContentLoaded',()=>{globalInit();setupSearch();if(
   }
 
   function init(){
-    var p = pageName();
     var bars = ensureTopbar();
     if(!bars) return;
 
-    if(isDashboard(p)){
+    if(isDashboard()){
       bars.topbar.style.display = "none";
       return;
     } else {
       bars.topbar.style.display = "";
     }
 
-    if(isSecondary(p)){
-      bars.right.appendChild(makeBtn("⌂ Dashboard", "index.html"));
+    if(isSecondary()){
+      bars.right.appendChild(makeBtn("⌂ Dashboard", hrefFromHere("../index.html")));
       return;
     }
 
     // Tertiary
-    bars.left.appendChild(makeBtn("← Back", backTarget(p)));
-    bars.right.appendChild(makeBtn("⌂ Dashboard", "index.html"));
+    bars.left.appendChild(makeBtn("← Back", backTarget()));
+    bars.right.appendChild(makeBtn("⌂ Dashboard", hrefFromHere("../index.html")));
 
-    if(isProductPage(p)){
+    if(isProductPage()){
       keepExistingDownload(bars.right);
       bars.right.appendChild(makeBtn("✎ Suggest Edit", "#", "suggestEditBtn"));
     }
@@ -1372,85 +1444,3 @@ document.addEventListener('DOMContentLoaded',()=>{globalInit();setupSearch();if(
   document.addEventListener("DOMContentLoaded", init);
 })();
 
-
-
-/* pwa-register */
-(function(){
-  if(!("serviceWorker" in navigator)) return;
-  window.addEventListener("load", function(){
-    // Use a stable root-relative path for GitHub Pages
-    navigator.serviceWorker.register("./service-worker.js").catch(function(e){
-      console.warn("SW register failed", e);
-    });
-  });
-})();
-
-
-/* suggest-edit-dynamic */
-(function(){
-  function getSlugAndType(){
-    var p = (location.pathname || "").split("/").pop() || "";
-    var m = p.match(/^(.+)-(brief|detailed)\.html$/);
-    if(!m) return null;
-    return { slug: m[1], type: m[2] };
-  }
-
-  function stampNow(){
-    var d = new Date();
-    var p2 = function(n){ return String(n).padStart(2,'0'); };
-    return d.getFullYear() + "-" + p2(d.getMonth()+1) + "-" + p2(d.getDate()) +
-      "_" + p2(d.getHours()) + "-" + p2(d.getMinutes());
-  }
-
-  function getToEmail(){
-    try{
-      var raw = localStorage.getItem("bwproguide.settings");
-      var s = raw ? JSON.parse(raw) : {};
-      return (s && s.toEmail) ? s.toEmail : "sales@bearingwholesalers.com.au";
-    }catch(e){
-      return "sales@bearingwholesalers.com.au";
-    }
-  }
-
-  document.addEventListener("DOMContentLoaded", function(){
-    var btn = document.getElementById("suggestEditBtn");
-    if(!btn) return;
-    var info = getSlugAndType() || {slug:"unknown", type:"page"};
-    btn.addEventListener("click", function(e){
-      e.preventDefault();
-      var subj = "[edit]-[" + info.slug + "]-[" + info.type + "]-[" + stampNow() + "]";
-      location.href = "mailto:" + encodeURIComponent(getToEmail()) + "?subject=" + encodeURIComponent(subj);
-    });
-  });
-})();
-
-
-/* ui-visibility-hard-lock */
-(function(){
-  function pageName(){
-    return (location.pathname || "").split("/").pop() || "index.html";
-  }
-  function isProductPage(p){
-    return /^.+-(brief|detailed)\.html$/.test(p) && (location.pathname || "").includes("/products/");
-  }
-  document.addEventListener("DOMContentLoaded", function(){
-    var p = pageName();
-    function kill(sel){
-      document.querySelectorAll(sel).forEach(function(el){ el.remove(); });
-    }
-
-    // Admin + Dev Notes buttons removed everywhere
-    kill('[data-action="admin"]');
-    kill('[data-action="devnote"]');
-
-    // Suggest edit UI only allowed on product pages (via #suggestEditBtn in topbar)
-    if(!isProductPage(p)){
-      kill('[data-action="suggest"]');
-      kill('#suggestModal');
-      // remove any dev notes card if present
-      kill('#devNoteModal');
-      kill('#devNotesCard');
-      document.querySelectorAll('.devNotes,[data-devnotes]').forEach(function(el){ el.remove(); });
-    }
-  });
-})();
