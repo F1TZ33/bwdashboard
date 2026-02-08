@@ -1,0 +1,897 @@
+{
+  "version": "1.26.4",
+  "last_updated": "2026-02-07",
+  "products": [
+    {
+      "slug": "angular-contact-ball-bearings",
+      "display_name": "Angular Contact Ball Bearings",
+      "pages": {
+        "brief": "products/angular-contact-ball-bearings-brief.html",
+        "detailed": "products/angular-contact-ball-bearings-detailed.html"
+      },
+      "photos": {
+        "path": "photos/angular-contact-ball-bearings.pdf",
+        "exists": true
+      },
+      "downloads": [
+        {
+          "label": "Detailed workbook (XLSX)",
+          "path": "downloads/products/angular-contact-ball-bearings/Angular Contact Ball Bearings.xlsx"
+        },
+        {
+          "label": "Poster (DOCX)",
+          "path": "downloads/products/angular-contact-ball-bearings/Angular_Contact_Ball_Bearings_Poster_Phase_2.docx"
+        }
+      ],
+      "source_workbooks": {
+        "detailed_xlsx": "Angular Contact Ball Bearings.xlsx",
+        "brief_xlsx": "Angular Contact Ball Bearings.xlsx",
+        "poster_docx": "Angular_Contact_Ball_Bearings_Poster_Phase_2.docx"
+      },
+      "bw_product_folder": "Angular Contact Ball Bearings"
+    },
+    {
+      "slug": "ball-bearings",
+      "display_name": "Ball Bearings",
+      "pages": {
+        "brief": "products/ball-bearings-brief.html",
+        "detailed": "products/ball-bearings-detailed.html"
+      },
+      "photos": {
+        "path": "photos/ball-bearings.pdf",
+        "exists": true
+      },
+      "downloads": [
+        {
+          "label": "Detailed workbook (XLSX)",
+          "path": "downloads/products/ball-bearings/Ball Bearings.xlsx"
+        },
+        {
+          "label": "Poster (DOCX)",
+          "path": "downloads/products/ball-bearings/Ball_Bearings_Poster_2_Column_Phase_2.docx"
+        }
+      ],
+      "source_workbooks": {
+        "detailed_xlsx": "Ball Bearings.xlsx",
+        "brief_xlsx": "Ball Bearings.xlsx",
+        "poster_docx": "Ball_Bearings_Poster_2_Column_Phase_2.docx"
+      },
+      "bw_product_folder": "Ball Bearings"
+    },
+    {
+      "slug": "bearing-housings",
+      "display_name": "Bearing Housings",
+      "pages": {
+        "brief": "products/bearing-housings-brief.html",
+        "detailed": "products/bearing-housings-detailed.html"
+      },
+      "photos": {
+        "path": "photos/bearing-housings.pdf",
+        "exists": true
+      },
+      "downloads": [
+        {
+          "label": "Detailed workbook (XLSX)",
+          "path": "downloads/products/bearing-housings/Bearing Housings.xlsx"
+        },
+        {
+          "label": "Poster (DOCX)",
+          "path": "downloads/products/bearing-housings/Bearing_Housings_Poster_Phase_2.docx"
+        }
+      ],
+      "source_workbooks": {
+        "detailed_xlsx": "Bearing Housings.xlsx",
+        "brief_xlsx": "Bearing Housings.xlsx",
+        "poster_docx": "Bearing_Housings_Poster_Phase_2.docx"
+      },
+      "bw_product_folder": "Bearing Housings"
+    },
+    {
+      "slug": "brass-bsp-npt-fittings",
+      "display_name": "Brass Fittings",
+      "pages": {
+        "brief": "products/brass-bsp-npt-fittings-brief.html",
+        "detailed": "products/brass-bsp-npt-fittings-detailed.html"
+      },
+      "photos": {
+        "path": "photos/brass-bsp-npt-fittings.pdf",
+        "exists": true
+      },
+      "downloads": [
+        {
+          "label": "Detailed workbook (XLSX)",
+          "path": "downloads/products/brass-bsp-npt-fittings/Brass Fittings.xlsx"
+        },
+        {
+          "label": "Poster (DOCX)",
+          "path": "downloads/products/brass-bsp-npt-fittings/Brass_Fittings_Poster_Phase_2.docx"
+        }
+      ],
+      "source_workbooks": {
+        "detailed_xlsx": "Brass Fittings.xlsx",
+        "brief_xlsx": "Brass Fittings.xlsx",
+        "poster_docx": "Brass_Fittings_Poster_Phase_2.docx"
+      },
+      "bw_product_folder": "Brass Fittings"
+    },
+    {
+      "slug": "bronze-bushings",
+      "display_name": "Bronze Bushings",
+      "pages": {
+        "brief": "products/bronze-bushings-brief.html",
+        "detailed": "products/bronze-bushings-detailed.html"
+      },
+      "photos": {
+        "path": "photos/bronze-bushings.pdf",
+        "exists": true
+      },
+      "downloads": [
+        {
+          "label": "Detailed workbook (XLSX)",
+          "path": "downloads/products/bronze-bushings/Bronze Bushings.xlsx"
+        },
+        {
+          "label": "Poster (DOCX)",
+          "path": "downloads/products/bronze-bushings/Bronze_Bushings_Poster_Phase_2.docx"
+        }
+      ],
+      "source_workbooks": {
+        "detailed_xlsx": "Bronze Bushings.xlsx",
+        "brief_xlsx": "Bronze Bushings.xlsx",
+        "poster_docx": "Bronze_Bushings_Poster_Phase_2.docx"
+      },
+      "bw_product_folder": "Bronze Bushings"
+    },
+    {
+      "slug": "bushings-hubs",
+      "display_name": "Bushings & Hubs",
+      "pages": {
+        "brief": "products/bushings-hubs-brief.html",
+        "detailed": "products/bushings-hubs-detailed.html"
+      },
+      "photos": {
+        "path": "photos/bushings-hubs.pdf",
+        "exists": true
+      },
+      "downloads": [
+        {
+          "label": "Detailed workbook (XLSX)",
+          "path": "downloads/products/bushings-hubs/Bushings & Hubs.xlsx"
+        },
+        {
+          "label": "Poster (DOCX)",
+          "path": "downloads/products/bushings-hubs/Bushings_and_Hubs_Poster_Phase_2.docx"
+        }
+      ],
+      "source_workbooks": {
+        "detailed_xlsx": "Bushings & Hubs.xlsx",
+        "brief_xlsx": "Bushings & Hubs.xlsx",
+        "poster_docx": "Bushings_and_Hubs_Poster_Phase_2.docx"
+      },
+      "bw_product_folder": "Bushings & Hubs"
+    },
+    {
+      "slug": "cam-followers",
+      "display_name": "Cam Followers",
+      "pages": {
+        "brief": "products/cam-followers-brief.html",
+        "detailed": "products/cam-followers-detailed.html"
+      },
+      "photos": {
+        "path": "photos/cam-followers.pdf",
+        "exists": true
+      },
+      "downloads": [
+        {
+          "label": "Detailed workbook (XLSX)",
+          "path": "downloads/products/cam-followers/Cam Followers.xlsx"
+        },
+        {
+          "label": "Poster (DOCX)",
+          "path": "downloads/products/cam-followers/Cam_Followers_Poster_Phase_2.docx"
+        }
+      ],
+      "source_workbooks": {
+        "detailed_xlsx": "Cam Followers.xlsx",
+        "brief_xlsx": "Cam Followers.xlsx",
+        "poster_docx": "Cam_Followers_Poster_Phase_2.docx"
+      },
+      "bw_product_folder": "Cam Followers"
+    },
+    {
+      "slug": "cylindrical-roller-bearings",
+      "display_name": "Cylindrical Roller Bearings",
+      "pages": {
+        "brief": "products/cylindrical-roller-bearings-brief.html",
+        "detailed": "products/cylindrical-roller-bearings-detailed.html"
+      },
+      "photos": {
+        "path": "photos/cylindrical-roller-bearings.pdf",
+        "exists": true
+      },
+      "downloads": [
+        {
+          "label": "Detailed workbook (XLSX)",
+          "path": "downloads/products/cylindrical-roller-bearings/Cylindrical Roller Bearings.xlsx"
+        },
+        {
+          "label": "Poster (DOCX)",
+          "path": "downloads/products/cylindrical-roller-bearings/Cylindrical_Roller_Bearings_Poster_Phase_2.docx"
+        }
+      ],
+      "source_workbooks": {
+        "detailed_xlsx": "Cylindrical Roller Bearings.xlsx",
+        "brief_xlsx": "Cylindrical Roller Bearings.xlsx",
+        "poster_docx": "Cylindrical_Roller_Bearings_Poster_Phase_2.docx"
+      },
+      "bw_product_folder": "Cylindrical Roller Bearings"
+    },
+    {
+      "slug": "electric-motors",
+      "display_name": "Electric Motors",
+      "pages": {
+        "brief": "products/electric-motors-brief.html",
+        "detailed": "products/electric-motors-detailed.html"
+      },
+      "photos": {
+        "path": "photos/electric-motors.pdf",
+        "exists": true
+      },
+      "downloads": [
+        {
+          "label": "Detailed workbook (XLSX)",
+          "path": "downloads/products/electric-motors/Electric Motors.xlsx"
+        },
+        {
+          "label": "Poster (DOCX)",
+          "path": "downloads/products/electric-motors/Electric_Motors_Poster_Phase_2.docx"
+        }
+      ],
+      "source_workbooks": {
+        "detailed_xlsx": "Electric Motors.xlsx",
+        "brief_xlsx": "Electric Motors.xlsx",
+        "poster_docx": "Electric_Motors_Poster_Phase_2.docx"
+      },
+      "bw_product_folder": "Electric Motors"
+    },
+    {
+      "slug": "gearboxes-gear-reducers",
+      "display_name": "Gearboxes & Gear Reducers",
+      "pages": {
+        "brief": "products/gearboxes-gear-reducers-brief.html",
+        "detailed": "products/gearboxes-gear-reducers-detailed.html"
+      },
+      "photos": {
+        "path": "photos/gearboxes-gear-reducers.pdf",
+        "exists": true
+      },
+      "downloads": [
+        {
+          "label": "Detailed workbook (XLSX)",
+          "path": "downloads/products/gearboxes-gear-reducers/Gearboxes & Gear Reducers.xlsx"
+        }
+      ],
+      "source_workbooks": {
+        "detailed_xlsx": "Gearboxes & Gear Reducers.xlsx",
+        "brief_xlsx": "Gearboxes & Gear Reducers.xlsx"
+      },
+      "bw_product_folder": "Gearboxes & Gear Reducers"
+    },
+    {
+      "slug": "idlers",
+      "display_name": "Idlers (Pulley & Sprocket)",
+      "pages": {
+        "brief": "products/idlers-brief.html",
+        "detailed": "products/idlers-detailed.html"
+      },
+      "photos": {
+        "path": "photos/idlers.pdf",
+        "exists": true
+      },
+      "downloads": [
+        {
+          "label": "Detailed workbook (XLSX)",
+          "path": "downloads/products/idlers/Idlers (Pulley & Sprocket).xlsx"
+        },
+        {
+          "label": "Poster (DOCX)",
+          "path": "downloads/products/idlers/Idlers_Pulley_and_Sprocket_Poster_Phase_2.docx"
+        }
+      ],
+      "source_workbooks": {
+        "detailed_xlsx": "Idlers (Pulley & Sprocket).xlsx",
+        "brief_xlsx": "Idlers (Pulley & Sprocket).xlsx",
+        "poster_docx": "Idlers_Pulley_and_Sprocket_Poster_Phase_2.docx"
+      },
+      "bw_product_folder": "Idlers (Pulley & Sprocket)"
+    },
+    {
+      "slug": "insert-bearings",
+      "display_name": "Insert Bearing",
+      "pages": {
+        "brief": "products/insert-bearings-brief.html",
+        "detailed": "products/insert-bearings-detailed.html"
+      },
+      "photos": {
+        "path": "photos/insert-bearings.pdf",
+        "exists": true
+      },
+      "downloads": [
+        {
+          "label": "Detailed workbook (XLSX)",
+          "path": "downloads/products/insert-bearings/Insert Bearing.xlsx"
+        },
+        {
+          "label": "Poster (DOCX)",
+          "path": "downloads/products/insert-bearings/Insert_Bearings_Poster_Phase_2.docx"
+        }
+      ],
+      "source_workbooks": {
+        "detailed_xlsx": "Insert Bearing.xlsx",
+        "brief_xlsx": "Insert Bearing.xlsx",
+        "poster_docx": "Insert_Bearings_Poster_Phase_2.docx"
+      },
+      "bw_product_folder": "Insert Bearing"
+    },
+    {
+      "slug": "needle-roller-bearings",
+      "display_name": "Needle Roller Bearings",
+      "pages": {
+        "brief": "products/needle-roller-bearings-brief.html",
+        "detailed": "products/needle-roller-bearings-detailed.html"
+      },
+      "photos": {
+        "path": "photos/needle-roller-bearings.pdf",
+        "exists": true
+      },
+      "downloads": [
+        {
+          "label": "Detailed workbook (XLSX)",
+          "path": "downloads/products/needle-roller-bearings/Needle Roller Bearings.xlsx"
+        },
+        {
+          "label": "Poster (DOCX)",
+          "path": "downloads/products/needle-roller-bearings/Needle_Roller_Bearings_Poster_Phase_2.docx"
+        }
+      ],
+      "source_workbooks": {
+        "detailed_xlsx": "Needle Roller Bearings.xlsx",
+        "brief_xlsx": "Needle Roller Bearings.xlsx",
+        "poster_docx": "Needle_Roller_Bearings_Poster_Phase_2.docx"
+      },
+      "bw_product_folder": "Needle Roller Bearings"
+    },
+    {
+      "slug": "nuts-bolts",
+      "display_name": "Nuts & Bolts",
+      "pages": {
+        "brief": "products/nuts-bolts-brief.html",
+        "detailed": "products/nuts-bolts-detailed.html"
+      },
+      "photos": {
+        "path": "photos/nuts-bolts.pdf",
+        "exists": true
+      },
+      "downloads": [
+        {
+          "label": "Detailed workbook (XLSX)",
+          "path": "downloads/products/nuts-bolts/Nuts & Bolts.xlsx"
+        },
+        {
+          "label": "Poster (DOCX)",
+          "path": "downloads/products/nuts-bolts/Nuts_and_Bolts_Poster_Phase_2.docx"
+        }
+      ],
+      "source_workbooks": {
+        "detailed_xlsx": "Nuts & Bolts.xlsx",
+        "brief_xlsx": "Nuts & Bolts.xlsx",
+        "poster_docx": "Nuts_and_Bolts_Poster_Phase_2.docx"
+      },
+      "bw_product_folder": "Nuts & Bolts"
+    },
+    {
+      "slug": "o-rings",
+      "display_name": "O-Rings",
+      "pages": {
+        "brief": "products/o-rings-brief.html",
+        "detailed": "products/o-rings-detailed.html"
+      },
+      "photos": {
+        "path": "photos/o-rings.pdf",
+        "exists": true
+      },
+      "downloads": [
+        {
+          "label": "Detailed workbook (XLSX)",
+          "path": "downloads/products/o-rings/Oils & Greases.xlsx"
+        },
+        {
+          "label": "Poster (DOCX)",
+          "path": "downloads/products/o-rings/O-Rings_Poster_Phase_2.docx"
+        }
+      ],
+      "source_workbooks": {
+        "detailed_xlsx": "Oils & Greases.xlsx",
+        "brief_xlsx": "Oils & Greases.xlsx",
+        "poster_docx": "O-Rings_Poster_Phase_2.docx"
+      },
+      "bw_product_folder": "O-Rings"
+    },
+    {
+      "slug": "oils-greases",
+      "display_name": "Oils & Greases",
+      "pages": {
+        "brief": "products/oils-greases-brief.html",
+        "detailed": "products/oils-greases-detailed.html"
+      },
+      "photos": {
+        "path": "photos/oils-greases.pdf",
+        "exists": true
+      },
+      "downloads": [
+        {
+          "label": "Detailed workbook (XLSX)",
+          "path": "downloads/products/oils-greases/Oils & Greases.xlsx"
+        },
+        {
+          "label": "Poster (DOCX)",
+          "path": "downloads/products/oils-greases/Oils_and_Greases_Poster_Phase_2.docx"
+        }
+      ],
+      "source_workbooks": {
+        "detailed_xlsx": "Oils & Greases.xlsx",
+        "brief_xlsx": "Oils & Greases.xlsx",
+        "poster_docx": "Oils_and_Greases_Poster_Phase_2.docx"
+      },
+      "bw_product_folder": "Oils & Greases"
+    },
+    {
+      "slug": "pressure-gauges",
+      "display_name": "Pressure Gauges",
+      "pages": {
+        "brief": "products/pressure-gauges-brief.html",
+        "detailed": "products/pressure-gauges-detailed.html"
+      },
+      "photos": {
+        "path": "photos/pressure-gauges.pdf",
+        "exists": true
+      },
+      "downloads": [
+        {
+          "label": "Detailed workbook (XLSX)",
+          "path": "downloads/products/pressure-gauges/Pressure Gauges.xlsx"
+        },
+        {
+          "label": "Poster (DOCX)",
+          "path": "downloads/products/pressure-gauges/Pressure_Gauges_Poster_Phase_2.docx"
+        }
+      ],
+      "source_workbooks": {
+        "detailed_xlsx": "Pressure Gauges.xlsx",
+        "brief_xlsx": "Pressure Gauges.xlsx",
+        "poster_docx": "Pressure_Gauges_Poster_Phase_2.docx"
+      },
+      "bw_product_folder": "Pressure Gauges"
+    },
+    {
+      "slug": "pulleys",
+      "display_name": "Pulleys (Sheaves)",
+      "pages": {
+        "brief": "products/pulleys-brief.html",
+        "detailed": "products/pulleys-detailed.html"
+      },
+      "photos": {
+        "path": "photos/pulleys.pdf",
+        "exists": true
+      },
+      "downloads": [
+        {
+          "label": "Detailed workbook (XLSX)",
+          "path": "downloads/products/pulleys/Pulleys (Sheaves).xlsx"
+        },
+        {
+          "label": "Poster (DOCX)",
+          "path": "downloads/products/pulleys/Pulleys_Poster_Cheat_Sheet_Phase_2.docx"
+        }
+      ],
+      "source_workbooks": {
+        "detailed_xlsx": "Pulleys (Sheaves).xlsx",
+        "brief_xlsx": "Pulleys (Sheaves).xlsx",
+        "poster_docx": "Pulleys_Poster_Cheat_Sheet_Phase_2.docx"
+      },
+      "bw_product_folder": "Pulleys (Sheaves)"
+    },
+    {
+      "slug": "push-fit-fittings-for-nylon-tube",
+      "display_name": "Push-Fit Fittings",
+      "pages": {
+        "brief": "products/push-fit-fittings-for-nylon-tube-brief.html",
+        "detailed": "products/push-fit-fittings-for-nylon-tube-detailed.html"
+      },
+      "photos": {
+        "path": "photos/push-fit-fittings-for-nylon-tube.pdf",
+        "exists": true
+      },
+      "downloads": [
+        {
+          "label": "Detailed workbook (XLSX)",
+          "path": "downloads/products/push-fit-fittings-for-nylon-tube/Push-Fit Fittings.xlsx"
+        },
+        {
+          "label": "Poster (DOCX)",
+          "path": "downloads/products/push-fit-fittings-for-nylon-tube/Push_Fit_Fittings_Poster_Phase_2.docx"
+        }
+      ],
+      "source_workbooks": {
+        "detailed_xlsx": "Push-Fit Fittings.xlsx",
+        "brief_xlsx": "Push-Fit Fittings.xlsx",
+        "poster_docx": "Push_Fit_Fittings_Poster_Phase_2.docx"
+      },
+      "bw_product_folder": "Push-Fit Fittings"
+    },
+    {
+      "slug": "rod-ends",
+      "display_name": "Rod Ends",
+      "pages": {
+        "brief": "products/rod-ends-brief.html",
+        "detailed": "products/rod-ends-detailed.html"
+      },
+      "photos": {
+        "path": "photos/rod-ends.pdf",
+        "exists": true
+      },
+      "downloads": [
+        {
+          "label": "Detailed workbook (XLSX)",
+          "path": "downloads/products/rod-ends/Rod Ends.xlsx"
+        },
+        {
+          "label": "Poster (DOCX)",
+          "path": "downloads/products/rod-ends/Rod_Ends_Poster_Cheat_Sheet_Phase_2.docx"
+        }
+      ],
+      "source_workbooks": {
+        "detailed_xlsx": "Rod Ends.xlsx",
+        "brief_xlsx": "Rod Ends.xlsx",
+        "poster_docx": "Rod_Ends_Poster_Cheat_Sheet_Phase_2.docx"
+      },
+      "bw_product_folder": "Rod Ends"
+    },
+    {
+      "slug": "rotary-seals",
+      "display_name": "Rotary Seals",
+      "pages": {
+        "brief": "products/rotary-seals-brief.html",
+        "detailed": "products/rotary-seals-detailed.html"
+      },
+      "photos": {
+        "path": "photos/rotary-seals.pdf",
+        "exists": true
+      },
+      "downloads": [
+        {
+          "label": "Detailed workbook (XLSX)",
+          "path": "downloads/products/rotary-seals/Rotary Seals .xlsx"
+        },
+        {
+          "label": "Poster (DOCX)",
+          "path": "downloads/products/rotary-seals/Rotary_Shaft_Seals_Poster_Cheat_Sheet_Phase_2.docx"
+        }
+      ],
+      "source_workbooks": {
+        "detailed_xlsx": "Rotary Seals .xlsx",
+        "brief_xlsx": "Rotary Seals .xlsx",
+        "poster_docx": "Rotary_Shaft_Seals_Poster_Cheat_Sheet_Phase_2.docx"
+      },
+      "bw_product_folder": "Rotary Seals"
+    },
+    {
+      "slug": "shaft-collars-shrink-rings",
+      "display_name": "Shaft Collars & Shrink Rings",
+      "pages": {
+        "brief": "products/shaft-collars-shrink-rings-brief.html",
+        "detailed": "products/shaft-collars-shrink-rings-detailed.html"
+      },
+      "photos": {
+        "path": "photos/shaft-collars-shrink-rings.pdf",
+        "exists": true
+      },
+      "downloads": [
+        {
+          "label": "Detailed workbook (XLSX)",
+          "path": "downloads/products/shaft-collars-shrink-rings/Shaft Collars & Shrink Rings.xlsx"
+        },
+        {
+          "label": "Poster (DOCX)",
+          "path": "downloads/products/shaft-collars-shrink-rings/Shaft_Collars_and_Shrink_Rings_Poster_Phase_2.docx"
+        }
+      ],
+      "source_workbooks": {
+        "detailed_xlsx": "Shaft Collars & Shrink Rings.xlsx",
+        "brief_xlsx": "Shaft Collars & Shrink Rings.xlsx",
+        "poster_docx": "Shaft_Collars_and_Shrink_Rings_Poster_Phase_2.docx"
+      },
+      "bw_product_folder": "Shaft Collars & Shrink Rings"
+    },
+    {
+      "slug": "spherical-plain-bearings",
+      "display_name": "Spherical Plain Bearings",
+      "pages": {
+        "brief": "products/spherical-plain-bearings-brief.html",
+        "detailed": "products/spherical-plain-bearings-detailed.html"
+      },
+      "photos": {
+        "path": "photos/spherical-plain-bearings.pdf",
+        "exists": true
+      },
+      "downloads": [
+        {
+          "label": "Detailed workbook (XLSX)",
+          "path": "downloads/products/spherical-plain-bearings/Spherical Plain Bearings.xlsx"
+        },
+        {
+          "label": "Poster (DOCX)",
+          "path": "downloads/products/spherical-plain-bearings/Spherical_Plain_Bearings_Poster_Phase_2.docx"
+        }
+      ],
+      "source_workbooks": {
+        "detailed_xlsx": "Spherical Plain Bearings.xlsx",
+        "brief_xlsx": "Spherical Plain Bearings.xlsx",
+        "poster_docx": "Spherical_Plain_Bearings_Poster_Phase_2.docx"
+      },
+      "bw_product_folder": "Spherical Plain Bearings"
+    },
+    {
+      "slug": "spherical-roller-bearings",
+      "display_name": "Spherical Roller Bearings",
+      "pages": {
+        "brief": "products/spherical-roller-bearings-brief.html",
+        "detailed": "products/spherical-roller-bearings-detailed.html"
+      },
+      "photos": {
+        "path": "photos/spherical-roller-bearings.pdf",
+        "exists": true
+      },
+      "downloads": [
+        {
+          "label": "Detailed workbook (XLSX)",
+          "path": "downloads/products/spherical-roller-bearings/Spherical Roller Bearings.xlsx"
+        },
+        {
+          "label": "Poster (DOCX)",
+          "path": "downloads/products/spherical-roller-bearings/Spherical_Roller_Bearings_Poster_Phase_2.docx"
+        }
+      ],
+      "source_workbooks": {
+        "detailed_xlsx": "Spherical Roller Bearings.xlsx",
+        "brief_xlsx": "Spherical Roller Bearings.xlsx",
+        "poster_docx": "Spherical_Roller_Bearings_Poster_Phase_2.docx"
+      },
+      "bw_product_folder": "Spherical Roller Bearings"
+    },
+    {
+      "slug": "sprockets",
+      "display_name": "Sprockets",
+      "pages": {
+        "brief": "products/sprockets-brief.html",
+        "detailed": "products/sprockets-detailed.html"
+      },
+      "photos": {
+        "path": "photos/sprockets.pdf",
+        "exists": true
+      },
+      "downloads": [
+        {
+          "label": "Detailed workbook (XLSX)",
+          "path": "downloads/products/sprockets/Sprockets.xlsx"
+        },
+        {
+          "label": "Poster (DOCX)",
+          "path": "downloads/products/sprockets/Sprockets_Poster_Cheat_Sheet_Phase_2.docx"
+        }
+      ],
+      "source_workbooks": {
+        "detailed_xlsx": "Sprockets.xlsx",
+        "brief_xlsx": "Sprockets.xlsx",
+        "poster_docx": "Sprockets_Poster_Cheat_Sheet_Phase_2.docx"
+      },
+      "bw_product_folder": "Sprockets"
+    },
+    {
+      "slug": "tapered-roller-bearings",
+      "display_name": "Tapered Roller Bearings",
+      "pages": {
+        "brief": "products/tapered-roller-bearings-brief.html",
+        "detailed": "products/tapered-roller-bearings-detailed.html"
+      },
+      "photos": {
+        "path": "photos/tapered-roller-bearings.pdf",
+        "exists": true
+      },
+      "downloads": [
+        {
+          "label": "Detailed workbook (XLSX)",
+          "path": "downloads/products/tapered-roller-bearings/Tapered Roller Bearings.xlsx"
+        },
+        {
+          "label": "Poster (DOCX)",
+          "path": "downloads/products/tapered-roller-bearings/Tapered_Roller_Bearings_Poster_Phase_2.docx"
+        }
+      ],
+      "source_workbooks": {
+        "detailed_xlsx": "Tapered Roller Bearings.xlsx",
+        "brief_xlsx": "Tapered Roller Bearings.xlsx",
+        "poster_docx": "Tapered_Roller_Bearings_Poster_Phase_2.docx"
+      },
+      "bw_product_folder": "Tapered Roller Bearings"
+    },
+    {
+      "slug": "thrust-bearings",
+      "display_name": "Thrust Bearings",
+      "pages": {
+        "brief": "products/thrust-bearings-brief.html",
+        "detailed": "products/thrust-bearings-detailed.html"
+      },
+      "photos": {
+        "path": "photos/thrust-bearings.pdf",
+        "exists": true
+      },
+      "downloads": [
+        {
+          "label": "Detailed workbook (XLSX)",
+          "path": "downloads/products/thrust-bearings/Thrust Bearings.xlsx"
+        },
+        {
+          "label": "Poster (DOCX)",
+          "path": "downloads/products/thrust-bearings/Thrust_Bearings_Poster_Phase_2.docx"
+        }
+      ],
+      "source_workbooks": {
+        "detailed_xlsx": "Thrust Bearings.xlsx",
+        "brief_xlsx": "Thrust Bearings.xlsx",
+        "poster_docx": "Thrust_Bearings_Poster_Phase_2.docx"
+      },
+      "bw_product_folder": "Thrust Bearings"
+    },
+    {
+      "slug": "timing-belts",
+      "display_name": "Timing Belts",
+      "pages": {
+        "brief": "products/timing-belts-brief.html",
+        "detailed": "products/timing-belts-detailed.html"
+      },
+      "photos": {
+        "path": "photos/timing-belts.pdf",
+        "exists": true
+      },
+      "downloads": [
+        {
+          "label": "Detailed workbook (XLSX)",
+          "path": "downloads/products/timing-belts/Timing Pulleys.xlsx"
+        },
+        {
+          "label": "Poster (DOCX)",
+          "path": "downloads/products/timing-belts/Timing_Belts_Poster_Phase_2.docx"
+        }
+      ],
+      "source_workbooks": {
+        "detailed_xlsx": "Timing Pulleys.xlsx",
+        "brief_xlsx": "Timing Pulleys.xlsx",
+        "poster_docx": "Timing_Belts_Poster_Phase_2.docx"
+      },
+      "bw_product_folder": "Timing Belts"
+    },
+    {
+      "slug": "timing-pulleys",
+      "display_name": "Timing Pulleys",
+      "pages": {
+        "brief": "products/timing-pulleys-brief.html",
+        "detailed": "products/timing-pulleys-detailed.html"
+      },
+      "photos": {
+        "path": "photos/timing-pulleys.pdf",
+        "exists": true
+      },
+      "downloads": [
+        {
+          "label": "Detailed workbook (XLSX)",
+          "path": "downloads/products/timing-pulleys/Timing Pulleys.xlsx"
+        },
+        {
+          "label": "Poster (DOCX)",
+          "path": "downloads/products/timing-pulleys/Timing_Pulleys_Poster_Phase_2.docx"
+        }
+      ],
+      "source_workbooks": {
+        "detailed_xlsx": "Timing Pulleys.xlsx",
+        "brief_xlsx": "Timing Pulleys.xlsx",
+        "poster_docx": "Timing_Pulleys_Poster_Phase_2.docx"
+      },
+      "bw_product_folder": "Timing Pulleys"
+    },
+    {
+      "slug": "transmission-chain-conveyor-chain",
+      "display_name": "Transmission & Conveyor Chain",
+      "pages": {
+        "brief": "products/transmission-chain-conveyor-chain-brief.html",
+        "detailed": "products/transmission-chain-conveyor-chain-detailed.html"
+      },
+      "photos": {
+        "path": "photos/transmission-chain-conveyor-chain.pdf",
+        "exists": true
+      },
+      "downloads": [
+        {
+          "label": "Detailed workbook (XLSX)",
+          "path": "downloads/products/transmission-chain-conveyor-chain/Transmission & Conveyor Chain.xlsx"
+        },
+        {
+          "label": "Poster (DOCX)",
+          "path": "downloads/products/transmission-chain-conveyor-chain/Transmission_and_Conveyor_Chain_Poster_Phase_2.docx"
+        }
+      ],
+      "source_workbooks": {
+        "detailed_xlsx": "Transmission & Conveyor Chain.xlsx",
+        "brief_xlsx": "Transmission & Conveyor Chain.xlsx",
+        "poster_docx": "Transmission_and_Conveyor_Chain_Poster_Phase_2.docx"
+      },
+      "bw_product_folder": "Transmission & Conveyor Chain"
+    },
+    {
+      "slug": "universal-joints",
+      "display_name": "Universal Joints (U-Joints)",
+      "pages": {
+        "brief": "products/universal-joints-brief.html",
+        "detailed": "products/universal-joints-detailed.html"
+      },
+      "photos": {
+        "path": "photos/universal-joints.pdf",
+        "exists": true
+      },
+      "downloads": [
+        {
+          "label": "Detailed workbook (XLSX)",
+          "path": "downloads/products/universal-joints/Universal Joints (U-Joints).xlsx"
+        },
+        {
+          "label": "Poster (DOCX)",
+          "path": "downloads/products/universal-joints/Universal_Joints_Poster_Cheat_Sheet_Phase_2.docx"
+        }
+      ],
+      "source_workbooks": {
+        "detailed_xlsx": "Universal Joints (U-Joints).xlsx",
+        "brief_xlsx": "Universal Joints (U-Joints).xlsx",
+        "poster_docx": "Universal_Joints_Poster_Cheat_Sheet_Phase_2.docx"
+      },
+      "bw_product_folder": "Universal Joints (U-Joints)"
+    },
+    {
+      "slug": "v-belts",
+      "display_name": "V-Belts",
+      "pages": {
+        "brief": "products/v-belts-brief.html",
+        "detailed": "products/v-belts-detailed.html"
+      },
+      "photos": {
+        "path": "photos/v-belts.pdf",
+        "exists": true
+      },
+      "downloads": [
+        {
+          "label": "Detailed workbook (XLSX)",
+          "path": "downloads/products/v-belts/V-Belts.xlsx"
+        },
+        {
+          "label": "Poster (DOCX)",
+          "path": "downloads/products/v-belts/V-Belts_Poster_Phase_2.docx"
+        }
+      ],
+      "source_workbooks": {
+        "detailed_xlsx": "V-Belts.xlsx",
+        "brief_xlsx": "V-Belts.xlsx",
+        "poster_docx": "V-Belts_Poster_Phase_2.docx"
+      },
+      "bw_product_folder": "V-Belts"
+    }
+  ]
+}
