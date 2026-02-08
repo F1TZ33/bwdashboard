@@ -251,3 +251,38 @@ h1, .pageTitle{
 .supplierNote{opacity:.8; margin-top:4px; font-size:.95rem;}
 .supplierActions{display:flex; gap:8px; align-items:center; flex-wrap:wrap; justify-content:flex-end;}
 .btn.mini{padding:6px 10px; font-size:.9rem; border-radius:10px;}
+
+/* ===== Store selector compact (Product Guide) ===== */
+.siteHeader{ position:relative; }
+#storeSelectorCard.storeSelectorCompact{
+  position:absolute;
+  top:14px;
+  right:14px;
+  width:360px;
+  padding:12px 14px;
+  border-radius:14px;
+}
+#storeSelectorCard.storeSelectorCompact h2{
+  font-size:14px;
+  margin:0 0 8px 0;
+}
+#storeSelectorCard.storeSelectorCompact p{ display:none; }
+#storeSelectorCard.storeSelectorCompact label{ min-width:auto !important; }
+#storeSelectorCard.storeSelectorCompact select{
+  max-width:220px;
+  height:34px;
+  padding:6px 10px;
+}
+#storeSelectorCard.storeSelectorCompact #storeSelectorStatus{
+  font-size:12px;
+  opacity:.75;
+}
+
+/* On small screens, keep it in flow above tiles */
+@media (max-width: 900px){
+  #storeSelectorCard.storeSelectorCompact{
+    position:static;
+    width:auto;
+    margin: 0 0 18px 0;
+  }
+}
