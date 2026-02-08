@@ -676,12 +676,6 @@ document.addEventListener('DOMContentLoaded',()=>{globalInit();setupSearch();if(
         img.classList.add("is-missing");
         img.src = fallback;
       };
-
-      // If the browser already attempted to load and failed before our handlers were attached,
-      // complete==true and naturalWidth==0. Force fallback in that case.
-      if (img.complete && img.naturalWidth === 0) {
-        try { img.onerror && img.onerror(); } catch(e) {}
-      }
       // In case src is empty or was cached incorrectly, force it
       var expected = "assets/img/products/" + slug + ".png";
       if (img.getAttribute("src") !== expected) img.setAttribute("src", expected);
@@ -984,19 +978,7 @@ document.addEventListener('DOMContentLoaded',()=>{globalInit();setupSearch();if(
 
 /* shared-suppliers-json */
 (function(){
-  const SUPPLIERS_URL = (function(){
-    // Repo-root safe URL for GitHub Pages (prevents /products/docs/... 404)
-    function segs(){ return (location.pathname || "").split("/").filter(Boolean); }
-    function repoRootPath(){
-      var s = segs();
-      var host = (location.hostname || "").toLowerCase();
-      if(host.endsWith("github.io") && s.length >= 1){
-        return "/" + s[0] + "/"; // "/bwdashboard/"
-      }
-      return "/";
-    }
-    return new URL(repoRootPath() + "docs/suppliers.json", location.origin).href;
-  })();
+  const SUPPLIERS_URL = new URL("docs/suppliers.json", document.baseURI).href;
   const KEY_ACTIVE_STORE = "activeStoreTemplate";
   const KEY_LOCAL_DRAFT = "supplierEditsDraftV1"; // optional local cache of edits until published
 
@@ -1326,7 +1308,226 @@ document.addEventListener('DOMContentLoaded',()=>{globalInit();setupSearch();if(
 
 
 
+/* nav-enforcer-v1 */
+(function(){
+  function pageName(){
+    var p = (location.pathname || "").split("/").pop() || "index.html";
+    return p;
+  }
+  function isDashboard(p){ return p === "index.html" || p === ""; }
 
+  function isSecondary(p){
+    return ["product-guide.html","resources.html","sops.html","sales.html","admin.html"].includes(p);
+  }
+
+  function isProductPage(p){
+    return /^.+-(brief|detailed)\.html$/.test(p) && (location.pathname || "").includes("/products/");
+  }
+
+  function backTarget(p){
+    if(isProductPage(p)) return "../product-guide.html";
+    if(p.startsWith("sales-")) return "sales.html";
+    if(p.startsWith("resources-")) return "resources.html";
+    if(p.startsWith("sop-")) return "sops.html";
+    if(p === "photos.html") return "product-guide.html";
+    if(p === "supplier-directory.html") return "resources.html";
+    if(p === "account-applications.html") return "resources.html";
+    return "index.html";
+  }
+
+  function ensureTopbar(){
+    var topbar = document.querySelector(".topbar");
+    if(!topbar) return null;
+
+    // remove ALL buttons inside topbar (this strips Dev Notes / Admin / etc)
+    topbar.querySelectorAll("a.btn, button.btn").forEach(function(el){ el.remove(); });
+
+    // Ensure containers
+    var left = topbar.querySelector(".leftBtns");
+    if(!left){
+      left = document.createElement("div");
+      left.className = "leftBtns";
+      topbar.appendChild(left);
+    }
+    var right = topbar.querySelector(".rightBtns");
+    if(!right){
+      right = document.createElement("div");
+      right.className = "rightBtns";
+      topbar.appendChild(right);
+    }
+    left.innerHTML = "";
+    right.innerHTML = "";
+    return {topbar:topbar,left:left,right:right};
+  }
+
+  function makeBtn(text, href, id){
+    var a = document.createElement("a");
+    a.className = "btn";
+    if(id) a.id = id;
+    a.href = href;
+    a.textContent = text;
+    return a;
+  }
+
+  function keepExistingDownload(right){
+    // If a download button exists elsewhere in DOM (from product templates), keep its href.
+    var existing = document.querySelector('a.btn[href*="downloads/"]');
+    if(existing){
+      right.appendChild(makeBtn("⬇ Download", existing.getAttribute("href")));
+      return true;
+    }
+    return false;
+  }
+
+  function init(){
+    var p = pageName();
+    var bars = ensureTopbar();
+    if(!bars) return;
+
+    if(isDashboard(p)){
+      bars.topbar.style.display = "none";
+      return;
+    } else {
+      bars.topbar.style.display = "";
+    }
+
+    if(isSecondary(p)){
+      bars.right.appendChild(makeBtn("⌂ Dashboard", "index.html"));
+      return;
+    }
+
+    // Tertiary
+    bars.left.appendChild(makeBtn("← Back", backTarget(p)));
+    bars.right.appendChild(makeBtn("⌂ Dashboard", "index.html"));
+
+    if(isProductPage(p)){
+      keepExistingDownload(bars.right);
+      bars.right.appendChild(makeBtn("✎ Suggest Edit", "#", "suggestEditBtn"));
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", init);
+})();
+
+
+
+
+
+
+/* ===== PATCH: Product Guide store selector modal + product placeholder path fix (GitHub Pages safe) ===== */
+(function(){
+  function isProductGuide(){
+    const p = (location.pathname||"").split("/").pop() || "index.html";
+    return p === "product-guide.html";
+  }
+
+  function findChangeStoreButton(){
+    return document.getElementById("changeStoreBtn")
+      || document.querySelector('[data-action="change-store"]')
+      || Array.from(document.querySelectorAll(".btn")).find(b => (b.textContent||"").toLowerCase().includes("change store"))
+      || null;
+  }
+
+  function show(el){ if(el) el.style.display="flex"; }
+  function hide(el){ if(el) el.style.display="none"; }
+
+  function ensureStoreModal(){
+    // Hide the old on-page box if it exists
+    const card = document.getElementById("storeSelectorCard");
+    if(card) card.style.display = "none";
+
+    let sel = document.getElementById("storeSelector");
+    let status = document.getElementById("storeSelectorStatus");
+
+    // If the old card is removed, re-create the select so existing suppliers code can still populate it
+    if(!sel){
+      sel = document.createElement("select");
+      sel.id = "storeSelector";
+      sel.style.minWidth = "280px";
+      sel.style.width = "100%";
+    }
+    if(!status){
+      status = document.createElement("div");
+      status.id = "storeSelectorStatus";
+      status.style.opacity = ".75";
+      status.style.marginTop = "8px";
+    }
+
+    // Create modal if not already present
+    let back = document.getElementById("storeModalBack");
+    if(back) return; // already built
+
+    back = document.createElement("div");
+    back.className = "modalBack";
+    back.id = "storeModalBack";
+
+    const modal = document.createElement("div");
+    modal.className = "modal";
+    modal.innerHTML = `
+      <div style="display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap;">
+        <h3 style="margin:0;">Change Store</h3>
+        <button class="btn" type="button" id="closeStoreModal">✕ Close</button>
+      </div>
+      <div class="subtitle" style="margin:10px 0 10px 0;">Select your store template. Saved automatically.</div>
+      <div style="display:grid;gap:10px;">
+        <div id="storeModalSelectMount"></div>
+      </div>
+      <div id="storeModalStatusMount" style="margin-top:10px;"></div>
+    `;
+    back.appendChild(modal);
+    document.body.appendChild(back);
+
+    // Mount select + status into modal
+    const mount = document.getElementById("storeModalSelectMount");
+    if(mount) mount.appendChild(sel);
+    const sm = document.getElementById("storeModalStatusMount");
+    if(sm) sm.appendChild(status);
+
+    // Close behaviors
+    back.addEventListener("click", (e)=>{ if(e.target === back) hide(back); });
+    const closeBtn = document.getElementById("closeStoreModal");
+    if(closeBtn) closeBtn.addEventListener("click", ()=>hide(back));
+
+    // Open button
+    const openBtn = findChangeStoreButton();
+    if(openBtn){
+      openBtn.addEventListener("click", (e)=>{
+        // Button may be <a>
+        if(e) e.preventDefault();
+        show(back);
+      });
+    }
+  }
+
+  function fixProductPlaceholders(){
+    // Some templates used an absolute /assets/... path which breaks on GitHub Pages repo subpaths.
+    const fallbackRel = "assets/img/products/_generic.png";
+    document.querySelectorAll("img.productThumb").forEach(img => {
+      // Remove inline onerror that points to /assets/... (wrong on GH pages)
+      const onerr = img.getAttribute("onerror") || "";
+      if(onerr.includes("/assets/")) img.removeAttribute("onerror");
+
+      img.onerror = function(){
+        if(img.getAttribute("data-fellback")==="1") return;
+        img.setAttribute("data-fellback","1");
+        img.classList.add("is-missing");
+        img.src = fallbackRel;
+      };
+
+      // If it already fell back to a broken /assets/... URL, correct it.
+      const cur = (img.getAttribute("src")||"");
+      if(cur.startsWith("/assets/")){
+        img.src = cur.replace(/^\/assets\//, "assets/");
+      }
+    });
+  }
+
+  document.addEventListener("DOMContentLoaded", function(){
+    if(!isProductGuide()) return;
+    ensureStoreModal();
+    fixProductPlaceholders();
+  });
+})();
 
 
 /* pwa-register */
@@ -1339,188 +1540,3 @@ document.addEventListener('DOMContentLoaded',()=>{globalInit();setupSearch();if(
     });
   });
 })();
-
-
-
-/* nav-enforcer-v4 (repo-root safe + Product Guide store header) */
-(function(){
-  function segs(){ return (location.pathname || "").split("/").filter(Boolean); }
-  function file(){ var s=segs(); return s.length ? s[s.length-1] : "index.html"; }
-
-  function repoRootPath(){
-    var s = segs();
-    var host = (location.hostname || "").toLowerCase();
-    if(host.endsWith("github.io") && s.length >= 1){
-      return "/" + s[0] + "/";
-    }
-    return "/";
-  }
-  function urlAtRoot(rel){
-    return new URL(repoRootPath() + rel, location.origin).href;
-  }
-
-  function isDashboard(){
-    return (location.pathname || "").endsWith(repoRootPath() + "index.html");
-  }
-  function isSecondary(){
-    return ["product-guide.html","resources.html","sops.html","sales.html","admin.html"].includes(file());
-  }
-  function isProductGuide(){
-    return file() === "product-guide.html";
-  }
-  function isProductPage(){
-    return /^.+-(brief|detailed)\.html$/.test(file()) && (location.pathname || "").includes("/products/");
-  }
-
-  function backTarget(){
-    var s = segs();
-    var f = file();
-    if(s.includes("sales") && f==="index.html" && s.length > 2){
-      return urlAtRoot("sales.html");
-    }
-    if(isProductPage()) return urlAtRoot("product-guide.html");
-
-    if(f.startsWith("sales-") || s.includes("sales")) return urlAtRoot("sales.html");
-    if(f.startsWith("resources-") || s.includes("resources")) return urlAtRoot("resources.html");
-    if(f.startsWith("sop-") || s.includes("sops")) return urlAtRoot("sops.html");
-
-    if(f==="supplier-directory.html" || f==="account-applications.html") return urlAtRoot("resources.html");
-    if(f==="photos.html") return urlAtRoot("product-guide.html");
-
-    return urlAtRoot("index.html");
-  }
-
-  function ensureTopbar(){
-    var topbar = document.querySelector(".topbar");
-    if(!topbar) return null;
-
-    // remove ALL buttons inside topbar (strips Dev Notes / Admin / etc)
-    topbar.querySelectorAll("a.btn, button.btn").forEach(function(el){ el.remove(); });
-
-    // Ensure containers
-    var left = topbar.querySelector(".leftBtns");
-    if(!left){
-      left = document.createElement("div");
-      left.className = "leftBtns";
-      topbar.appendChild(left);
-    }
-    var center = topbar.querySelector(".centerBtns");
-    if(!center){
-      center = document.createElement("div");
-      center.className = "centerBtns";
-      topbar.appendChild(center);
-    }
-    var right = topbar.querySelector(".rightBtns");
-    if(!right){
-      right = document.createElement("div");
-      right.className = "rightBtns";
-      topbar.appendChild(right);
-    }
-    left.innerHTML = "";
-    center.innerHTML = "";
-    right.innerHTML = "";
-    return {topbar:topbar,left:left,center:center,right:right};
-  }
-
-  function makeBtn(text, href, id){
-    var a = document.createElement("a");
-    a.className = "btn";
-    if(id) a.id = id;
-    a.href = href;
-    a.textContent = text;
-    return a;
-  }
-
-  function makeCenterLabel(text){
-    var span = document.createElement("div");
-    span.className = "topbarCenterLabel";
-    span.textContent = text;
-    return span;
-  }
-
-  function keepExistingDownload(right){
-    var existing = document.querySelector('a.btn[href*="downloads/"]');
-    if(existing){
-      right.appendChild(makeBtn("⬇ Download", existing.getAttribute("href")));
-      return true;
-    }
-    return false;
-  }
-
-  function getActiveStoreName(){
-    try{
-      return localStorage.getItem("activeStoreTemplate") || "Default";
-    }catch(e){
-      return "Default";
-    }
-  }
-
-  function wireChangeStore(btn, bars){
-    btn.addEventListener("click", function(e){
-      e.preventDefault();
-      var card = document.getElementById("storeSelectorCard");
-      var sel = document.getElementById("storeSelector");
-      if(card){
-        card.style.display = "";
-        card.scrollIntoView({behavior:"smooth", block:"start"});
-      }
-      if(sel){
-        setTimeout(function(){ try{ sel.focus(); }catch(e){} }, 250);
-      }
-      // update label immediately (in case store exists but label not yet set)
-      if(bars && bars.center){
-        bars.center.innerHTML = "";
-        bars.center.appendChild(makeCenterLabel(getActiveStoreName()));
-      }
-    });
-  }
-
-  function init(){
-    var bars = ensureTopbar();
-    if(!bars) return;
-
-    if(isDashboard()){
-      bars.topbar.style.display = "none";
-      return;
-    } else {
-      bars.topbar.style.display = "";
-    }
-
-    // Product Guide: Dashboard left, store name center, Change Store right
-    if(isProductGuide()){
-      bars.left.appendChild(makeBtn("⌂ Dashboard", urlAtRoot("index.html")));
-      bars.center.appendChild(makeCenterLabel(getActiveStoreName()));
-      var cs = makeBtn("⇄ Change Store", "#", "changeStoreBtn");
-      bars.right.appendChild(cs);
-      wireChangeStore(cs, bars);
-
-      // Sync label when user changes the store selector
-      document.addEventListener("change", function(ev){
-        var t = ev.target;
-        if(t && t.id === "storeSelector"){
-          bars.center.innerHTML = "";
-          bars.center.appendChild(makeCenterLabel(getActiveStoreName()));
-        }
-      });
-      return;
-    }
-
-    // Other secondary pages: dashboard only (right side)
-    if(isSecondary()){
-      bars.right.appendChild(makeBtn("⌂ Dashboard", urlAtRoot("index.html")));
-      return;
-    }
-
-    // Tertiary
-    bars.left.appendChild(makeBtn("← Back", backTarget()));
-    bars.right.appendChild(makeBtn("⌂ Dashboard", urlAtRoot("index.html")));
-
-    if(isProductPage()){
-      keepExistingDownload(bars.right);
-      bars.right.appendChild(makeBtn("✎ Suggest Edit", "#", "suggestEditBtn"));
-    }
-  }
-
-  document.addEventListener("DOMContentLoaded", init);
-})();
-
