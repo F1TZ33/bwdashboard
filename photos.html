@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<title>Product Photos</title>
+<link href="assets/css/style.css" rel="stylesheet"/>
+</head>
+<body>
+<div class="container">
+<div class="siteHeader"><img alt="Bearing Wholesalers" class="siteLogo" src="assets/img/logo.png"/></div>
+<div class="topbar">
+<div class="leftBtns">
+<a class="btn" href="product-guide.html">← Back</a>
+<a class="btn" href="index.html">⌂ Dashboard</a>
+</div>
+<div class="rightBtns">
+<button class="btn" data-action="suggest" type="button">Suggest edit</button>
+<button class="btn" data-action="admin" title="Admin" type="button">Admin</button>
+</div>
+</div>
+<div class="meta">Version: <strong>GitHub vFinal</strong> • Last updated: <strong>2026-02-08</strong></div>
+<h1>Product Photos</h1>
+<p class="subtitle">Quick photo references by product.</p>
+<div class="card">
+<ul style="margin:0; padding-left:18px; display:grid; gap:10px">
+<li><a class="smallbtn" href="photos/angular-contact-ball-bearings.pdf">Angular Contact Ball Bearings</a></li>
+<li><a class="smallbtn" href="photos/ball-bearings.pdf">Ball Bearings</a></li>
+<li><a class="smallbtn" href="photos/bearing-housings.pdf">Bearing Housings</a></li>
+<li><a class="smallbtn" href="photos/brass-bsp-npt-fittings.pdf">Brass BSP &amp; NPT Fittings</a></li>
+<li><a class="smallbtn" href="photos/bronze-bushings.pdf">Bronze Bushings</a></li>
+<li><a class="smallbtn" href="photos/bushings-hubs.pdf">Bushings &amp; Hubs</a></li>
+<li><a class="smallbtn" href="photos/cylindrical-roller-bearings.pdf">Cylindrical Roller Bearings</a></li>
+<li><a class="smallbtn" href="photos/electric-motors.pdf">Electric Motors</a></li>
+<li><a class="smallbtn" href="photos/gearboxes-gear-reducers.pdf">Gearboxes &amp; Gear Reducers</a></li>
+<li><a class="smallbtn" href="photos/idlers.pdf">Idlers</a></li>
+<li><a class="smallbtn" href="photos/insert-bearings.pdf">Insert Bearings</a></li>
+<li><a class="smallbtn" href="photos/needle-roller-bearings.pdf">Needle Roller Bearings</a></li>
+<li><a class="smallbtn" href="photos/nuts-bolts.pdf">Nuts &amp; Bolts</a></li>
+<li><a class="smallbtn" href="photos/o-rings.pdf">O-Rings</a></li>
+<li><a class="smallbtn" href="photos/oils-greases.pdf">Oils &amp; Greases</a></li>
+<li><a class="smallbtn" href="photos/pressure-gauges.pdf">Pressure Gauges</a></li>
+<li><a class="smallbtn" href="photos/pulleys.pdf">Pulleys</a></li>
+<li><a class="smallbtn" href="photos/push-fit-fittings-for-nylon-tube.pdf">Push-Fit Fittings for Nylon Tube</a></li>
+<li><a class="smallbtn" href="photos/rod-ends.pdf">Rod Ends</a></li>
+<li><a class="smallbtn" href="photos/rotary-seals.pdf">Rotary Seals</a></li>
+<li><a class="smallbtn" href="photos/shaft-collars-shrink-rings.pdf">Shaft Collars &amp; Shrink Rings</a></li>
+<li><a class="smallbtn" href="photos/spherical-plain-bearings.pdf">Spherical Plain Bearings</a></li>
+<li><a class="smallbtn" href="photos/spherical-roller-bearings.pdf">Spherical Roller Bearings</a></li>
+<li><a class="smallbtn" href="photos/sprockets.pdf">Sprockets</a></li>
+<li><a class="smallbtn" href="photos/tapered-roller-bearings.pdf">Tapered Roller Bearings</a></li>
+<li><a class="smallbtn" href="photos/thrust-bearings.pdf">Thrust Bearings</a></li>
+<li><a class="smallbtn" href="photos/timing-belts.pdf">Timing Belts</a></li>
+<li><a class="smallbtn" href="photos/timing-pulleys.pdf">Timing Pulleys</a></li>
+<li><a class="smallbtn" href="photos/transmission-chain-conveyor-chain.pdf">Transmission Chain &amp; Conveyor Chain</a></li>
+<li><a class="smallbtn" href="photos/universal-joints.pdf">Universal Joints</a></li>
+<li><a class="smallbtn" href="photos/v-belts.pdf">V-Belts</a></li>
+</ul>
+</div>
+</div>
+<script src="assets/js/app.js"></script>
+<script>
+    (function(){
+      try{
+        const raw = localStorage.getItem('bwproguide.settings');
+        const s = raw ? JSON.parse(raw) : {};
+        const v = s.version || 'v3';
+        const lu = s.lastUpdated || '';
+        document.querySelectorAll('[data-meta="version"]').forEach(el=>el.textContent=v);
+        document.querySelectorAll('[data-meta="lastUpdated"]').forEach(el=>el.textContent=lu || '—');
+      }catch(e){}
+    })();
+  </script>
+</body>
+</html>
