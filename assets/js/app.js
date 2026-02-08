@@ -941,7 +941,19 @@ document.addEventListener('DOMContentLoaded',()=>{globalInit();setupSearch();if(
 
 /* shared-suppliers-json */
 (function(){
-  const SUPPLIERS_URL = new URL("docs/suppliers.json", document.baseURI).href;
+  const SUPPLIERS_URL = (function(){
+    // Repo-root safe URL for GitHub Pages (prevents /products/docs/... 404)
+    function segs(){ return (location.pathname || "").split("/").filter(Boolean); }
+    function repoRootPath(){
+      var s = segs();
+      var host = (location.hostname || "").toLowerCase();
+      if(host.endsWith("github.io") && s.length >= 1){
+        return "/" + s[0] + "/"; // "/bwdashboard/"
+      }
+      return "/";
+    }
+    return new URL(repoRootPath() + "docs/suppliers.json", location.origin).href;
+  })();
   const KEY_ACTIVE_STORE = "activeStoreTemplate";
   const KEY_LOCAL_DRAFT = "supplierEditsDraftV1"; // optional local cache of edits until published
 
