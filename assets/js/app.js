@@ -1633,3 +1633,4 @@ document.addEventListener('DOMContentLoaded',()=>{globalInit();setupSearch();if(
 
   document.addEventListener("DOMContentLoaded", init);
 })();
+
