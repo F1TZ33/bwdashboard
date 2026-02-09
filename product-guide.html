@@ -10,10 +10,24 @@
 <body data-page="page">
 <div class="container">
 <div class="siteHeader"><img alt="Bearing Wholesalers" class="siteLogo" src="assets/img/logo.png"/></div>
-<div class="topbar">
-<div class="leftBtns">
-<a class="btn" href="index.html">← Back</a>
-<a class="btn" href="index.html">⌂ Dashboard</a>
+div class="topbar productguide-bar">
+
+  <!-- LEFT SIDE: Store + Change -->
+  <div class="pg-left">
+    <span id="activeStoreLabel" class="pg-store">Bayswater</span>
+
+    <button id="changeStoreBtn" class="btn pg-change">
+      ⇄ Change Store
+    </button>
+  </div>
+
+  <!-- RIGHT SIDE: Dashboard -->
+  <div class="pg-right">
+    <a href="index.html" class="btn pg-dash">
+      ⌂ Dashboard
+    </a>
+  </div>
+
 </div>
 <div class="rightBtns">
 <button class="btn" data-action="suggest" type="button">Suggest edit</button>
