@@ -319,3 +319,97 @@ h1, .pageTitle{
 @media (max-width: 720px){
   .topbarCenterLabel{ font-size:12px; padding:8px 12px; }
 }
+
+/* ===== CLEAN WHITE STORE BANNER ===== */
+
+.storeBanner{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  background:#ffffff;
+  padding:14px 18px;
+  border-radius:14px;
+  margin-bottom:18px;
+  flex-wrap:wrap;
+}
+
+/* Left group */
+.storeLeft{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+/* Purple Bayswater tile */
+.storeTile{
+  background:#7c3aed;
+  color:#ffffff;
+  padding:10px 16px;
+  border-radius:999px;
+  font-weight:800;
+  font-size:14px;
+  white-space:nowrap;
+}
+
+/* Change store button */
+.storeChange{
+  background:#7c3aed;
+  color:#ffffff;
+  border:none;
+  padding:10px 16px;
+  border-radius:999px;
+  font-weight:700;
+  cursor:pointer;
+  transition:opacity .15s ease;
+}
+
+.storeChange:hover{
+  opacity:.85;
+}
+
+/* Right group */
+.storeRight{
+  display:flex;
+  align-items:center;
+}
+
+/* Dashboard button */
+.dashboardBtn{
+  background:#7c3aed;
+  color:#ffffff;
+  padding:10px 18px;
+  border-radius:999px;
+  font-weight:800;
+  text-decoration:none;
+  white-space:nowrap;
+  transition:opacity .15s ease;
+}
+
+.dashboardBtn:hover{
+  opacity:.85;
+}
+
+/* ===== Responsive ===== */
+
+@media (max-width:640px){
+
+  .storeBanner{
+    flex-direction:column;
+    align-items:stretch;
+    gap:10px;
+  }
+
+  .storeLeft{
+    justify-content:center;
+  }
+
+  .storeRight{
+    justify-content:center;
+  }
+
+  .dashboardBtn{
+    width:100%;
+    text-align:center;
+  }
+}
