@@ -1392,10 +1392,8 @@ document.addEventListener('DOMContentLoaded',()=>{globalInit();setupSearch();if(
     var topbar = document.querySelector(".topbar");
     if(!topbar) return null;
 
-    // remove ALL buttons/links inside topbar (strips Dev Notes / Admin / etc)
+    // remove ALL buttons inside topbar (this strips Dev Notes / Admin / etc)
     topbar.querySelectorAll("a.btn, button.btn").forEach(function(el){ el.remove(); });
-    // remove any existing store pill text nodes we previously injected
-    topbar.querySelectorAll(".navPill").forEach(function(el){ el.remove(); });
 
     // Ensure containers
     var left = topbar.querySelector(".leftBtns");
@@ -1404,12 +1402,6 @@ document.addEventListener('DOMContentLoaded',()=>{globalInit();setupSearch();if(
       left.className = "leftBtns";
       topbar.appendChild(left);
     }
-    var center = topbar.querySelector(".centerBtns");
-    if(!center){
-      center = document.createElement("div");
-      center.className = "centerBtns";
-      topbar.appendChild(center);
-    }
     var right = topbar.querySelector(".rightBtns");
     if(!right){
       right = document.createElement("div");
@@ -1417,9 +1409,8 @@ document.addEventListener('DOMContentLoaded',()=>{globalInit();setupSearch();if(
       topbar.appendChild(right);
     }
     left.innerHTML = "";
-    center.innerHTML = "";
     right.innerHTML = "";
-    return {topbar:topbar,left:left,center:center,right:right};
+    return {topbar:topbar,left:left,right:right};
   }
 
   function makeBtn(text, href, id){
@@ -1451,25 +1442,6 @@ document.addEventListener('DOMContentLoaded',()=>{globalInit();setupSearch();if(
       return;
     } else {
       bars.topbar.style.display = "";
-    }
-
-    // Product Guide special: Store (left) · Change Store (center) · Dashboard (right)
-    if(p === "product-guide.html"){
-      var pill = document.createElement("div");
-      pill.className = "navPill";
-      pill.id = "storeNamePill";
-      pill.textContent = "Store";
-      bars.left.appendChild(pill);
-
-      var changeBtn = document.createElement("button");
-      changeBtn.className = "btn";
-      changeBtn.type = "button";
-      changeBtn.id = "changeStoreBtn";
-      changeBtn.textContent = "Change Store";
-      bars.center.appendChild(changeBtn);
-
-      bars.right.appendChild(makeBtn("⌂ Dashboard", "index.html"));
-      return;
     }
 
     if(isSecondary(p)){
@@ -1506,27 +1478,34 @@ document.addEventListener('DOMContentLoaded',()=>{globalInit();setupSearch();if(
 
 /* product-guide-store-modal */
 (function(){
-  // Provides: store list + active store persisted in localStorage, and a modal picker.
-  // UI buttons are created by nav-enforcer; this module only wires behavior + keeps the pill text updated.
+  const SUPPLIERS_URL = new URL(window.__bwRepoBase() + "docs/suppliers.json", location.origin).href;
+  const KEY_ACTIVE_STORE = "activeStoreTemplate";
 
-  var SUPPLIERS_URL = null;
-  try{ SUPPLIERS_URL = new URL("docs/suppliers.json", document.baseURI).href; }catch(e){}
+  function isProductGuide(){
+    return /product-guide\.html($|\?)/.test(location.href);
+  }
 
-  var KEY_ACTIVE_STORE = "activeStoreTemplate";
+  async function fetchJson(url){
+    const res = await fetch(url, {cache:"no-store"});
+    if(!res.ok) throw new Error("Fetch failed: " + res.status);
+    return await res.json();
+  }
 
-  function fetchJson(url){
-    return fetch(url, {cache:"no-store"}).then(function(res){
-      if(!res.ok) throw new Error("Fetch failed: " + res.status);
-      return res.json();
-    });
+  function repoRoot(){
+    var parts = (location.pathname || "/").split("/").filter(Boolean);
+    if(parts.length===0) return "";
+    return "/" + parts[0];
   }
 
   function getActiveStore(shared){
-    var stored = localStorage.getItem(KEY_ACTIVE_STORE);
-    if(stored && shared && Array.isArray(shared.stores) && shared.stores.indexOf(stored) !== -1) return stored;
-    var first = (shared && Array.isArray(shared.stores) && shared.stores.length) ? shared.stores[0] : "Default";
-    localStorage.setItem(KEY_ACTIVE_STORE, first);
-    return first;
+    const stored = localStorage.getItem(KEY_ACTIVE_STORE);
+    if(stored && shared.stores && shared.stores.includes(stored)) return stored;
+    if(shared.stores && shared.stores.length){
+      localStorage.setItem(KEY_ACTIVE_STORE, shared.stores[0]);
+      return shared.stores[0];
+    }
+    localStorage.setItem(KEY_ACTIVE_STORE, "Default");
+    return "Default";
   }
 
   function setActiveStore(name){
@@ -1534,86 +1513,123 @@ document.addEventListener('DOMContentLoaded',()=>{globalInit();setupSearch();if(
   }
 
   function ensureModal(){
-    if(document.getElementById("storeModal")) return;
-    var wrap = document.createElement("div");
-    wrap.className = "modalBack";
-    wrap.id = "storeModal";
-    wrap.innerHTML =
-      '<div class="modal">' +
-        '<h3>Change store</h3>' +
-        '<p class="subtitle" style="margin:0 0 10px">Select a store template. This only affects suppliers lists on this device.</p>' +
-        '<div class="field">' +
-          '<label>Store template</label>' +
-          '<select id="storeSelectorModal"></select>' +
-        '</div>' +
-        '<div class="actions">' +
-          '<button class="btn" id="storeModalSave" type="button">Save</button>' +
-          '<button class="smallbtn" data-close="storeModal" type="button">Cancel</button>' +
-        '</div>' +
-      '</div>';
-    document.body.appendChild(wrap);
+    if(document.getElementById("storeModalBack")) return;
 
-    // click outside closes
-    wrap.addEventListener("click", function(e){ if(e.target === wrap) wrap.style.display="none"; });
-    // data-close buttons
-    wrap.querySelectorAll("[data-close]").forEach(function(btn){
-      btn.addEventListener("click", function(){ wrap.style.display="none"; });
-    });
+    const back = document.createElement("div");
+    back.id = "storeModalBack";
+    back.className = "modalBack";
+    back.innerHTML = `
+      <div class="modal">
+        <h3>Change Store</h3>
+        <p class="subtitle" style="margin-top:6px;">Supplier preferences will default to the selected store across all product brief pages.</p>
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:12px;">
+          <label for="storeSelectorModal" style="min-width:120px;"><strong>Store</strong></label>
+          <select id="storeSelectorModal" style="min-width:280px;"></select>
+          <span id="storeSelectorModalStatus" style="opacity:.75;"></span>
+        </div>
+        <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:16px;">
+          <button class="btn" id="storeModalClose" type="button">Close</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(back);
+
+    back.addEventListener("click", (e)=>{ if(e.target===back) back.style.display="none"; });
+    document.getElementById("storeModalClose").addEventListener("click", ()=>{ back.style.display="none"; });
   }
 
-  function openModal(){
-    ensureModal();
-    var m = document.getElementById("storeModal");
-    if(m) m.style.display = "flex";
+  function setNavStorePill(name){
+    const pill = document.getElementById("storeNamePill");
+    if(pill) pill.textContent = name;
   }
 
-  function setPillText(name){
-    var pill = document.getElementById("storeNamePill");
-    if(pill) pill.textContent = name || "Store";
-  }
+  async function init(){
+    if(!isProductGuide()) return;
 
-  function isProductGuidePage(){
-    var p = (location.pathname || "").split("/").pop() || "";
-    return p === "product-guide.html";
-  }
-
-  document.addEventListener("DOMContentLoaded", function(){
-    if(location.protocol === "file:") return;
-    if(!isProductGuidePage()) return;
-
-    var changeBtn = document.getElementById("changeStoreBtn");
-    if(changeBtn) changeBtn.addEventListener("click", openModal);
+    // Hide the old top-right store card if it exists
+    const old = document.getElementById("storeSelectorCard");
+    if(old) old.style.display = "none";
 
     ensureModal();
 
-    fetchJson(SUPPLIERS_URL).then(function(shared){
-      var active = getActiveStore(shared);
-      setPillText(active);
+    // Ensure button + pill exist in the topbar (in case HTML is older/newer)
+    const topbar = document.querySelector(".topbar");
+    if(topbar){
+      const left = topbar.querySelector(".leftBtns") || topbar;
+      const right = topbar.querySelector(".rightBtns") || topbar;
 
-      var sel = document.getElementById("storeSelectorModal");
-      if(sel){
-        sel.innerHTML = "";
-        (shared.stores || ["Default"]).forEach(function(n){
-          var opt = document.createElement("option");
-          opt.value = n; opt.textContent = n;
-          sel.appendChild(opt);
-        });
-        sel.value = active;
+      if(!document.querySelector('a.btn[href="index.html"][data-role="dash"]')){
+        const dash = document.createElement("a");
+        dash.className="btn";
+        dash.href="index.html";
+        dash.dataset.role="dash";
+        dash.textContent="⌂ Dashboard";
+        // put dashboard on left side
+        left.prepend(dash);
       }
 
-      var saveBtn = document.getElementById("storeModalSave");
-      if(saveBtn){
-        saveBtn.addEventListener("click", function(){
-          var next = (sel && sel.value) ? sel.value : active;
-          setActiveStore(next);
-          setPillText(next);
-          var m = document.getElementById("storeModal");
-          if(m) m.style.display = "none";
+      if(!document.getElementById("changeStoreBtn")){
+        const btn = document.createElement("button");
+        btn.className="btn";
+        btn.id="changeStoreBtn";
+        btn.type="button";
+        btn.textContent="⇄ Change Store";
+        right.prepend(btn);
+      }
+
+      if(!document.getElementById("storeNamePill")){
+        const pill = document.createElement("span");
+        pill.className="btn";
+        pill.id="storeNamePill";
+        pill.style.pointerEvents="none";
+        pill.style.opacity="0.95";
+        // attempt center by inserting between groups if possible
+        // If left/right containers exist, place at end of left group (looks centered enough with your layout)
+        left.appendChild(pill);
+      }
+    }
+
+    // Load stores
+    if(location.protocol === "file:"){
+      setNavStorePill("Store: (server required)");
+      return;
+    }
+
+    try{
+      const shared = await fetchJson(SUPPLIERS_URL);
+      const active = getActiveStore(shared);
+      setNavStorePill(active);
+
+      const sel = document.getElementById("storeSelectorModal");
+      const status = document.getElementById("storeSelectorModalStatus");
+      sel.innerHTML = "";
+      (shared.stores || ["Default"]).forEach(n=>{
+        const opt=document.createElement("option");
+        opt.value=n; opt.textContent=n;
+        sel.appendChild(opt);
+      });
+      sel.value = active;
+      if(status) status.textContent = "Saved automatically.";
+
+      sel.addEventListener("change", ()=>{
+        setActiveStore(sel.value);
+        setNavStorePill(sel.value);
+        if(status) status.textContent = "Saved: " + sel.value;
+      });
+
+      const openBtn = document.getElementById("changeStoreBtn");
+      if(openBtn){
+        openBtn.addEventListener("click", ()=>{
+          document.getElementById("storeModalBack").style.display="flex";
+          // sync current
+          sel.value = localStorage.getItem(KEY_ACTIVE_STORE) || active;
         });
       }
-    }).catch(function(err){
-      console.error(err);
-      setPillText(localStorage.getItem(KEY_ACTIVE_STORE) || "Default");
-    });
-  });
+    }catch(e){
+      setNavStorePill("Store: unavailable");
+      console.error(e);
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", init);
 })();
