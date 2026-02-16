@@ -114,7 +114,7 @@
       {
         "label": "Products",
         "slug": "resources-products",
-        "href": "https://bapcor.sharepoint.com/:f:/r/sites/BW-Everyone/Shared%20Documents/General/Resources/Product%20Resources?csf=1&web=1&e=aXPGY7",
+        "href": "resources.html",
         "icon": "products.png",
         "type": "external"
       },
@@ -128,7 +128,7 @@
       {
         "label": "Contacts",
         "slug": "resources-contacts",
-        "href": "https://bapcor.sharepoint.com/:x:/s/BW-Everyone/IQC7fLDxyovFSbo8L8jwY8CPAdGkwMquvai6FMfMMR2a-Ws?e=ZJ11jc",
+        "href": "resources.html",
         "icon": "contacts.png",
         "type": "external"
       },
