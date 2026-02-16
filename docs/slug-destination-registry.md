@@ -33,9 +33,9 @@ Locked rules: slugs are immutable; product cards always show Brief / Detailed / 
 
 | Tile label | Slug | Destination | Icon | Type |
 |---|---|---|---|---|
-| Products | `resources-products` | `https://bapcor.sharepoint.com/:f:/r/sites/BW-Everyone/Shared%20Documents/General/Resources/Product%20Resources?csf=1&web=1&e=aXPGY7` | `assets/img/menu/products.png` | external |
+| Products | `resources-products` | `resources-templates.html` | `assets/img/menu/products.png` | external |
 | Accounts | `resources-accounts` | `account-applications.html` | `assets/img/menu/accounts.png` | internal |
-| Contacts | `resources-contacts` | `https://bapcor.sharepoint.com/:x:/s/BW-Everyone/IQC7fLDxyovFSbo8L8jwY8CPAdGkwMquvai6FMfMMR2a-Ws?e=ZJ11jc` | `assets/img/menu/contacts.png` | external |
+| Contacts | `resources-contacts` | `resources-templates.html` | `assets/img/menu/contacts.png` | external |
 | Templates | `resources-templates` | `resources-templates.html` | `assets/img/menu/templates.png` | internal |
 | Core | `resources-core` | `resources-core.html` | `assets/img/menu/core.png` | internal |
 | Calculators | `resources-calculators` | `resources-calculators.html` | `assets/img/menu/calculators.png` | internal |
