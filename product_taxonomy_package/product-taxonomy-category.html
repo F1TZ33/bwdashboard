@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Category</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="pg">
+  <header class="pg-header">
+    <div class="pg-header__inner">
+      <div class="pg-brand">
+        <div class="pg-brand__mark" aria-hidden="true">⚙️</div>
+        <div class="pg-brand__text">
+          <div id="pageTitle" class="pg-title">Category</div>
+          <div class="pg-subtitle">Hierarchy tree</div>
+        </div>
+      </div>
+
+      <div class="pg-actions">
+        <button class="btn btn--ghost" id="backBtn" type="button">← Back</button>
+        <a class="btn btn--ghost" href="dashboard.html">Dashboard</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="pg-main">
+    <section class="pg-section">
+      <div class="section-head">
+        <div class="breadcrumb">
+          <a href="product-taxonomy.html">Product Categories</a>
+          <span aria-hidden="true">›</span>
+          <span id="crumbHere">Category</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card__head">
+          <div class="card__icon" aria-hidden="true">⚙️</div>
+          <div>
+            <h1 id="categoryTitle" class="h2">Category</h1>
+            <p class="muted" id="categoryHint">Brief list only. No brands/suppliers.</p>
+          </div>
+        </div>
+
+        <div id="treeWrap" class="tree"></div>
+      </div>
+    </section>
+  </main>
+
+  <script src="taxonomy.js"></script>
+</body>
+</html>
