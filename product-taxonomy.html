@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Product Categories</title>
+
+  <!-- Your existing site stylesheet (keep as-is) -->
+  <link rel="stylesheet" href="style.css" />
+
+  <!-- Taxonomy styles (namespaced; safe to drop in) -->
+  <link rel="stylesheet" href="css/taxonomy.css" />
+</head>
+<body class="tax-page">
+  <header class="tax-header" role="banner">
+    <div class="tax-header__inner">
+      <div class="tax-brand">
+        <div class="tax-brand__icon" aria-hidden="true">⚙️</div>
+        <div class="tax-brand__text">
+          <div class="tax-title">Product Categories</div>
+          <div class="tax-subtitle">Quick reference taxonomy</div>
+        </div>
+      </div>
+
+      <nav class="tax-actions" aria-label="Page actions">
+        <a class="tax-btn tax-btn--ghost" href="dashboard.html">Dashboard</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="tax-main" role="main">
+    <section class="tax-section">
+      <div class="tax-section__head">
+        <h1 class="tax-h1">Choose a category</h1>
+        <p class="tax-muted">Tap a tile to view a static list of products (no links).</p>
+      </div>
+
+      <div id="taxGrid" class="tax-grid" aria-label="Category tiles"></div>
+    </section>
+  </main>
+
+  <script src="js/taxonomy.js"></script>
+</body>
+</html>

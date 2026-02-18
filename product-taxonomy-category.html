@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Category</title>
+
+  <!-- Your existing site stylesheet (keep as-is) -->
+  <link rel="stylesheet" href="style.css" />
+
+  <!-- Taxonomy styles (namespaced; safe to drop in) -->
+  <link rel="stylesheet" href="css/taxonomy.css" />
+</head>
+<body class="tax-page">
+  <header class="tax-header" role="banner">
+    <div class="tax-header__inner">
+      <div class="tax-brand">
+        <div class="tax-brand__icon" aria-hidden="true">⚙️</div>
+        <div class="tax-brand__text">
+          <div id="taxHeaderTitle" class="tax-title">Category</div>
+          <div class="tax-subtitle">Static product list</div>
+        </div>
+      </div>
+
+      <nav class="tax-actions" aria-label="Page actions">
+        <button class="tax-btn tax-btn--ghost" id="taxBackBtn" type="button">← Back</button>
+        <a class="tax-btn tax-btn--ghost" href="dashboard.html">Dashboard</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="tax-main" role="main">
+    <section class="tax-section">
+      <div class="tax-breadcrumb" aria-label="Breadcrumb">
+        <a href="product-taxonomy.html">Product Categories</a>
+        <span aria-hidden="true">›</span>
+        <span id="taxCrumb">Category</span>
+      </div>
+
+      <div class="tax-card">
+        <div class="tax-card__head">
+          <div class="tax-card__icon" aria-hidden="true">📦</div>
+          <div>
+            <h1 id="taxCategoryTitle" class="tax-h2">Category</h1>
+            <p class="tax-muted">Static list for review only (no links).</p>
+          </div>
+        </div>
+
+        <div id="taxListWrap" class="tax-list" aria-label="Product list"></div>
+      </div>
+    </section>
+  </main>
+
+  <script src="js/taxonomy.js"></script>
+</body>
+</html>
