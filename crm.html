@@ -1,0 +1,1131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Preptus CRM Dashboard Prototype v4</title>
+  <style>
+    :root{
+      --bg:#0f172a;
+      --panel:#111827;
+      --panel2:#1f2937;
+      --panel3:#0b1220;
+      --border:#334155;
+      --text:#e5e7eb;
+      --muted:#94a3b8;
+      --accent:#2563eb;
+      --accent2:#1d4ed8;
+      --good:#22c55e;
+      --warn:#f59e0b;
+      --bad:#ef4444;
+      --shadow:0 20px 50px rgba(0,0,0,.35);
+      --radius:18px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:Arial,Helvetica,sans-serif;
+      background:linear-gradient(180deg,#0b1120 0%,#0f172a 100%);
+      color:var(--text);
+    }
+    .page{
+      max-width:1500px;
+      margin:0 auto;
+      padding:24px;
+    }
+    .topbar,.card,.modal{
+      background:rgba(17,24,39,.95);
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+    }
+    .topbar{
+      padding:18px 20px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+      margin-bottom:18px;
+      flex-wrap:wrap;
+    }
+    h1,h2,h3,p{margin:0}
+    .muted{color:var(--muted)}
+    .controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+    .top-select, .field input, .field select, .field textarea{
+      width:100%;
+      background:#0b1220;
+      color:var(--text);
+      border:1px solid #475569;
+      border-radius:12px;
+      padding:12px 14px;
+      font:inherit;
+    }
+    .top-select{min-width:220px;font-weight:700}
+    .btn{
+      appearance:none;
+      border:none;
+      cursor:pointer;
+      padding:13px 18px;
+      border-radius:14px;
+      font-weight:700;
+      color:#fff;
+      background:var(--accent);
+      transition:.15s ease;
+    }
+    .btn:hover{transform:translateY(-1px);background:var(--accent2)}
+    .btn.secondary{
+      background:var(--panel2);
+      border:1px solid var(--border);
+      color:var(--text);
+    }
+    .btn.ghost{
+      background:transparent;
+      border:1px dashed #475569;
+      color:var(--muted);
+    }
+    .hero{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:14px;
+      flex-wrap:wrap;
+      padding:14px 0 24px;
+    }
+    .hero .btn{
+      min-width:220px;
+      min-height:58px;
+      font-size:16px;
+      border-radius:999px;
+    }
+    .hero .btn.center{
+      min-width:260px;
+      font-size:18px;
+    }
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(12,1fr);
+      gap:16px;
+    }
+    .card{padding:18px}
+    .metric-card{
+      grid-column:span 12;
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:10px;
+      min-height:120px;
+      background:linear-gradient(180deg,rgba(31,41,55,.95) 0%, rgba(17,24,39,.95) 100%);
+    }
+    .metric-card h3{font-size:14px;color:var(--muted);margin-bottom:12px}
+    .metric-card .value{font-size:34px;font-weight:800;line-height:1}
+    .metric-card .sub{font-size:12px;color:var(--muted);margin-top:10px}
+    @media(min-width:700px){ .metric-card{grid-column:span 6} }
+    @media(min-width:1100px){ .metric-card{grid-column:span 4} }
+    @media(min-width:1350px){ .metric-card{grid-column:span 3} }
+    .span-4{grid-column:span 12}
+    .span-6{grid-column:span 12}
+    .span-8{grid-column:span 12}
+    .span-12{grid-column:span 12}
+    @media(min-width:1000px){
+      .span-4{grid-column:span 4}
+      .span-6{grid-column:span 6}
+      .span-8{grid-column:span 8}
+    }
+    .section-title{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      margin-bottom:14px;
+    }
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      padding:8px 12px;
+      border-radius:999px;
+      background:rgba(37,99,235,.12);
+      color:#bfdbfe;
+      border:1px solid rgba(37,99,235,.25);
+      font-size:12px;
+      font-weight:700;
+    }
+    .list, .report-list{
+      display:grid;
+      gap:10px;
+    }
+    .list-item, .report-item{
+      padding:12px 14px;
+      border-radius:14px;
+      background:#0b1220;
+      border:1px solid rgba(71,85,105,.65);
+    }
+    .list-item strong, .report-item strong{display:block;margin-bottom:6px}
+    .bar-row{display:grid;gap:12px}
+    .bar-label{
+      display:flex;justify-content:space-between;gap:10px;font-size:14px;margin-bottom:6px
+    }
+    .bar{
+      height:10px;border-radius:999px;background:#0b1220;border:1px solid #334155;overflow:hidden
+    }
+    .bar > span{
+      display:block;height:100%;background:linear-gradient(90deg,#2563eb 0%, #60a5fa 100%)
+    }
+
+    .summary-table{
+      width:100%;
+      border-collapse:collapse;
+      font-size:14px;
+    }
+    .summary-table th,.summary-table td{
+      border-bottom:1px solid rgba(71,85,105,.45);
+      padding:12px 10px;
+      text-align:center;
+    }
+    .summary-table th{color:var(--muted);font-size:12px;letter-spacing:.04em;text-transform:uppercase}
+    .score{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-width:62px;
+      padding:8px 10px;
+      border-radius:999px;
+      background:#0b1220;
+      border:1px solid #475569;
+      font-weight:800;
+    }
+    .score.good{border-color:rgba(34,197,94,.45); color:#86efac}
+    .score.warn{border-color:rgba(245,158,11,.45); color:#fcd34d}
+    .score.bad{border-color:rgba(239,68,68,.45); color:#fca5a5}
+    .tiny{font-size:12px;color:var(--muted)}
+
+    .overlay{
+      position:fixed;inset:0;background:rgba(2,6,23,.72);
+      display:none;align-items:center;justify-content:center;
+      padding:20px;z-index:50;
+    }
+    .overlay.show{display:flex}
+    .modal{
+      width:min(1100px,100%);
+      max-height:min(90vh,920px);
+      overflow:auto;
+      padding:20px;
+      position:relative;
+    }
+    .modal.large{width:min(1380px,100%)}
+    .close{
+      position:absolute;top:14px;right:14px;
+      width:42px;height:42px;border-radius:999px;
+      border:1px solid var(--border);background:#0b1220;color:var(--text);cursor:pointer;font-size:20px
+    }
+    .modal-header{
+      display:flex;align-items:flex-start;justify-content:space-between;gap:14px;
+      margin-bottom:16px;padding-right:54px;
+    }
+    .form-grid{
+      display:grid;grid-template-columns:repeat(12,1fr);gap:14px;
+    }
+    .field{grid-column:span 12}
+    .field.half{grid-column:span 12}
+    .field.third{grid-column:span 12}
+    .field textarea{min-height:100px;resize:vertical}
+    @media(min-width:900px){
+      .field.half{grid-column:span 6}
+      .field.third{grid-column:span 4}
+    }
+    .quote-fields{
+      display:none;
+      margin-top:14px;
+      padding:16px;
+      border:1px solid rgba(37,99,235,.35);
+      background:rgba(37,99,235,.08);
+      border-radius:16px;
+    }
+    .quote-fields.show{display:block}
+
+    .planner-toolbar{
+      display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px;
+    }
+    .week-chip{
+      display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:999px;background:#0b1220;border:1px solid #475569;font-weight:700
+    }
+    .planner-grid{
+      display:grid;
+      grid-template-columns:repeat(5,minmax(240px,1fr));
+      gap:14px;
+      align-items:start;
+      overflow-x:auto;
+      padding-bottom:8px;
+    }
+    .day-card{
+      min-width:240px;
+      background:#0b1220;
+      border:1px solid rgba(71,85,105,.65);
+      border-radius:18px;
+      padding:14px;
+    }
+    .day-card h3{margin-bottom:4px}
+    .day-card .tiny{margin-bottom:12px;display:block}
+    .call-list{
+      display:grid;
+      gap:10px;
+    }
+    .call-row{
+      border:1px solid rgba(71,85,105,.6);
+      background:rgba(15,23,42,.9);
+      border-radius:14px;
+      padding:10px;
+    }
+    .call-row label{
+      display:block;
+      font-size:11px;
+      color:var(--muted);
+      margin:0 0 6px;
+      letter-spacing:.03em;
+      text-transform:uppercase;
+    }
+    .call-row input{
+      width:100%;
+      background:#020617;
+      color:var(--text);
+      border:1px solid #334155;
+      border-radius:10px;
+      padding:10px 12px;
+      font:inherit;
+    }
+    .call-row.mandatory{border-color:rgba(245,158,11,.4)}
+    .planner-foot{
+      margin-top:16px;
+      display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap
+    }
+    .empty-note{
+      padding:18px;
+      text-align:center;
+      border:1px dashed #475569;
+      border-radius:16px;
+      color:var(--muted);
+      background:#0b1220;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="topbar">
+      <div>
+        <h1>Preptus CRM Dashboard</h1>
+        <p class="muted">Prototype v4 — sales person filter, planner, call report, and entry flow.</p>
+      </div>
+      <div class="controls">
+        <label class="muted" for="salesPersonFilter">Sales Person</label>
+        <select id="salesPersonFilter" class="top-select"></select>
+        <button class="btn secondary" id="addSalesPersonBtn" type="button">+ Add Sales Person</button>
+        <button class="btn ghost" id="removeSalesPersonBtn" type="button">Authorised Remove</button>
+      </div>
+    </header>
+
+    <section class="hero">
+      <button class="btn secondary" id="openPlannerBtn" type="button">View / Edit Planner</button>
+      <button class="btn center" id="openEntryBtn" type="button">+ New Entry</button>
+      <button class="btn secondary" id="openReportBtn" type="button">View Call Report</button>
+    </section>
+
+    <section class="grid" id="metricGrid"></section>
+
+    <section class="grid" style="margin-top:16px;">
+      <article class="card span-8">
+        <div class="section-title">
+          <div>
+            <h2>Scheduled Visits — Current Week</h2>
+            <p class="muted">Monday to Friday summary for the selected sales person.</p>
+          </div>
+          <span class="pill" id="weekLabelMain">Current Week</span>
+        </div>
+        <div id="weekSummaryWrap"></div>
+      </article>
+
+      <article class="card span-4">
+        <div class="section-title">
+          <div>
+            <h2>Recent Activity</h2>
+            <p class="muted">Most recent actions attached to the selected view.</p>
+          </div>
+        </div>
+        <div class="list" id="recentActivity"></div>
+      </article>
+
+      <article class="card span-4">
+        <div class="section-title">
+          <div>
+            <h2>Activity by Sales Person</h2>
+            <p class="muted">Quick view of overall logged activity.</p>
+          </div>
+        </div>
+        <div class="bar-row" id="activityBySales"></div>
+      </article>
+
+      <article class="card span-4">
+        <div class="section-title">
+          <div>
+            <h2>Open Quotes by Urgency</h2>
+            <p class="muted">Quote pressure for the selected dashboard context.</p>
+          </div>
+        </div>
+        <div class="bar-row" id="quotesByUrgency"></div>
+      </article>
+
+      <article class="card span-4">
+        <div class="section-title">
+          <div>
+            <h2>Category Breakdown</h2>
+            <p class="muted">Visible categories tied to activity.</p>
+          </div>
+        </div>
+        <div class="bar-row" id="categoryBreakdown"></div>
+      </article>
+    </section>
+  </div>
+
+  <div class="overlay" id="entryOverlay" aria-hidden="true">
+    <div class="modal">
+      <button class="close" type="button" data-close="entryOverlay">×</button>
+      <div class="modal-header">
+        <div>
+          <h2>New CRM Entry</h2>
+          <p class="muted">Fill the log, then submit. Submit closes the overlay for now.</p>
+        </div>
+      </div>
+
+      <form id="crmForm">
+        <div class="form-grid">
+          <div class="field half">
+            <label for="company">Company</label>
+            <input id="company" name="company" type="text" />
+          </div>
+          <div class="field half">
+            <label for="contactName">Contact Name</label>
+            <input id="contactName" name="contactName" type="text" />
+          </div>
+          <div class="field half">
+            <label for="contactNumber">Contact Number</label>
+            <input id="contactNumber" name="contactNumber" type="tel" />
+          </div>
+          <div class="field half">
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" />
+          </div>
+          <div class="field third">
+            <label for="salesPersonEntry">Sales Person</label>
+            <select id="salesPersonEntry" name="salesPersonEntry"></select>
+          </div>
+          <div class="field third">
+            <label for="category">Category</label>
+            <select id="category" name="category">
+              <option>Bearings</option>
+              <option>Power Transmission</option>
+              <option>Seals</option>
+              <option>Lubrication</option>
+              <option>General Industrial</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="field third">
+            <label for="purpose">Purpose</label>
+            <select id="purpose" name="purpose">
+              <option value="">Select purpose</option>
+              <option>Quote</option>
+              <option>Order</option>
+              <option>Enquiry</option>
+            </select>
+          </div>
+          <div class="field half">
+            <label for="result">Result</label>
+            <select id="result" name="result">
+              <option>Quoted</option>
+              <option>Ordered</option>
+              <option>Information Provided</option>
+              <option>Waiting on Supplier</option>
+              <option>Waiting on Customer</option>
+              <option>No Sale</option>
+              <option>Closed</option>
+            </select>
+          </div>
+          <div class="field half">
+            <label for="followUpRequired">Follow Up Required</label>
+            <select id="followUpRequired" name="followUpRequired">
+              <option>Yes</option>
+              <option>No</option>
+            </select>
+          </div>
+          <div class="field half">
+            <label for="followUpDate">Follow Up Date</label>
+            <input id="followUpDate" name="followUpDate" type="date" />
+          </div>
+          <div class="field half">
+            <label for="followUpAction">Follow Up Action</label>
+            <select id="followUpAction" name="followUpAction">
+              <option>Call</option>
+              <option>Email</option>
+              <option>Quote Check</option>
+              <option>Await Response</option>
+              <option>Visit</option>
+              <option>Close Out</option>
+            </select>
+          </div>
+          <div class="field half">
+            <label for="createdDate">Created Date</label>
+            <input id="createdDate" name="createdDate" type="date" />
+          </div>
+          <div class="field half">
+            <label for="updatedDate">Last Updated Date</label>
+            <input id="updatedDate" name="updatedDate" type="date" />
+          </div>
+          <div class="field half">
+            <label for="status">Status</label>
+            <select id="status" name="status">
+              <option>Open</option>
+              <option>In Progress</option>
+              <option>Waiting</option>
+              <option>Closed</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="notes">Notes</label>
+            <textarea id="notes" name="notes"></textarea>
+          </div>
+        </div>
+
+        <div class="quote-fields" id="quoteFields">
+          <div class="form-grid">
+            <div class="field third">
+              <label for="quoteCompletionDate">Quote Prompt Completion Date</label>
+              <input id="quoteCompletionDate" name="quoteCompletionDate" type="date" />
+            </div>
+            <div class="field third">
+              <label for="quoteFollowUpDate">Follow Up Date</label>
+              <input id="quoteFollowUpDate" name="quoteFollowUpDate" type="date" />
+            </div>
+            <div class="field third">
+              <label for="urgency">Urgency</label>
+              <select id="urgency" name="urgency">
+                <option>Standard</option>
+                <option>Priority</option>
+                <option>Urgent</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:18px;">
+          <button class="btn secondary" type="button" data-close="entryOverlay">Cancel</button>
+          <button class="btn" type="submit">Submit</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="overlay" id="plannerOverlay" aria-hidden="true">
+    <div class="modal large">
+      <button class="close" type="button" data-close="plannerOverlay">×</button>
+      <div class="modal-header">
+        <div>
+          <h2>Weekly Call Planner</h2>
+          <p class="muted">Three calls per day are prebooked by default. Additional calls can be added underneath each day.</p>
+        </div>
+      </div>
+
+      <div class="planner-toolbar">
+        <div class="controls">
+          <span class="week-chip" id="plannerSalesChip">Sales Person</span>
+          <span class="week-chip" id="plannerWeekChip">Current Week</span>
+        </div>
+        <div class="controls">
+          <button class="btn secondary" id="showCurrentWeekBtn" type="button">Current Week</button>
+          <button class="btn secondary" id="showNextWeekBtn" type="button">Next Week</button>
+        </div>
+      </div>
+
+      <div class="planner-grid" id="plannerGrid"></div>
+
+      <div class="planner-foot">
+        <p class="tiny">Each day shows Monday to Friday only. Add more calls as needed.</p>
+        <button class="btn secondary" type="button" data-close="plannerOverlay">Close Planner</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="overlay" id="reportOverlay" aria-hidden="true">
+    <div class="modal">
+      <button class="close" type="button" data-close="reportOverlay">×</button>
+      <div class="modal-header">
+        <div>
+          <h2>Call Report</h2>
+          <p class="muted">Shows scheduled visits for the selected sales person and week view.</p>
+        </div>
+      </div>
+
+      <div class="planner-toolbar">
+        <div class="controls">
+          <span class="week-chip" id="reportSalesChip">Sales Person</span>
+          <span class="week-chip" id="reportWeekChip">Current Week</span>
+        </div>
+        <div class="controls">
+          <button class="btn secondary" id="reportCurrentBtn" type="button">Current Week</button>
+          <button class="btn secondary" id="reportNextBtn" type="button">Next Week</button>
+        </div>
+      </div>
+
+      <div class="report-list" id="reportList"></div>
+
+      <div style="display:flex; justify-content:flex-end; margin-top:18px;">
+        <button class="btn secondary" type="button" data-close="reportOverlay">Close Report</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+
+      var state = {
+        salesPeople: ['All Sales People', 'Hayden', 'Jess', 'Mitch'],
+        selectedSalesPerson: 'All Sales People',
+        visibleWeek: 'current',
+        dashboardData: {
+          'All Sales People': {
+            metrics: { quotesDue: 8, followupsDue: 11, overdue: 4, urgent: 6, callsToday: 7, recentCount: 9, openQuotes: 10, activeCategories: 6, scheduledThisWeek: 23 },
+            recentActivity: [
+              { title: 'SKF quote issued', meta: 'Hayden • Priority • 18 mins ago' },
+              { title: 'Follow-up completed', meta: 'Jess • General Industrial • 42 mins ago' },
+              { title: 'Urgent visit added', meta: 'Mitch • Bearings • 1 hr ago' },
+              { title: 'Customer record updated', meta: 'Hayden • 2 hrs ago' }
+            ],
+            activityBySales: [
+              { label: 'Hayden', value: 14 },
+              { label: 'Jess', value: 8 },
+              { label: 'Mitch', value: 11 }
+            ],
+            quotesByUrgency: [
+              { label: 'Urgent', value: 3 },
+              { label: 'Priority', value: 4 },
+              { label: 'Standard', value: 3 }
+            ],
+            categoryBreakdown: [
+              { label: 'Bearings', value: 9 },
+              { label: 'Power Transmission', value: 6 },
+              { label: 'Seals', value: 4 },
+              { label: 'General Industrial', value: 5 }
+            ]
+          },
+          'Hayden': {
+            metrics: { quotesDue: 3, followupsDue: 4, overdue: 1, urgent: 2, callsToday: 3, recentCount: 4, openQuotes: 4, activeCategories: 4, scheduledThisWeek: 8 },
+            recentActivity: [
+              { title: 'Quote follow-up booked', meta: 'Priority • 20 mins ago' },
+              { title: 'Visit added to planner', meta: 'General Industrial • 55 mins ago' },
+              { title: 'Enquiry logged', meta: 'Bearings • 1 hr ago' }
+            ],
+            activityBySales: [
+              { label: 'Hayden', value: 14 },
+              { label: 'Jess', value: 8 },
+              { label: 'Mitch', value: 11 }
+            ],
+            quotesByUrgency: [
+              { label: 'Urgent', value: 1 },
+              { label: 'Priority', value: 2 },
+              { label: 'Standard', value: 1 }
+            ],
+            categoryBreakdown: [
+              { label: 'Bearings', value: 3 },
+              { label: 'Power Transmission', value: 2 },
+              { label: 'Seals', value: 1 },
+              { label: 'General Industrial', value: 2 }
+            ]
+          },
+          'Jess': {
+            metrics: { quotesDue: 2, followupsDue: 3, overdue: 2, urgent: 1, callsToday: 2, recentCount: 3, openQuotes: 3, activeCategories: 3, scheduledThisWeek: 7 },
+            recentActivity: [
+              { title: 'Customer call completed', meta: 'General Industrial • 14 mins ago' },
+              { title: 'Quote in progress', meta: 'Bearings • 1 hr ago' }
+            ],
+            activityBySales: [
+              { label: 'Hayden', value: 14 },
+              { label: 'Jess', value: 8 },
+              { label: 'Mitch', value: 11 }
+            ],
+            quotesByUrgency: [
+              { label: 'Urgent', value: 1 },
+              { label: 'Priority', value: 1 },
+              { label: 'Standard', value: 1 }
+            ],
+            categoryBreakdown: [
+              { label: 'General Industrial', value: 3 },
+              { label: 'Bearings', value: 2 },
+              { label: 'Seals', value: 1 }
+            ]
+          },
+          'Mitch': {
+            metrics: { quotesDue: 3, followupsDue: 4, overdue: 1, urgent: 3, callsToday: 2, recentCount: 2, openQuotes: 3, activeCategories: 4, scheduledThisWeek: 8 },
+            recentActivity: [
+              { title: 'Urgent site visit added', meta: 'Bearings • 9 mins ago' },
+              { title: 'Quote requested', meta: 'Power Transmission • 47 mins ago' }
+            ],
+            activityBySales: [
+              { label: 'Hayden', value: 14 },
+              { label: 'Jess', value: 8 },
+              { label: 'Mitch', value: 11 }
+            ],
+            quotesByUrgency: [
+              { label: 'Urgent', value: 1 },
+              { label: 'Priority', value: 1 },
+              { label: 'Standard', value: 1 }
+            ],
+            categoryBreakdown: [
+              { label: 'Bearings', value: 4 },
+              { label: 'Power Transmission', value: 3 },
+              { label: 'General Industrial', value: 1 }
+            ]
+          }
+        },
+        plannerData: {}
+      };
+
+      function seededCalls() {
+        return {
+          current: {
+            Monday: ['Acme Hydraulics', 'Bayside Pumps', ''],
+            Tuesday: ['Metro Bearings', '', ''],
+            Wednesday: ['PlantFix Services', 'Delta Industrial', ''],
+            Thursday: ['', '', ''],
+            Friday: ['Valley Engineering', '', '']
+          },
+          next: {
+            Monday: ['', '', ''],
+            Tuesday: ['', '', ''],
+            Wednesday: ['', '', ''],
+            Thursday: ['', '', ''],
+            Friday: ['', '', '']
+          }
+        };
+      }
+
+      function ensurePlanner(name) {
+        if (!state.plannerData[name]) {
+          state.plannerData[name] = seededCalls();
+        }
+        return state.plannerData[name];
+      }
+
+      ['Hayden', 'Jess', 'Mitch'].forEach(function (name) { ensurePlanner(name); });
+      state.plannerData['Jess'].current.Tuesday[1] = 'Northside Trade';
+      state.plannerData['Jess'].current.Friday[1] = 'Eastern Conveyor';
+      state.plannerData['Mitch'].current.Monday[1] = 'WestPro Maintenance';
+      state.plannerData['Mitch'].current.Thursday[0] = 'RiverTech';
+      state.plannerData['Mitch'].current.Thursday[1] = 'Apex Ag';
+      state.plannerData['Mitch'].current.Thursday[2] = 'Southern Belting';
+
+      var salesPersonFilter = document.getElementById('salesPersonFilter');
+      var salesPersonEntry = document.getElementById('salesPersonEntry');
+      var addSalesPersonBtn = document.getElementById('addSalesPersonBtn');
+      var removeSalesPersonBtn = document.getElementById('removeSalesPersonBtn');
+
+      var openEntryBtn = document.getElementById('openEntryBtn');
+      var openPlannerBtn = document.getElementById('openPlannerBtn');
+      var openReportBtn = document.getElementById('openReportBtn');
+
+      var entryOverlay = document.getElementById('entryOverlay');
+      var plannerOverlay = document.getElementById('plannerOverlay');
+      var reportOverlay = document.getElementById('reportOverlay');
+
+      var crmForm = document.getElementById('crmForm');
+      var purpose = document.getElementById('purpose');
+      var quoteFields = document.getElementById('quoteFields');
+
+      var metricGrid = document.getElementById('metricGrid');
+      var recentActivity = document.getElementById('recentActivity');
+      var activityBySales = document.getElementById('activityBySales');
+      var quotesByUrgency = document.getElementById('quotesByUrgency');
+      var categoryBreakdown = document.getElementById('categoryBreakdown');
+      var weekSummaryWrap = document.getElementById('weekSummaryWrap');
+      var weekLabelMain = document.getElementById('weekLabelMain');
+
+      var plannerGrid = document.getElementById('plannerGrid');
+      var plannerSalesChip = document.getElementById('plannerSalesChip');
+      var plannerWeekChip = document.getElementById('plannerWeekChip');
+      var showCurrentWeekBtn = document.getElementById('showCurrentWeekBtn');
+      var showNextWeekBtn = document.getElementById('showNextWeekBtn');
+
+      var reportList = document.getElementById('reportList');
+      var reportSalesChip = document.getElementById('reportSalesChip');
+      var reportWeekChip = document.getElementById('reportWeekChip');
+      var reportCurrentBtn = document.getElementById('reportCurrentBtn');
+      var reportNextBtn = document.getElementById('reportNextBtn');
+
+      function setTodayDefaults() {
+        var today = new Date().toISOString().slice(0, 10);
+        document.getElementById('createdDate').value = today;
+        document.getElementById('updatedDate').value = today;
+      }
+
+      function populateSalesPeople() {
+        var options = state.salesPeople.map(function (name) {
+          return '<option value="' + escapeHtml(name) + '">' + escapeHtml(name) + '</option>';
+        }).join('');
+        salesPersonFilter.innerHTML = options;
+        salesPersonFilter.value = state.selectedSalesPerson;
+        salesPersonEntry.innerHTML = options.replace('<option value="All Sales People">All Sales People</option>', '');
+        if (state.selectedSalesPerson !== 'All Sales People' && state.salesPeople.indexOf(state.selectedSalesPerson) !== -1) {
+          salesPersonEntry.value = state.selectedSalesPerson;
+        } else {
+          salesPersonEntry.selectedIndex = 0;
+        }
+      }
+
+      function getDashboardData() {
+        return state.dashboardData[state.selectedSalesPerson] || createBlankDashboard(state.selectedSalesPerson);
+      }
+
+      function getMetricCards(data) {
+        return [
+          { title: 'Quotes Due Today', value: data.metrics.quotesDue, sub: 'Open quote workload' },
+          { title: 'Follow-Ups Due Today', value: data.metrics.followupsDue, sub: 'Planned follow-up actions' },
+          { title: 'Overdue Follow-Ups', value: data.metrics.overdue, sub: 'Needs immediate attention' },
+          { title: 'Urgent Items', value: data.metrics.urgent, sub: 'High-priority pressure' },
+          { title: 'Calls Scheduled Today', value: data.metrics.callsToday, sub: 'Today’s call plan' },
+          { title: 'Recent Activity', value: data.metrics.recentCount, sub: 'Latest visible actions' },
+          { title: 'Open Quotes', value: data.metrics.openQuotes, sub: 'Tracked quote volume' },
+          { title: 'Categories Active', value: data.metrics.activeCategories, sub: 'Live category footprint' }
+        ];
+      }
+
+      function renderMetrics(data) {
+        metricGrid.innerHTML = getMetricCards(data).map(function (item) {
+          return '<article class="metric-card card">' +
+            '<div><h3>' + escapeHtml(item.title) + '</h3><div class="value">' + item.value + '</div><div class="sub">' + escapeHtml(item.sub) + '</div></div>' +
+            '</article>';
+        }).join('');
+      }
+
+      function renderList(target, items, formatter) {
+        if (!items || !items.length) {
+          target.innerHTML = '<div class="empty-note">Nothing to show here yet.</div>';
+          return;
+        }
+        target.innerHTML = items.map(formatter).join('');
+      }
+
+      function renderBars(target, items) {
+        if (!items || !items.length) {
+          target.innerHTML = '<div class="empty-note">No data yet.</div>';
+          return;
+        }
+        var max = Math.max.apply(null, items.map(function (item) { return item.value || 0; }).concat([1]));
+        target.innerHTML = items.map(function (item) {
+          var pct = Math.round(((item.value || 0) / max) * 100);
+          return '<div>' +
+            '<div class="bar-label"><span>' + escapeHtml(item.label) + '</span><strong>' + (item.value || 0) + '</strong></div>' +
+            '<div class="bar"><span style="width:' + pct + '%;"></span></div>' +
+          '</div>';
+        }).join('');
+      }
+
+      function computeWeekSummary(person, weekKey) {
+        var names = person === 'All Sales People'
+          ? state.salesPeople.filter(function (name) { return name !== 'All Sales People'; })
+          : [person];
+
+        return DAYS.map(function (day) {
+          var total = 0;
+          names.forEach(function (name) {
+            var planner = ensurePlanner(name);
+            var entries = planner[weekKey][day] || [];
+            total += entries.filter(function (value) { return (value || '').trim() !== ''; }).length;
+          });
+          return { day: day, total: total };
+        });
+      }
+
+      function scoreClass(value) {
+        if (value < 3) return 'bad';
+        if (value === 3) return 'good';
+        return 'warn';
+      }
+
+      function renderWeekSummary() {
+        var weekKey = 'current';
+        var rows = computeWeekSummary(state.selectedSalesPerson, weekKey);
+        weekLabelMain.textContent = 'Current Week';
+        weekSummaryWrap.innerHTML =
+          '<table class="summary-table">' +
+            '<thead><tr>' + rows.map(function (row) { return '<th>' + row.day.slice(0,3) + '</th>'; }).join('') + '</tr></thead>' +
+            '<tbody><tr>' + rows.map(function (row) {
+              return '<td><span class="score ' + scoreClass(row.total) + '">' + row.total + '/3</span></td>';
+            }).join('') + '</tr></tbody>' +
+          '</table>' +
+          '<p class="tiny" style="margin-top:12px;">Scores are shown out of 3 even when more than 3 calls are booked.</p>';
+      }
+
+      function renderDashboard() {
+        var data = getDashboardData();
+        renderMetrics(data);
+
+        renderList(recentActivity, data.recentActivity, function (item) {
+          return '<div class="list-item"><strong>' + escapeHtml(item.title) + '</strong><span class="muted">' + escapeHtml(item.meta) + '</span></div>';
+        });
+        renderBars(activityBySales, data.activityBySales);
+        renderBars(quotesByUrgency, data.quotesByUrgency);
+        renderBars(categoryBreakdown, data.categoryBreakdown);
+        renderWeekSummary();
+      }
+
+      function renderPlanner() {
+        plannerSalesChip.textContent = state.selectedSalesPerson;
+        plannerWeekChip.textContent = state.visibleWeek === 'current' ? 'Current Week' : 'Next Week';
+
+        if (state.selectedSalesPerson === 'All Sales People') {
+          plannerGrid.innerHTML = '<div class="empty-note" style="grid-column:1/-1;">Select an individual sales person to edit the planner.</div>';
+          return;
+        }
+
+        var planner = ensurePlanner(state.selectedSalesPerson);
+        var weekKey = state.visibleWeek;
+        plannerGrid.innerHTML = DAYS.map(function (day) {
+          var calls = planner[weekKey][day] || [];
+          return '<section class="day-card" data-day="' + day + '">' +
+            '<h3>' + day + '</h3>' +
+            '<span class="tiny">Three default call slots plus extras</span>' +
+            '<div class="call-list">' +
+              calls.map(function (value, idx) {
+                var mandatory = idx < 3 ? ' mandatory' : '';
+                var label = idx < 3 ? 'Customer ' + (idx + 1) : 'Additional Call';
+                return '<div class="call-row' + mandatory + '">' +
+                    '<label>' + label + '</label>' +
+                    '<input type="text" value="' + escapeAttribute(value || '') + '" data-day="' + day + '" data-index="' + idx + '" />' +
+                  '</div>';
+              }).join('') +
+            '</div>' +
+            '<div style="margin-top:12px;"><button class="btn ghost add-call-btn" type="button" data-day="' + day + '">+ Add Call</button></div>' +
+          '</section>';
+        }).join('');
+      }
+
+      function renderReport() {
+        reportSalesChip.textContent = state.selectedSalesPerson;
+        reportWeekChip.textContent = state.visibleWeek === 'current' ? 'Current Week' : 'Next Week';
+
+        if (state.selectedSalesPerson === 'All Sales People') {
+          var combined = computeWeekSummary('All Sales People', state.visibleWeek);
+          reportList.innerHTML = combined.map(function (row) {
+            return '<div class="report-item"><strong>' + row.day + '</strong><span class="muted">' + row.total + ' scheduled calls</span></div>';
+          }).join('');
+          return;
+        }
+
+        var planner = ensurePlanner(state.selectedSalesPerson);
+        var weekKey = state.visibleWeek;
+        reportList.innerHTML = DAYS.map(function (day) {
+          var items = (planner[weekKey][day] || []).filter(function (value) { return (value || '').trim() !== ''; });
+          return '<div class="report-item">' +
+            '<strong>' + day + ' — ' + items.length + ' scheduled</strong>' +
+            (items.length
+              ? '<div class="tiny">' + items.map(escapeHtml).join(' • ') + '</div>'
+              : '<div class="tiny">No calls scheduled yet.</div>') +
+          '</div>';
+        }).join('');
+      }
+
+      function createBlankDashboard(name) {
+        return {
+          metrics: { quotesDue: 0, followupsDue: 0, overdue: 0, urgent: 0, callsToday: 0, recentCount: 0, openQuotes: 0, activeCategories: 0, scheduledThisWeek: 0 },
+          recentActivity: [],
+          activityBySales: state.salesPeople.filter(function (x) { return x !== 'All Sales People'; }).map(function (salesName) {
+            var base = state.dashboardData['All Sales People'] && state.dashboardData['All Sales People'].activityBySales.find(function (row) { return row.label === salesName; });
+            return { label: salesName, value: salesName === name ? 0 : (base ? base.value : 0) };
+          }),
+          quotesByUrgency: [
+            { label: 'Urgent', value: 0 },
+            { label: 'Priority', value: 0 },
+            { label: 'Standard', value: 0 }
+          ],
+          categoryBreakdown: []
+        };
+      }
+
+      function updateAllSalesActivityChart() {
+        if (!state.dashboardData['All Sales People']) return;
+        state.dashboardData['All Sales People'].activityBySales = state.salesPeople
+          .filter(function (name) { return name !== 'All Sales People'; })
+          .map(function (name) {
+            var data = state.dashboardData[name] || createBlankDashboard(name);
+            var value = (data.metrics.quotesDue || 0) + (data.metrics.followupsDue || 0) + (data.metrics.callsToday || 0);
+            return { label: name, value: value };
+          });
+      }
+
+      function addSalesPerson() {
+        var newName = window.prompt('Enter new sales person name:');
+        if (!newName) return;
+        var trimmed = newName.trim();
+        if (!trimmed) return;
+
+        var exists = state.salesPeople.some(function (name) {
+          return name.toLowerCase() === trimmed.toLowerCase();
+        });
+        if (exists) {
+          window.alert('That sales person already exists.');
+          return;
+        }
+
+        state.salesPeople.push(trimmed);
+        state.dashboardData[trimmed] = createBlankDashboard(trimmed);
+        ensurePlanner(trimmed);
+        state.selectedSalesPerson = trimmed;
+        updateAllSalesActivityChart();
+        populateSalesPeople();
+        renderDashboard();
+      }
+
+      function openOverlay(el) {
+        el.classList.add('show');
+      }
+
+      function closeOverlay(el) {
+        el.classList.remove('show');
+      }
+
+      function closeAllOverlays() {
+        [entryOverlay, plannerOverlay, reportOverlay].forEach(closeOverlay);
+      }
+
+      function handlePurposeChange() {
+        if (purpose.value === 'Quote') {
+          quoteFields.classList.add('show');
+        } else {
+          quoteFields.classList.remove('show');
+        }
+      }
+
+      function handleSalesPersonChange() {
+        state.selectedSalesPerson = salesPersonFilter.value;
+        populateSalesPeople();
+        renderDashboard();
+        renderPlanner();
+        renderReport();
+      }
+
+      function escapeHtml(value) {
+        return String(value)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#39;');
+      }
+
+      function escapeAttribute(value) {
+        return escapeHtml(value);
+      }
+
+      function updatePlannerValue(day, index, value) {
+        if (state.selectedSalesPerson === 'All Sales People') return;
+        var planner = ensurePlanner(state.selectedSalesPerson);
+        planner[state.visibleWeek][day][index] = value;
+        renderWeekSummary();
+        renderReport();
+      }
+
+      populateSalesPeople();
+      setTodayDefaults();
+      updateAllSalesActivityChart();
+      renderDashboard();
+      renderPlanner();
+      renderReport();
+
+      openEntryBtn.addEventListener('click', function () {
+        setTodayDefaults();
+        if (state.selectedSalesPerson !== 'All Sales People') salesPersonEntry.value = state.selectedSalesPerson;
+        openOverlay(entryOverlay);
+      });
+
+      openPlannerBtn.addEventListener('click', function () {
+        renderPlanner();
+        openOverlay(plannerOverlay);
+      });
+
+      openReportBtn.addEventListener('click', function () {
+        renderReport();
+        openOverlay(reportOverlay);
+      });
+
+      purpose.addEventListener('change', handlePurposeChange);
+      salesPersonFilter.addEventListener('change', handleSalesPersonChange);
+      addSalesPersonBtn.addEventListener('click', addSalesPerson);
+      removeSalesPersonBtn.addEventListener('click', function () {
+        window.alert('Removal is reserved for authorised users in the future build.');
+      });
+
+      crmForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        closeOverlay(entryOverlay);
+        crmForm.reset();
+        setTodayDefaults();
+        quoteFields.classList.remove('show');
+      });
+
+      document.querySelectorAll('[data-close]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          closeOverlay(document.getElementById(btn.getAttribute('data-close')));
+        });
+      });
+
+      [entryOverlay, plannerOverlay, reportOverlay].forEach(function (overlay) {
+        overlay.addEventListener('click', function (e) {
+          if (e.target === overlay) closeOverlay(overlay);
+        });
+      });
+
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') closeAllOverlays();
+      });
+
+      showCurrentWeekBtn.addEventListener('click', function () {
+        state.visibleWeek = 'current';
+        renderPlanner();
+        renderReport();
+      });
+
+      showNextWeekBtn.addEventListener('click', function () {
+        state.visibleWeek = 'next';
+        renderPlanner();
+        renderReport();
+      });
+
+      reportCurrentBtn.addEventListener('click', function () {
+        state.visibleWeek = 'current';
+        renderPlanner();
+        renderReport();
+      });
+
+      reportNextBtn.addEventListener('click', function () {
+        state.visibleWeek = 'next';
+        renderPlanner();
+        renderReport();
+      });
+
+      plannerGrid.addEventListener('click', function (e) {
+        var addBtn = e.target.closest('.add-call-btn');
+        if (!addBtn || state.selectedSalesPerson === 'All Sales People') return;
+        var day = addBtn.getAttribute('data-day');
+        var planner = ensurePlanner(state.selectedSalesPerson);
+        planner[state.visibleWeek][day].push('');
+        renderPlanner();
+      });
+
+      plannerGrid.addEventListener('input', function (e) {
+        if (e.target.tagName !== 'INPUT') return;
+        var day = e.target.getAttribute('data-day');
+        var index = parseInt(e.target.getAttribute('data-index'), 10);
+        updatePlannerValue(day, index, e.target.value);
+      });
+    })();
+  </script>
+</body>
+</html>
