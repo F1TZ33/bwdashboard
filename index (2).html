@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<title>Sales Tip – How to Respond</title>
+<link href="../../assets/css/style.css" rel="stylesheet"/>
+
+<style>
+.salesHero{
+  position:relative;
+  overflow:hidden;
+  background:
+    linear-gradient(135deg, rgba(198,40,40,.16), transparent 42%),
+    linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+  border:1px solid rgba(255,255,255,.10);
+  border-radius:24px;
+  padding:28px 24px;
+  margin-bottom:18px;
+  box-shadow:0 18px 55px rgba(0,0,0,.34);
+}
+.salesHero::after{
+  content:"";
+  position:absolute;
+  top:-70px;
+  right:-70px;
+  width:220px;
+  height:220px;
+  border-radius:50%;
+  background:radial-gradient(circle, rgba(198,40,40,.22), transparent 70%);
+  pointer-events:none;
+}
+.salesHeroTop{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:14px;
+  margin-bottom:10px;
+}
+.salesHeroIcon{
+  width:58px;
+  height:58px;
+  border-radius:18px;
+  display:grid;
+  place-items:center;
+  font-size:28px;
+  background:rgba(198,40,40,.16);
+  border:1px solid rgba(198,40,40,.34);
+  box-shadow:0 10px 22px rgba(198,40,40,.12);
+}
+.salesHero h1{margin:0 !important;}
+.salesHero .subtitle{
+  margin:10px auto 0 !important;
+  max-width:820px;
+}
+.bubbleGrid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:18px;
+}
+@media (max-width:900px){
+  .bubbleGrid{grid-template-columns:1fr;}
+}
+.tipBubble{
+  position:relative;
+  overflow:hidden;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.025)),
+    linear-gradient(135deg, rgba(198,40,40,.08), transparent 45%);
+  border:1px solid rgba(255,255,255,.10);
+  border-radius:26px;
+  padding:22px 20px 18px;
+  box-shadow:0 18px 55px rgba(0,0,0,.30);
+}
+.tipBubble::before{
+  content:"";
+  position:absolute;
+  top:0;
+  left:24px;
+  right:24px;
+  height:3px;
+  border-radius:999px;
+  background:linear-gradient(90deg, rgba(198,40,40,0), rgba(198,40,40,.9), rgba(198,40,40,0));
+}
+.tipNumber{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:42px;
+  height:42px;
+  padding:0 12px;
+  border-radius:999px;
+  font-weight:900;
+  margin-bottom:14px;
+  background:rgba(198,40,40,.16);
+  border:1px solid rgba(198,40,40,.34);
+}
+.tipBubble h2{
+  margin:0 0 10px;
+  font-size:21px;
+  color:#fff;
+  text-align:left !important;
+}
+.tipLead{
+  margin:0 0 12px;
+  color:#e5d1d1;
+  font-weight:700;
+  line-height:1.5;
+}
+.tipList{
+  margin:0;
+  padding-left:18px;
+}
+.tipList li{
+  margin:8px 0;
+  line-height:1.55;
+  color:#d8dee7;
+}
+.tipFooter{
+  margin-top:18px;
+  text-align:center;
+  font-size:13px;
+}
+</style>
+
+</head>
+<body data-page="page">
+<div class="container">
+  <div class="siteHeader"><img alt="Bearing Wholesalers" class="siteLogo" src="../../assets/img/logo.png"/></div>
+  <div class="topbar">
+    <div class="leftBtns">
+      <a class="btn" href="../../sales.html">← Back</a>
+      <a class="btn" href="../../index.html">⤒ Dashboard</a>
+    </div>
+    <div class="rightBtns">
+      <button class="btn" data-action="suggest" type="button">Suggest edit</button>
+      <button class="btn" data-action="devnote" data-editor-only="1" style="display:none" type="button">Dev notes</button>
+      <button class="btn" data-action="admin" title="Admin" type="button">Admin</button>
+    </div>
+  </div>
+
+  <section class="salesHero">
+    <div class="salesHeroTop"><div class="salesHeroIcon">🗣️</div></div>
+    <h1>Sales Tip – How to Respond</h1>
+    <p class="subtitle">Clear, confident wording that keeps control without sounding arrogant.</p>
+  </section>
+
+  <section class="bubbleGrid">
+    
+        <article class="tipBubble">
+          <div class="tipNumber">Tip 1</div>
+          <h2>Confidence-Setting Openers</h2>
+          <p class="tipLead">Establish control immediately:</p>
+          <ul class="tipList"><li>“Let’s have a look at what you’ve got.”</li>
+<li>“We’ll sort this out step by step.”</li>
+<li>“That’s a common one — we’ll get you the right match.”</li>
+<li>“I see these pretty regularly.”</li>
+<li>You’re not claiming mastery — you’re claiming process.</li></ul>
+        </article>
+        
+
+        <article class="tipBubble">
+          <div class="tipNumber">Tip 2</div>
+          <h2>Buying Time Without Sounding Unsure</h2>
+          <p class="tipLead">When you need to think, measure, or check:</p>
+          <ul class="tipList"><li>“Let me just double-check the sizing on this.”</li>
+<li>“I want to make sure we don’t miss anything.”</li>
+<li>“I’ll confirm that before we lock it in.”</li>
+<li>“I’ve seen similar — just want to be certain.”</li>
+<li>Avoid: “I’m not sure” and “I don’t know much about these”.</li></ul>
+        </article>
+        
+
+        <article class="tipBubble">
+          <div class="tipNumber">Tip 3</div>
+          <h2>Redirecting Without Saying “You’re Wrong”</h2>
+          <p class="tipLead">Keep customer confidence intact:</p>
+          <ul class="tipList"><li>“Sometimes they’re referred to that way — let’s confirm it.”</li>
+<li>“That term gets used for a few different things.”</li>
+<li>“Let’s just line it up with what you’ve got here.”</li>
+<li>“That’s close — the detail that matters is here.”</li>
+<li>You validate the customer without agreeing blindly.</li></ul>
+        </article>
+        
+
+        <article class="tipBubble">
+          <div class="tipNumber">Tip 4</div>
+          <h2>Measurement-First Language</h2>
+          <p class="tipLead">Position accuracy as professionalism:</p>
+          <ul class="tipList"><li>“If we match the measurements, the rest usually falls into place.”</li>
+<li>“Dimensions will tell us more than the name.”</li>
+<li>“Once we confirm ID and OD, it narrows fast.”</li>
+<li>“Measurements take the guesswork out.”</li></ul>
+        </article>
+        
+
+        <article class="tipBubble">
+          <div class="tipNumber">Tip 5</div>
+          <h2>Handling “I Need It Now” Pressure</h2>
+          <p class="tipLead">Maintain authority without escalation:</p>
+          <ul class="tipList"><li>“I’d rather take 30 seconds now than have you redo it later.”</li>
+<li>“The right part saves more time than a quick guess.”</li>
+<li>“Let’s get it right the first time.”</li>
+<li>“This is one of those where accuracy matters.”</li></ul>
+        </article>
+        
+
+        <article class="tipBubble">
+          <div class="tipNumber">Tip 6</div>
+          <h2>When You Know It’s the Wrong Part</h2>
+          <p class="tipLead">Correct the course without challenging ego:</p>
+          <ul class="tipList"><li>“That would fit, but it won’t last in that application.”</li>
+<li>“That option works in some cases — not this one.”</li>
+<li>“I’ve seen those fail in setups like yours.”</li>
+<li>“This is where the spec matters.”</li></ul>
+        </article>
+        
+
+        <article class="tipBubble">
+          <div class="tipNumber">Tip 7</div>
+          <h2>When You Need to Escalate</h2>
+          <p class="tipLead">Frame escalation as quality control:</p>
+          <ul class="tipList"><li>“I want a second set of eyes on this.”</li>
+<li>“This one’s worth confirming before we send you off.”</li>
+<li>“Let me loop someone in so we get it spot on.”</li>
+<li>“This falls into the don’t guess category.”</li></ul>
+        </article>
+        
+
+        <article class="tipBubble">
+          <div class="tipNumber">Tip 8</div>
+          <h2>Closing Language That Feels Calm and Certain</h2>
+          <p class="tipLead">No pressure, no hype:</p>
+          <ul class="tipList"><li>“This is the correct match for what you’ve described.”</li>
+<li>“This will suit the application you mentioned.”</li>
+<li>“That should solve the issue you’re seeing.”</li>
+<li>“This is the safest option for that setup.”</li></ul>
+        </article>
+        
+
+        <article class="tipBubble">
+          <div class="tipNumber">Tip 9</div>
+          <h2>If the Customer Challenges You</h2>
+          <p class="tipLead">Stay grounded, not defensive:</p>
+          <ul class="tipList"><li>“Happy to walk through the reasoning if you like.”</li>
+<li>“Let’s compare it to the one you had.”</li>
+<li>“We’re aiming for reliability here.”</li>
+<li>“I’m comfortable with this recommendation.”</li></ul>
+        </article>
+        
+
+        <article class="tipBubble">
+          <div class="tipNumber">Tip 10</div>
+          <h2>Universal Confidence Reset</h2>
+          <p class="tipLead">Works in almost every scenario:</p>
+          <ul class="tipList"><li>“Let’s slow it down and get it right.”</li>
+<li>“We’ll base it on what matters.”</li>
+<li>“We’ll go off facts, not guesses.”</li>
+<li>“We’ll match it to the application.”</li></ul>
+        </article>
+        
+  </section>
+
+  <div class="tipFooter">Single-page format locked to the BW dashboard style for faster training review.</div>
+</div>
+
+<div class="modalBack" id="suggestModal">
+  <div class="modal">
+    <h3>Suggest edit</h3>
+    <p class="subtitle" style="margin:0 0 10px">This creates an email draft to the manual admin. You’ll still click Send in your email app.</p>
+    <div class="row">
+      <div class="field">
+        <label>Your name (required)</label>
+        <input id="se_name" placeholder="e.g., Jordan"/>
+      </div>
+      <div class="field">
+        <label>Urgency (optional)</label>
+        <select id="se_urgency">
+          <option value="">—</option>
+          <option>Low</option><option>Medium</option><option>High</option>
+        </select>
+      </div>
+    </div>
+    <div class="field">
+      <label>Suggestion (required)</label>
+      <textarea id="se_suggestion" placeholder="What should change? Be specific if possible."></textarea>
+    </div>
+    <div class="field" data-editor-field="1" style="display:none">
+      <label>Section / location (optional)</label>
+      <input id="se_section" placeholder="Where on the page does this apply?"/>
+    </div>
+    <div class="field" data-editor-field="1" style="display:none">
+      <label>Proposed replacement wording (optional)</label>
+      <textarea id="se_replacement" placeholder="Paste the new wording here (optional)."></textarea>
+    </div>
+    <div class="field" data-editor-field="1" style="display:none">
+      <label>Reason / context (optional)</label>
+      <textarea id="se_reason" placeholder="Why should this change? Any customer context?"></textarea>
+    </div>
+    <input id="se_page" type="hidden"/>
+    <input id="se_path" type="hidden"/>
+    <input id="se_time" type="hidden"/>
+    <div class="actions">
+      <button class="btn" id="se_send" type="button">Confirm &amp; create email</button>
+      <button class="smallbtn" data-close="suggestModal" type="button">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div class="modalBack" id="devNoteModal">
+  <div class="modal">
+    <h3>Developer notes (private)</h3>
+    <p class="subtitle" style="margin:0 0 10px">Saved locally on this computer/browser. Not visible to normal users.</p>
+    <div class="field">
+      <label>Page</label>
+      <input id="dn_path" readonly=""/>
+    </div>
+    <div class="field">
+      <label>Notes</label>
+      <textarea id="dn_note" placeholder="Private admin notes for this page…"></textarea>
+    </div>
+    <div class="actions">
+      <button class="btn" id="dn_save" type="button">Save notes</button>
+      <button class="smallbtn" data-close="devNoteModal" type="button">Close</button>
+    </div>
+  </div>
+</div>
+<script src="../../assets/js/app.js"></script>
+</body>
+</html>
