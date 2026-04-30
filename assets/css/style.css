@@ -786,3 +786,30 @@ a.productCard,
   .product-image-tab{white-space:nowrap;width:auto;min-width:max-content;}
   .product-image-viewer,.product-image-viewer .product-placeholder{min-height:320px;}
 }
+
+
+/* =========================
+   PRODUCT APPLICATION LISTS
+========================= */
+.appList{
+  list-style:none;
+  padding:0;
+  margin:0;
+  display:grid;
+  gap:12px;
+}
+.appList li{
+  line-height:1.55;
+  color:rgba(255,255,255,.82);
+  padding:12px 14px;
+  border-radius:14px;
+  background:rgba(255,255,255,.035);
+  border:1px solid rgba(255,255,255,.07);
+}
+.appList strong{
+  color:#fff;
+  font-weight:800;
+}
+.application-card{
+  max-width:980px;
+}
