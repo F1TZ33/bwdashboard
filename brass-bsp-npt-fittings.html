@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Brass Fittings | BW Product Guide</title>
+<link href="assets/css/style.css" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/mammoth@1.6.0/mammoth.browser.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+</head>
+<body data-page="page">
+<div class="container">
+  <div id="bw-global-header"></div>
+  <section class="heroPanel">
+    <div class="heroIcon">📘</div>
+    <h1>Brass Fittings</h1>
+    <p class="subtitle" style="text-align:center;max-width:820px;margin:10px auto 0">Product Guide</p>
+  </section>
+  <main class="product-layout" data-product-slug="brass-bsp-npt-fittings" data-product-title="Brass Fittings">
+    <aside class="product-side" aria-label="Product sections">
+      <button class="product-tab" data-target="images">Images</button>
+      <button class="product-tab active" data-target="identification">Identification</button>
+      <button class="product-tab" data-target="application">Application</button>
+      <button class="product-tab" data-target="brands">Brands</button>
+      <button class="product-tab" data-target="suppliers">Suppliers</button>
+      <button class="product-tab" data-target="brief">Brief Rundown</button>
+      <button class="product-tab" data-target="detailed">Detailed Rundown</button>
+    </aside>
+    <section class="product-content">
+      <div id="images" class="product-section"><h2>Images</h2><p class="subtitle">Place images in <code>assets/img/galleries/brass-bsp-npt-fittings/</code> using names <code>01.jpg</code>, <code>02.jpg</code>, etc. The image tile resizes automatically and doubles on hover.</p><div class="product-gallery" id="gallery"></div></div>
+      <div id="identification" class="product-section active"><h2>Identification</h2><div class="product-info-grid"><div class="product-info-card"><h3>Visual checks</h3><p class="subtitle">Content coming soon.</p></div><div class="product-info-card"><h3>Measurements</h3><p class="subtitle">Content coming soon.</p></div></div></div>
+      <div id="application" class="product-section"><h2>Application</h2><div class="product-info-card"><p class="subtitle">Content coming soon.</p></div></div>
+      <div id="brands" class="product-section"><h2>Brands</h2><div class="product-info-card"><p class="subtitle">Content coming soon.</p></div></div>
+      <div id="suppliers" class="product-section"><h2>Suppliers</h2><div class="product-info-card"><p class="subtitle">Content coming soon.</p></div></div>
+      <div id="brief" class="product-section"><h2>Brief Rundown</h2><p class="source-note">Loads from the stored DOCX source when available. Existing source loading has been preserved.</p><div id="briefOut" class="source-content">Loading brief rundown…</div></div>
+      <div id="detailed" class="product-section"><h2>Detailed Rundown</h2><p class="source-note">Loads from the stored XLSX source when available. Existing source loading has been preserved.</p><div id="detailedOut" class="source-content">Loading detailed rundown…</div></div>
+    </section>
+  </main>
+</div>
+<script src="assets/js/app.js"></script>
+<script src="assets/js/bw-header.js"></script>
+<script>
+(function(){
+  const slug = 'brass-bsp-npt-fittings';
+  const title = 'Brass Fittings';
+  const tabs = document.querySelectorAll('.product-tab');
+  const sections = document.querySelectorAll('.product-section');
+  let registry = null;
+  async function getRegistry(){
+    if(registry) return registry;
+    const res = await fetch('docs/content-sources.json', {cache:'no-store'});
+    if(!res.ok) throw new Error('content-sources.json not found');
+    registry = await res.json();
+    return registry;
+  }
+  tabs.forEach(tab => tab.addEventListener('click', () => {
+    tabs.forEach(t => t.classList.remove('active'));
+    sections.forEach(s => s.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById(tab.dataset.target).classList.add('active');
+    if(tab.dataset.target === 'images') buildGallery();
+    if(tab.dataset.target === 'brief') loadBrief();
+    if(tab.dataset.target === 'detailed') loadDetailed();
+  }));
+  function esc(s){return String(s||'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
+  function candidateImages(i){
+    const n = String(i).padStart(2,'0');
+    return [
+      `assets/img/galleries/${slug}/${n}.jpg`, `assets/img/galleries/${slug}/${n}.png`, `assets/img/galleries/${slug}/${n}.webp`, `assets/img/galleries/${slug}/${n}.jpeg`,
+      `images/${slug}/${i===1?'cover':'image-'+(i-1)}.jpg`, `images/${slug}/${i===1?'cover':'image-'+(i-1)}.png`
+    ];
+  }
+  function tryImage(img, list, idx, fallback){
+    if(idx >= list.length){ fallback(); return; }
+    img.onerror = () => tryImage(img, list, idx+1, fallback);
+    img.src = list[idx];
+  }
+  function buildGallery(){
+    const gallery = document.getElementById('gallery');
+    if(gallery.dataset.done) return;
+    for(let i=1;i<=6;i++){
+      const wrap = document.createElement('div'); wrap.className='product-photo';
+      const img = document.createElement('img'); img.alt = `${title} image ${i}`; img.loading='lazy';
+      tryImage(img, candidateImages(i), 0, () => { wrap.innerHTML = `<div class="product-placeholder">Content coming soon<br><small>Image ${i}</small></div>`; });
+      wrap.appendChild(img); gallery.appendChild(wrap);
+    }
+    gallery.dataset.done='1';
+  }
+  async function loadBrief(){
+    const out = document.getElementById('briefOut');
+    if(!out || out.dataset.loaded==='1') return;
+    try{
+      const reg = await getRegistry();
+      const item = reg.products && reg.products[slug];
+      const path = item && item.brief_docx;
+      if(!path) throw new Error('No DOCX source registered');
+      out.innerHTML = 'Loading brief rundown…';
+      const res = await fetch(path, {cache:'no-store'});
+      if(!res.ok) throw new Error('DOCX not found: '+path);
+      const arrayBuffer = await res.arrayBuffer();
+      const result = await mammoth.convertToHtml({arrayBuffer});
+      out.innerHTML = result.value || '<p>No brief content found.</p>';
+      out.dataset.loaded='1';
+    }catch(err){
+      out.innerHTML = `<p><strong>Unable to load brief rundown.</strong></p><p>Please check the DOCX source is registered for <code>${esc(slug)}</code>.</p>`;
+      console.error(err);
+    }
+  }
+  async function loadDetailed(){
+    const out = document.getElementById('detailedOut');
+    if(!out || out.dataset.loaded==='1') return;
+    try{
+      const reg = await getRegistry();
+      const item = reg.products && reg.products[slug];
+      const path = item && item.detailed_xlsx;
+      if(!path) throw new Error('No XLSX source registered');
+      out.innerHTML = 'Loading detailed rundown…';
+      const res = await fetch(path, {cache:'no-store'});
+      if(!res.ok) throw new Error('XLSX not found: '+path);
+      const arrayBuffer = await res.arrayBuffer();
+      const wb = XLSX.read(arrayBuffer, {type:'array'});
+      let html = '';
+      wb.SheetNames.forEach(name => {
+        html += '<h3>'+esc(name)+'</h3>';
+        html += XLSX.utils.sheet_to_html(wb.Sheets[name]);
+      });
+      out.innerHTML = html || '<p>No detailed content found.</p>';
+      out.dataset.loaded='1';
+    }catch(err){
+      out.innerHTML = `<p><strong>Unable to load detailed rundown.</strong></p><p>Please check the XLSX source is registered for <code>${esc(slug)}</code>.</p>`;
+      console.error(err);
+    }
+  }
+})();
+</script>
+</body>
+</html>

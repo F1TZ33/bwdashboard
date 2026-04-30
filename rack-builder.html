@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<title>Rack Builder</title>
+<link href="assets/css/style.css" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrious@4.0.2/dist/qrious.min.js"></script>
+<style>
+  html{overflow-x:auto;overflow-y:auto;}
+  body{padding-top:max(0px, env(safe-area-inset-top));padding-bottom:max(28px, calc(env(safe-area-inset-bottom) + 18px));overflow-x:auto;overflow-y:auto;}
+  .container{max-width:1480px;width:calc(100% - 32px);}
+  .rackCard{background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.025));border:1px solid rgba(255,255,255,.10);border-radius:20px;padding:18px;box-shadow:0 14px 32px rgba(0,0,0,.16);overflow:visible;}
+  .rackGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;}
+  .field input{width:100%;height:48px;padding:0 14px;border-radius:12px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);color:var(--text);box-sizing:border-box;}
+  .btnRow{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px;}
+  .rackOutput{margin-top:18px;display:grid;gap:18px;min-width:0;}
+  .rackVisual{display:grid;gap:14px;padding:16px;border-radius:18px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.025);overflow-x:auto;overflow-y:visible;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;}
+  .shelf{border:1px solid rgba(255,255,255,.10);border-radius:14px;padding:12px;background:rgba(0,0,0,.10);width:max-content;min-width:100%;box-sizing:border-box;overflow:visible;}
+  .shelfTitle{font-weight:800;margin-bottom:10px;color:var(--text);}
+  .binRow{display:flex;flex-wrap:nowrap;gap:10px;align-items:center;justify-content:flex-start;width:max-content;min-width:max-content;padding:2px 4px 8px 0;}
+  .binTile{width:30px;height:30px;min-width:30px;min-height:30px;border:1px solid rgba(198,40,40,.28);border-radius:8px;display:flex;align-items:center;justify-content:center;text-align:center;padding:0;background:linear-gradient(180deg, rgba(198,40,40,.12), rgba(198,40,40,.06));color:var(--text);font-weight:900;font-size:12px;cursor:pointer;user-select:none;transition:transform .12s ease, border-color .12s ease, background .12s ease;}
+  .binTile:hover{transform:translateY(-1px);border-color:rgba(198,40,40,.55);background:linear-gradient(180deg, rgba(198,40,40,.18), rgba(198,40,40,.08));}
+  .binTileZero{opacity:.45;background:rgba(255,255,255,.025);border-color:rgba(255,255,255,.10);}
+  .binTileActive{outline:3px solid rgba(255,255,255,.92);border-color:rgba(198,40,40,.95);box-shadow:0 0 0 4px rgba(198,40,40,.30), 0 12px 26px rgba(0,0,0,.30);transform:translateY(-1px) scale(1.03);}
+  .rackTableWrap{overflow:auto;border-radius:16px;border:1px solid rgba(255,255,255,.08);-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;max-width:100%;}
+  .rackTable{width:100%;border-collapse:collapse;min-width:620px;background:rgba(255,255,255,.03);color:var(--text);}
+  .rackTable th,.rackTable td{padding:8px 10px;border:1px solid rgba(255,255,255,.08);color:var(--text);}
+  .rackTable th{font-weight:800;background:rgba(255,255,255,.06);text-align:left;}
+  .rackTable tr.shelfGap td{padding:14px 0 4px 0;border-left:0;border-right:0;background:rgba(255,255,255,.025);font-weight:900;color:var(--text);}
+  .rackTable input{width:100%;min-width:120px;height:34px;border-radius:9px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);color:var(--text);padding:0 9px;box-sizing:border-box;}
+  .locationText{font-weight:800;white-space:nowrap;color:var(--text);}
+  .statusNote{margin-top:12px;color:var(--muted);font-size:13px;}
+  #csvUpload{display:none;}
+  .qrSection{margin-top:18px;display:none;}
+  .qrSection.active{display:block;}
+  .qrHeader{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px;}
+  .qrLabels{display:grid;grid-template-columns:repeat(auto-fill, minmax(210px, 1fr));gap:12px;}
+  .qrLabel{width:64mm;min-height:33.8mm;display:grid;grid-template-columns:30mm minmax(0,1fr);gap:2.2mm;align-items:center;padding:1.7mm;box-sizing:border-box;border-radius:6px;border:1px solid rgba(255,255,255,.10);background:#fff;color:#111827;box-shadow:0 10px 22px rgba(0,0,0,.18);break-inside:avoid;page-break-inside:avoid;}
+  .qrCanvasWrap{width:30mm;height:30mm;display:flex;align-items:center;justify-content:center;background:#fff;}
+  .qrCanvasWrap canvas,.qrCanvasWrap img{width:30mm !important;height:30mm !important;}
+  .qrPart{font-size:9.5pt;line-height:1.05;font-weight:900;word-break:break-word;color:#111827;}
+  .qrDesc{margin-top:1.5mm;font-size:7pt;line-height:1.08;font-weight:700;color:#374151;word-break:break-word;}
+  .qrLoc{display:none;}
+  @page{size:A4 portrait;margin:13.3mm 9mm;}
+  @media print{html,body{width:210mm;min-height:297mm;background:#fff !important;padding:0 !important;margin:0 !important;overflow:visible !important;}.siteHeader,.topbar,.heroPanel,.rackCard>form,.rackVisual,.rackTableWrap,.statusNote,.qrHeader{display:none !important;}.container{max-width:none !important;width:192mm !important;padding:0 !important;margin:0 auto !important;}.rackCard{background:#fff !important;border:0 !important;box-shadow:none !important;padding:0 !important;margin:0 !important;}.rackOutput{display:block !important;margin:0 !important;}.qrSection{display:block !important;margin:0 !important;padding:0 !important;}.qrLabels{display:grid !important;grid-template-columns:repeat(3,64mm) !important;grid-auto-rows:33.8mm !important;gap:0 !important;align-items:start !important;justify-content:start !important;}.qrLabel{width:64mm !important;height:33.8mm !important;min-height:33.8mm !important;border:0 !important;border-radius:0 !important;box-shadow:none !important;padding:1.7mm !important;overflow:hidden !important;}.qrCanvasWrap{width:30mm !important;height:30mm !important;}.qrCanvasWrap canvas,.qrCanvasWrap img{width:30mm !important;height:30mm !important;}.qrPart{font-size:9pt !important;}.qrDesc{font-size:6.8pt !important;}}
+  @media (max-width:980px){.rackGrid{grid-template-columns:repeat(2,minmax(0,1fr));}}
+  @media (max-width:760px){.container{width:100%;max-width:100%;padding-left:14px;padding-right:14px;box-sizing:border-box;overflow-x:visible;}.rackCard{padding:14px;}.rackGrid{grid-template-columns:1fr;}.qrLabels{grid-template-columns:1fr;}.rackTable{min-width:520px;}}
+</style>
+</head>
+<body>
+<div class="container"><div id="bw-global-header"></div>
+<section class="heroPanel"><h1>Rack Builder</h1></section>
+<section class="rackCard">
+<form id="rackForm">
+<div class="rackGrid">
+<div class="field"><label>Customer / Site</label><input autocomplete="off" id="site"/></div>
+<div class="field"><label>Rack / Category</label><input autocomplete="off" id="category"/></div>
+<div class="field"><label>Rack Number</label><input autocomplete="off" id="rack"/></div>
+<div class="field"><label>Number of Shelves</label><input autocomplete="off" id="shelves" min="1" type="number"/></div>
+<div class="field"><label>Bins per Shelf</label><input autocomplete="off" id="bins" min="1" type="number"/></div>
+<div class="field"><label>Default Positions per Bin</label><input autocomplete="off" id="positions" min="1" type="number"/></div>
+</div>
+<div class="btnRow">
+<button class="btn" id="generateBtn" type="button">Build Rack</button>
+<button class="btn" id="downloadBtn" type="button">Download CSV</button>
+<button class="btn" id="uploadBtn" type="button">Upload CSV</button>
+<button class="btn" id="summaryBtn" type="button">Print Summary</button>
+<button class="btn" id="qrBtn" type="button">Generate QR Codes</button>
+<button class="btn" id="resetBtn" type="button">Reset</button>
+<input accept=".csv,text/csv" id="csvUpload" type="file"/>
+</div>
+<div class="statusNote" id="statusNote"></div>
+</form>
+<div class="rackOutput" id="output"></div>
+<section class="qrSection" id="qrSection"><div class="qrHeader"><h3>QR Labels — Avery AV959418 / L7159, 24 per A4 sheet</h3><button class="btn" onclick="window.print()" type="button">Print Labels</button></div><div class="qrLabels" id="qrLabels"></div></section>
+</section></div>
+<script>
+(() => {
+  const output=document.getElementById('output'), statusNote=document.getElementById('statusNote'), uploadInput=document.getElementById('csvUpload'), qrSection=document.getElementById('qrSection'), qrLabels=document.getElementById('qrLabels');
+  let binMap=[], rackRows=[];
+  const headers=['Part Number','Description'];
+  const val=id=>document.getElementById(id).value.trim();
+  const setVal=(id,value)=>{const el=document.getElementById(id); if(el && !el.value) el.value=value;};
+  const safeNumber=id=>{const n=parseInt(val(id),10);return Number.isFinite(n)&&n>0?n:0;};
+  const shelfLetter=i=>String.fromCharCode(64+i);
+  const csvEscape=v=>{const t=String(v??'');return /[",\n\r]/.test(t)?'"'+t.replace(/"/g,'""')+'"':t;};
+  const escapeHtml=v=>String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  const clean=str=>String(str||'').trim().replace(/[^a-z0-9]+/gi,'_').replace(/^_+|_+$/g,'') || 'NA';
+  function parseCsv(text){const rows=[];let row=[],field='',q=false;for(let i=0;i<text.length;i++){const ch=text[i],n=text[i+1];if(ch==='"'&&q&&n==='"'){field+='"';i++;}else if(ch==='"'){q=!q;}else if(ch===','&&!q){row.push(field);field='';}else if((ch==='\n'||ch==='\r')&&!q){if(ch==='\r'&&n==='\n')i++;row.push(field);if(row.some(c=>String(c).trim()!==''))rows.push(row);row=[];field='';}else field+=ch;}row.push(field);if(row.some(c=>String(c).trim()!==''))rows.push(row);return rows;}
+  function makeDisplayLocation(row){return `Shelf ${row.shelfNumber}, Bin ${row.binNumber}, Position ${row.positionNumber}`;}
+  function makeQrPayload(row){return String(row.part||'').trim();}
+  function rebuildRowsFromBinMap(){const oldByKey={};rackRows.forEach(r=>oldByKey[`${r.shelfNumber}-${r.binNumber}-${r.positionNumber}`]=r);const rows=[];binMap.forEach(bin=>{for(let p=1;p<=bin.positions;p++){const key=`${bin.shelfNumber}-${bin.binNumber}-${p}`, old=oldByKey[key];const row={shelf:bin.shelf,shelfNumber:bin.shelfNumber,binNumber:bin.binNumber,positionNumber:p,part:old?.part||'',desc:old?.desc||''};row.location=makeDisplayLocation(row);row.binBase=`${row.shelfNumber}-${row.binNumber}`;row.qr=makeQrPayload(row);rows.push(row);}});rackRows=rows;}
+  function buildBinMap(){const site=val('site'),category=val('category'),rack=val('rack'),shelves=safeNumber('shelves'),bins=safeNumber('bins'),positions=safeNumber('positions');if(!shelves||!bins||!positions){alert('Enter shelves, bins per shelf, and default positions per bin before building the rack.');return false;}binMap=[];for(let s=1;s<=shelves;s++){for(let b=1;b<=bins;b++){binMap.push({site,category,rack,shelf:shelfLetter(s),shelfNumber:s,binNumber:b,positions,maxPositions:positions});}}rebuildRowsFromBinMap();return true;}
+  function render(){if(!binMap.length&&!rackRows.length){output.innerHTML='';qrSection.classList.remove('active');qrLabels.innerHTML='';return;}let visual='<div class="rackVisual">';const shelves={};binMap.forEach((bin,index)=>{if(!shelves[bin.shelfNumber])shelves[bin.shelfNumber]=[];shelves[bin.shelfNumber].push({bin,index});});Object.keys(shelves).sort((a,b)=>a-b).forEach(sn=>{const shelfBins=shelves[sn];visual+=`<div class="shelf"><div class="shelfTitle">Shelf ${sn}</div><div class="binRow">`;shelfBins.forEach(item=>{const z=item.bin.positions===0?' binTileZero':'';visual+=`<button type="button" class="binTile${z}" data-bin-index="${item.index}" data-bin-base="${item.bin.shelfNumber}-${item.bin.binNumber}" title="Tap to reduce positions">${item.bin.positions}</button>`;});visual+='</div></div>';});visual+='</div>';
+    let table='<div class="rackTableWrap"><table class="rackTable"><thead><tr><th>Location</th><th>Part Number</th><th>Description</th></tr></thead><tbody>';let lastShelf=null;rackRows.forEach((row,index)=>{if(row.shelfNumber!==lastShelf){table+=`<tr class="shelfGap"><td colspan="3">Shelf ${escapeHtml(row.shelfNumber)}</td></tr>`;lastShelf=row.shelfNumber;}table+=`<tr><td class="locationText">${escapeHtml(row.location)}</td><td><input data-index="${index}" data-key="part" data-bin-base="${escapeHtml(row.binBase)}" value="${escapeHtml(row.part)}"></td><td><input data-index="${index}" data-key="desc" data-bin-base="${escapeHtml(row.binBase)}" value="${escapeHtml(row.desc)}"></td></tr>`;});table+='</tbody></table></div>';output.innerHTML=visual+table;
+    output.querySelectorAll('.binTile').forEach(btn=>btn.addEventListener('click',()=>{const index=Number(btn.dataset.binIndex), bin=binMap[index];if(!bin)return;const max=Number(bin.maxPositions)||safeNumber('positions')||1;bin.positions=bin.positions<=0?max:bin.positions-1;rebuildRowsFromBinMap();render();statusNote.textContent=`${rackRows.length} bin/position entries ready.`;}));
+    output.querySelectorAll('.rackTable input').forEach(input=>{input.addEventListener('focus',()=>highlightBin(input.dataset.binBase||''));input.addEventListener('input',()=>{const row=rackRows[Number(input.dataset.index)];if(!row)return;row[input.dataset.key]=input.value;row.qr=makeQrPayload(row);qrSection.classList.remove('active');qrLabels.innerHTML='';});});}
+  function highlightBin(binBase){output.querySelectorAll('.binTile').forEach(tile=>tile.classList.toggle('binTileActive',tile.dataset.binBase===binBase));}
+  function buildRack(){if(!buildBinMap())return;render();statusNote.textContent=`${rackRows.length} bin/position entries ready.`;}
+  function downloadCsv(){if(!rackRows.length){alert('Build or upload a rack before downloading.');return;}const lines=[headers.map(csvEscape).join(',')];rackRows.forEach(row=>lines.push([row.part||'',row.desc||''].map(csvEscape).join(',')));const blob=new Blob([lines.join('\n')],{type:'text/csv;charset=utf-8;'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);const company=val('site')||'Company',category=val('category')||'Category',number=val('rack')||'Number',date=new Date().toISOString().slice(0,10);a.download=`${clean(company)}_${clean(category)}_${clean(number)}_${date}.csv`;document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(a.href);setTimeout(printSummary,450);}
+  function uploadCsv(file){const reader=new FileReader();reader.onload=e=>{const parsed=parseCsv(String(e.target.result||''));if(parsed.length<2){alert('Could not upload CSV: CSV has a header but no data rows.');return;}const headerRow=parsed[0].map(h=>String(h).trim().toLowerCase());const dataRows=parsed.slice(1).filter(row=>row.some(cell=>String(cell||'').trim()!==''));const findIndex=names=>{for(const name of names){const idx=headerRow.indexOf(name.toLowerCase());if(idx>=0)return idx;}return -1;};const idxLoc=findIndex(['location','full bin location','full location','bin location']);const idxPart=findIndex(['part number','part','sku']);const idxDesc=findIndex(['description','desc']);
+      if(idxLoc>=0){rackRows=dataRows.map((row,i)=>{const loc=row[idxLoc]||'';let shelf=1,bin=1,pos=i+1;const m=String(loc).match(/shelf\s*(\d+)\s*,?\s*bin\s*(\d+)\s*,?\s*position\s*(\d+)/i);if(m){shelf=parseInt(m[1],10);bin=parseInt(m[2],10);pos=parseInt(m[3],10);}return {shelf:shelfLetter(shelf),shelfNumber:shelf,binNumber:bin,positionNumber:pos,location:loc||`Shelf ${shelf}, Bin ${bin}, Position ${pos}`,binBase:`${shelf}-${bin}`,part:idxPart>=0?row[idxPart]||'':row[1]||'',desc:idxDesc>=0?row[idxDesc]||'':row[2]||''};});rackRows.forEach(r=>r.qr=makeQrPayload(r));rebuildBinMapFromRows();}
+      else {if(!rackRows.length){const rowsNeeded=dataRows.length;document.getElementById('shelves').value=document.getElementById('shelves').value||'1';document.getElementById('bins').value=document.getElementById('bins').value||String(rowsNeeded);document.getElementById('positions').value=document.getElementById('positions').value||'1';buildBinMap();}
+        dataRows.forEach((row,i)=>{if(!rackRows[i])return;rackRows[i].part=idxPart>=0?row[idxPart]||'':row[0]||'';rackRows[i].desc=idxDesc>=0?row[idxDesc]||'':row[1]||'';rackRows[i].qr=makeQrPayload(rackRows[i]);});}
+      render();statusNote.textContent=`${Math.min(dataRows.length,rackRows.length)} part entries uploaded.`;uploadInput.value='';};reader.readAsText(file);}
+  function rebuildBinMapFromRows(){const grouped={};rackRows.forEach(row=>{const key=`${row.shelfNumber}-${row.binNumber}`;if(!grouped[key])grouped[key]={site:'',category:'',rack:'',shelf:shelfLetter(row.shelfNumber),shelfNumber:row.shelfNumber,binNumber:row.binNumber,positions:0,maxPositions:1};grouped[key].positions=Math.max(grouped[key].positions,Number(row.positionNumber)||1);grouped[key].maxPositions=Math.max(grouped[key].maxPositions,grouped[key].positions);});binMap=Object.values(grouped).sort((a,b)=>a.shelfNumber!==b.shelfNumber?a.shelfNumber-b.shelfNumber:a.binNumber-b.binNumber);setVal('shelves',String(Math.max(...binMap.map(b=>b.shelfNumber),1)));setVal('bins',String(Math.max(...binMap.map(b=>b.binNumber),1)));setVal('positions',String(Math.max(...binMap.map(b=>b.positions),1)));}
+  function printSummary(){if(!binMap.length&&!rackRows.length){alert('Build or upload a rack before printing the summary.');return;}const company=escapeHtml(val('site')||'Company'),category=escapeHtml(val('category')||'Category'),rack=escapeHtml(val('rack')||'Rack'),date=new Date().toISOString().slice(0,10);const shelves={};binMap.forEach(bin=>{if(!shelves[bin.shelfNumber])shelves[bin.shelfNumber]=[];shelves[bin.shelfNumber].push(bin);});let html=`<!DOCTYPE html><html><head><title>Rack Summary</title><style>@page{size:A4 portrait;margin:12mm;}body{font-family:Arial,Helvetica,sans-serif;color:#111;margin:0;}.printHeader{display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid #111;padding-bottom:7mm;margin-bottom:7mm;}.brand{font-size:18pt;font-weight:900;letter-spacing:1px;}.meta{text-align:right;font-size:10pt;line-height:1.35;}.page{break-after:page;page-break-after:always;}.page:last-child{break-after:auto;page-break-after:auto;}h1{font-size:16pt;margin:0 0 5mm;}h2{font-size:13pt;margin:0 0 3mm;}.shelfBox{border:1px solid #111;border-radius:4px;padding:3mm;margin-bottom:4mm;break-inside:avoid;page-break-inside:avoid;}.mapRow{display:flex;flex-wrap:nowrap;gap:3mm;overflow:hidden;}.cell{width:10mm;height:10mm;border:1px solid #111;border-radius:2mm;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:10pt;}.listShelf{margin-top:5mm;break-inside:avoid;page-break-inside:avoid;}.loc{font-size:10pt;padding:1.1mm 0;border-bottom:1px solid #ddd;}</style></head><body>`;const header=`<div class="printHeader"><div class="brand">BEARING WHOLESALERS</div><div class="meta"><strong>${company}</strong><br>${category} &nbsp; | &nbsp; Rack ${rack}<br>${date}</div></div>`;
+    html+=`<section class="page">${header}<h1>Rack Map</h1>`;Object.keys(shelves).sort((a,b)=>a-b).forEach(sn=>{html+=`<div class="shelfBox"><h2>Shelf ${sn}</h2><div class="mapRow">`;shelves[sn].sort((a,b)=>a.binNumber-b.binNumber).forEach(bin=>{html+=`<div class="cell">${escapeHtml(bin.positions)}</div>`;});html+='</div></div>';});html+='</section>';
+    html+=`<section>${header}<h1>Location List</h1>`;let currentShelf=null;rackRows.forEach(row=>{if(row.shelfNumber!==currentShelf){if(currentShelf!==null)html+='</div>';html+=`<div class="listShelf"><h2>Shelf ${escapeHtml(row.shelfNumber)}</h2>`;currentShelf=row.shelfNumber;}html+=`<div class="loc">${escapeHtml(row.location)}</div>`;});if(currentShelf!==null)html+='</div>';html+='</section></body></html>';const win=window.open('','_blank','width=900,height=700');if(!win){alert('Allow pop-ups to print the rack summary PDF.');return;}win.document.open();win.document.write(html);win.document.close();win.focus();setTimeout(()=>win.print(),300);}
+  async function generateQrCodes(){if(!rackRows.length){alert('Build or upload a rack before generating QR codes.');return;}qrLabels.innerHTML='';qrSection.classList.add('active');for(const row of rackRows){row.qr=makeQrPayload(row);if(!row.qr) continue;const label=document.createElement('div');label.className='qrLabel';const canvasWrap=document.createElement('div');canvasWrap.className='qrCanvasWrap';const text=document.createElement('div');text.className='qrLabelText';text.innerHTML=`<div class="qrPart">${escapeHtml(row.part||'')}</div><div class="qrDesc">${escapeHtml(row.desc||'')}</div>`;label.appendChild(canvasWrap);label.appendChild(text);qrLabels.appendChild(label);try{if(window.QRCode&&typeof window.QRCode.toCanvas==='function'){const canvas=document.createElement('canvas');canvasWrap.appendChild(canvas);await window.QRCode.toCanvas(canvas,row.qr,{width:114,margin:1,errorCorrectionLevel:'M'});}else if(window.QRious){const canvas=document.createElement('canvas');canvasWrap.appendChild(canvas);new QRious({element:canvas,value:row.qr,size:114,padding:4,level:'M'});}else throw new Error('No QR library');}catch(error){const img=document.createElement('img');img.width=114;img.height=114;img.alt='QR code';img.src='https://api.qrserver.com/v1/create-qr-code/?size=114x114&margin=1&data='+encodeURIComponent(row.qr);canvasWrap.innerHTML='';canvasWrap.appendChild(img);}}
+    statusNote.textContent=`${qrLabels.children.length} QR labels generated.`;}
+  function resetAll(){document.querySelectorAll('input').forEach(input=>{if(input.type!=='file')input.value='';});output.innerHTML='';statusNote.textContent='';qrLabels.innerHTML='';qrSection.classList.remove('active');binMap=[];rackRows=[];}
+  document.getElementById('generateBtn').addEventListener('click',buildRack);document.getElementById('downloadBtn').addEventListener('click',downloadCsv);document.getElementById('uploadBtn').addEventListener('click',()=>uploadInput.click());document.getElementById('summaryBtn').addEventListener('click',printSummary);document.getElementById('qrBtn').addEventListener('click',generateQrCodes);document.getElementById('resetBtn').addEventListener('click',resetAll);uploadInput.addEventListener('change',()=>{const file=uploadInput.files&&uploadInput.files[0];if(file)uploadCsv(file);});
+})();
+</script>
+<script src="assets/js/bw-header.js"></script></body>
+</html>

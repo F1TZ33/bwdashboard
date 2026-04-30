@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<title>Sales Tips</title>
+<link href="assets/css/style.css" rel="stylesheet"/>
+<style>
+.salesHero{
+  position:relative;overflow:hidden;
+  background:
+    linear-gradient(135deg, rgba(198,40,40,.16), transparent 42%),
+    linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+  border:1px solid rgba(255,255,255,.10);
+  border-radius:24px;padding:28px 24px;margin-bottom:18px;
+  box-shadow:0 18px 55px rgba(0,0,0,.34);
+}
+.salesHero::after{
+  content:"";position:absolute;top:-70px;right:-70px;width:220px;height:220px;border-radius:50%;
+  background:radial-gradient(circle, rgba(198,40,40,.22), transparent 70%);pointer-events:none;
+}
+.salesHeroTop{display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:10px;}
+.salesHeroIcon{
+  width:58px;height:58px;border-radius:18px;display:grid;place-items:center;font-size:28px;
+  background:rgba(198,40,40,.16);border:1px solid rgba(198,40,40,.34);box-shadow:0 10px 22px rgba(198,40,40,.12);
+}
+.salesHero h1{margin:0 !important;}
+.salesHero .subtitle{margin:10px auto 0 !important;max-width:900px;}
+
+.salesLayout{display:grid;grid-template-columns:320px minmax(0,1fr);gap:18px;align-items:start;}
+.salesNav,.salesContent{
+  background:
+    linear-gradient(135deg, rgba(198,40,40,.10), transparent 42%),
+    linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+  border:1px solid rgba(255,255,255,.10);
+  border-radius:24px;
+  box-shadow:0 18px 55px rgba(0,0,0,.30);
+}
+.salesNav{padding:14px;position:sticky;top:12px;}
+.salesContent{padding:24px 22px 20px;min-height:720px;}
+
+.navTitle{margin:2px 4px 14px;font-size:12px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:#e5d1d1;opacity:.9;}
+.typeBlock{margin:10px 0;border:1px solid rgba(255,255,255,.08);border-radius:18px;overflow:hidden;background:rgba(255,255,255,.02);}
+.typeButton{
+  width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;background:transparent;border:0;color:#fff;
+  padding:16px;font:inherit;font-weight:800;text-align:left;cursor:pointer;
+}
+.typeButton:hover{background:rgba(255,255,255,.04);}
+.typeLabel{display:flex;align-items:center;gap:10px;min-width:0;}
+.typeIcon{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;background:rgba(198,40,40,.16);border:1px solid rgba(198,40,40,.34);font-size:18px;flex:0 0 38px;}
+.typeText{line-height:1.25;}
+.typeChevron{opacity:.8;transition:transform .18s ease;}
+.typeBlock.open .typeChevron{transform:rotate(90deg);}
+.subList{display:none;padding:0 10px 12px;}
+.typeBlock.open .subList{display:block;}
+.subButton{
+  width:100%;background:rgba(255,255,255,.02);color:#d8dee7;border:1px solid rgba(255,255,255,.06);border-radius:14px;
+  padding:12px 13px;margin:8px 0 0;text-align:left;font:inherit;cursor:pointer;line-height:1.35;
+}
+.subButton:hover{background:rgba(255,255,255,.05);color:#fff;}
+.subButton.active{background:rgba(198,40,40,.16);border-color:rgba(198,40,40,.34);color:#fff;}
+
+.contentBadge{
+  display:inline-flex;align-items:center;gap:8px;min-height:38px;padding:0 14px;border-radius:999px;
+  background:rgba(198,40,40,.16);border:1px solid rgba(198,40,40,.34);font-weight:800;margin-bottom:14px;
+}
+.contentTitle{margin:0 0 8px !important;font-size:30px;line-height:1.1;}
+.contentLead{margin:0 0 14px;color:#e5d1d1;font-weight:700;line-height:1.55;}
+.contentList{margin:0;padding-left:18px;}
+.contentList li{margin:9px 0;line-height:1.6;color:#d8dee7;}
+.contentHint{margin-top:22px;color:var(--muted);font-size:13px;text-align:center;}
+
+.scriptActions{margin:18px 0 8px;display:none;gap:10px;flex-wrap:wrap;}
+.scriptActions.show{display:flex;}
+.scriptBtn{
+  border:1px solid rgba(198,40,40,.42);
+  background:rgba(198,40,40,.16);
+  color:#fff;
+  border-radius:999px;
+  padding:10px 14px;
+  font-weight:800;
+  cursor:pointer;
+}
+.scriptBtn:hover{background:rgba(198,40,40,.24);}
+
+.scriptOverlay{
+  display:none;
+  position:fixed;
+  inset:0;
+  z-index:3000;
+  background:rgba(0,0,0,.72);
+  align-items:center;
+  justify-content:center;
+  padding:18px;
+}
+.scriptOverlay.show{display:flex;}
+.scriptModal{
+  width:min(760px, 96vw);
+  max-height:86vh;
+  overflow:auto;
+  background:
+    linear-gradient(135deg, rgba(198,40,40,.13), transparent 42%),
+    linear-gradient(180deg, #111b32, #0b1224);
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:24px;
+  box-shadow:0 22px 70px rgba(0,0,0,.48);
+  padding:20px;
+  color:#fff;
+}
+.scriptHeader{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px;}
+.scriptHeader h3{margin:0;color:#fff;}
+.scriptClose{
+  width:38px;height:38px;border-radius:999px;
+  border:1px solid rgba(255,255,255,.16);
+  background:rgba(255,255,255,.05);
+  color:#fff;
+  cursor:pointer;
+  font-size:18px;
+}
+.scriptGroup{
+  margin:14px 0;
+  padding:14px;
+  border-radius:18px;
+  background:rgba(255,255,255,.035);
+  border:1px solid rgba(255,255,255,.08);
+}
+.scriptGroup h4{margin:0 0 8px;color:#efb1b1;}
+.scriptLine{
+  margin:8px 0;
+  padding:10px 12px;
+  border-left:3px solid rgba(198,40,40,.75);
+  background:rgba(0,0,0,.16);
+  border-radius:12px;
+  color:#eef2f7;
+  line-height:1.5;
+}
+@media (max-width:980px){
+  .salesLayout{grid-template-columns:1fr;}
+  .salesNav{position:static;}
+  .salesContent{min-height:unset;}
+}
+</style>
+</head>
+<body data-page="page">
+<div class="container">
+  <div class="siteHeader"><img alt="Bearing Wholesalers" class="siteLogo" src="assets/img/logo.png"/></div>
+
+  <div class="topbar">
+    <div class="leftBtns">
+      <a class="btn" href="index.html">⤒ Dashboard</a>
+    </div>
+    <div class="rightBtns">
+      <button class="btn" data-action="suggest" type="button">Suggest edit</button>
+      <button class="btn" data-action="devnote" data-editor-only="1" style="display:none" type="button">Dev notes</button>
+      <button class="btn" data-action="admin" title="Admin" type="button">Admin</button>
+    </div>
+  </div>
+
+  <section class="salesHero">
+    <div class="salesHeroTop"><div class="salesHeroIcon">🧠</div></div>
+    <h1>Sales Tips</h1>
+    <p class="subtitle">A simpler training browser. Select a type on the left, expand its subheadings, and view the content in the centre without leaving the page.</p>
+  </section>
+
+  <section class="salesLayout">
+    <aside class="salesNav">
+      <div class="navTitle">Types</div>
+      <div id="navRoot"></div>
+    </aside>
+
+    <main class="salesContent">
+      <div class="contentBadge" id="contentType">⚡ Basics</div>
+      <h2 class="contentTitle" id="contentTitle">Silent Internal Triggers (No Customer Involvement)</h2>
+      <p class="contentLead" id="contentLead">Core principle</p>
+
+      <div class="scriptActions" id="scriptActions">
+        <button class="scriptBtn" type="button" onclick="openScriptOverlay()">💬 View scripts / prompts</button>
+      </div>
+
+      <ul class="contentList" id="contentList"></ul>
+      <div class="contentHint">The active section stays expanded until a different heading is opened.</div>
+    </main>
+  </section>
+</div>
+
+<div class="scriptOverlay" id="scriptOverlay" onclick="closeScriptOverlay(event)">
+  <div class="scriptModal" role="dialog" aria-modal="true" aria-labelledby="scriptOverlayTitle" onclick="event.stopPropagation()">
+    <div class="scriptHeader">
+      <h3 id="scriptOverlayTitle">🔁 Re-Engagement Scripts / Prompts</h3>
+      <button class="scriptClose" type="button" onclick="closeScriptOverlay()">✕</button>
+    </div>
+
+    <div class="scriptGroup">
+      <h4>1. Identify Before Contact</h4>
+      <div class="scriptLine">“What did they buy previously?”</div>
+      <div class="scriptLine">“How often were they buying it?”</div>
+      <div class="scriptLine">“How long has it been since the account was used?”</div>
+      <div class="scriptLine">“Is this outside their normal buying pattern?”</div>
+    </div>
+
+    <div class="scriptGroup">
+      <h4>2. Soft Check-In</h4>
+      <div class="scriptLine">“Hey mate, just checking in — anything coming up we can help with?”</div>
+      <div class="scriptLine">“I noticed it’s been a while since the account was used — are you still needing those parts?”</div>
+      <div class="scriptLine">“You were grabbing those fairly regularly before — are you still going through them?”</div>
+    </div>
+
+    <div class="scriptGroup">
+      <h4>3. Purchase History Prompt</h4>
+      <div class="scriptLine">“You were using a fair bit of [product/part number] last time — still going through those?”</div>
+      <div class="scriptLine">“Last time we helped with [job/application] — has that been sorted or is there anything else needed?”</div>
+      <div class="scriptLine">“You normally pick these up around maintenance time — want me to check availability before you need them?”</div>
+    </div>
+
+    <div class="scriptGroup">
+      <h4>4. Quote Revisit</h4>
+      <div class="scriptLine">“You had a quote sitting for [part/job] — did you want me to refresh price and availability?”</div>
+      <div class="scriptLine">“That quote may have changed since we last spoke — want me to check current options?”</div>
+      <div class="scriptLine">“Did that job go ahead, or is it still something you’re working through?”</div>
+    </div>
+
+    <div class="scriptGroup">
+      <h4>5. Value Offer</h4>
+      <div class="scriptLine">“I can check stock before you get caught short.”</div>
+      <div class="scriptLine">“I can look at a couple of alternatives if price or availability is the issue.”</div>
+      <div class="scriptLine">“Want me to line something up so it’s ready when you need it?”</div>
+    </div>
+
+    <div class="scriptGroup">
+      <h4>6. Close / Next Action</h4>
+      <div class="scriptLine">“Do you want me to quote that again?”</div>
+      <div class="scriptLine">“Want me to put stock aside?”</div>
+      <div class="scriptLine">“Should I check back with you next week?”</div>
+      <div class="scriptLine">“No pressure — I’ll leave it with you, but I’m here if it comes back up.”</div>
+    </div>
+  </div>
+</div>
+
+<div class="modalBack" id="suggestModal">
+  <div class="modal">
+    <h3>Suggest edit</h3>
+    <p class="subtitle" style="margin:0 0 10px">This creates an email draft to the manual admin. You’ll still click Send in your email app.</p>
+    <div class="row">
+      <div class="field">
+        <label>Your name (required)</label>
+        <input id="se_name" placeholder="e.g., Jordan"/>
+      </div>
+      <div class="field">
+        <label>Urgency (optional)</label>
+        <select id="se_urgency">
+          <option value="">—</option>
+          <option>Low</option><option>Medium</option><option>High</option>
+        </select>
+      </div>
+    </div>
+    <div class="field">
+      <label>Suggestion (required)</label>
+      <textarea id="se_suggestion" placeholder="What should change? Be specific if possible."></textarea>
+    </div>
+    <div class="field" data-editor-field="1" style="display:none">
+      <label>Section / location (optional)</label>
+      <input id="se_section" placeholder="Where on the page does this apply?"/>
+    </div>
+    <div class="field" data-editor-field="1" style="display:none">
+      <label>Proposed replacement wording (optional)</label>
+      <textarea id="se_replacement" placeholder="Paste the new wording here (optional)."></textarea>
+    </div>
+    <div class="field" data-editor-field="1" style="display:none">
+      <label>Reason / context (optional)</label>
+      <textarea id="se_reason" placeholder="Why should this change? Any customer context?"></textarea>
+    </div>
+    <input id="se_page" type="hidden"/>
+    <input id="se_path" type="hidden"/>
+    <input id="se_time" type="hidden"/>
+    <div class="actions">
+      <button class="btn" id="se_send" type="button">Confirm &amp; create email</button>
+      <button class="smallbtn" data-close="suggestModal" type="button">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div class="modalBack" id="devNoteModal">
+  <div class="modal">
+    <h3>Developer notes (private)</h3>
+    <p class="subtitle" style="margin:0 0 10px">Saved locally on this computer/browser. Not visible to normal users.</p>
+    <div class="field">
+      <label>Page</label>
+      <input id="dn_path" readonly=""/>
+    </div>
+    <div class="field">
+      <label>Notes</label>
+      <textarea id="dn_note" placeholder="Private admin notes for this page…"></textarea>
+    </div>
+    <div class="actions">
+      <button class="btn" id="dn_save" type="button">Save notes</button>
+      <button class="smallbtn" data-close="devNoteModal" type="button">Close</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const salesData = [{"key": "basics", "icon": "⚡", "label": "Basics", "subtitle": "Core principles and escalation habits for accurate counter service.", "items": [{"title": "Silent Internal Triggers (No Customer Involvement)", "lead": "Core principle", "points": ["You don’t escalate because you’re slow — you escalate because accuracy matters.", "The customer never needs to know why assistance is needed — only that it improves the outcome.", "Escalate automatically when the part is not dimensionally standard.", "Escalate when the application involves load, speed, or safety.", "Escalate when the customer says “this keeps failing”.", "Escalate when the part has attachments, modifications, or damage.", "Escalate when you are choosing between two similar options.", "Escalate when the part will be hard to return once installed."]}, {"title": "External Red Flags from the Customer", "lead": "Seek assistance immediately if the customer says:", "points": ["“It just needs to get me through”", "“This is what they gave me last time”", "“I don’t have the old one”", "“I can make it work”", "“It’s close enough”", "These phrases usually indicate risk, not urgency."]}, {"title": "What Not to Ask the Customer", "lead": "Avoid pressure-creating questions:", "points": ["“Are you in a hurry?”", "“Do you need this quickly?”", "“Can you wait while I check?”", "“Is it okay if I ask someone?”", "These put pressure back on the trainee.", "They invite rushed decisions and make accuracy optional."]}, {"title": "What to Say Instead", "lead": "Use process-based statements, not permission-based questions:", "points": ["“I’m just going to confirm this before we proceed.”", "“I’ll get this checked so we don’t miss anything.”", "“This is worth a quick second look.”", "“I’m going to loop someone in to make sure this is right.”", "These assume cooperation without requesting permission."]}, {"title": "The 10-Second Escalation Script", "lead": "When stepping away:", "points": ["“I’m going to confirm this detail — it’ll save you time later.”", "That’s it.", "No apology. No explanation."]}, {"title": "How a Supervisor Should Step In", "lead": "Supervisors should reinforce the same standard:", "points": ["“Good call checking this.”", "“This is one you don’t rush.”", "“Let’s confirm the application.”", "Escalation should feel like professionalism, not weakness."]}, {"title": "Internal Rule of Thumb", "lead": "Easy to remember:", "points": ["If you wouldn’t bet your own time or money on it — escalate.", "This removes ego and speeds up good decisions."]}, {"title": "Confidence Reset If the Customer Pushes", "lead": "If the customer says “I’m in a hurry”, respond with:", "points": ["“Understood — accuracy is what gets you out the door once.”", "“This is the fastest way to avoid a redo.”", "“Getting it right is quicker than replacing it.”"]}, {"title": "Final Trainee Checklist", "lead": "Proceed alone only if all of these are true:", "points": ["Part is clearly identified.", "Measurements are confirmed.", "Application is low risk.", "No ambiguity exists.", "If any box is unchecked, escalate."]}]}, {"key": "respond", "icon": "🗣️", "label": "How to Respond", "subtitle": "Clear, confident wording that keeps control without sounding arrogant.", "items": [{"title": "Confidence-Setting Openers", "lead": "Establish control immediately:", "points": ["“Let’s have a look at what you’ve got.”", "“We’ll sort this out step by step.”", "“That’s a common one — we’ll get you the right match.”", "“I see these pretty regularly.”", "You’re not claiming mastery — you’re claiming process."]}, {"title": "Buying Time Without Sounding Unsure", "lead": "When you need to think, measure, or check:", "points": ["“Let me just double-check the sizing on this.”", "“I want to make sure we don’t miss anything.”", "“I’ll confirm that before we lock it in.”", "“I’ve seen similar — just want to be certain.”", "Avoid: “I’m not sure” and “I don’t know much about these”."]}, {"title": "Redirecting Without Saying “You’re Wrong”", "lead": "Keep customer confidence intact:", "points": ["“Sometimes they’re referred to that way — let’s confirm it.”", "“That term gets used for a few different things.”", "“Let’s just line it up with what you’ve got here.”", "“That’s close — the detail that matters is here.”", "You validate the customer without agreeing blindly."]}, {"title": "Measurement-First Language", "lead": "Position accuracy as professionalism:", "points": ["“If we match the measurements, the rest usually falls into place.”", "“Dimensions will tell us more than the name.”", "“Once we confirm ID and OD, it narrows fast.”", "“Measurements take the guesswork out.”"]}, {"title": "Handling “I Need It Now” Pressure", "lead": "Maintain authority without escalation:", "points": ["“I’d rather take 30 seconds now than have you redo it later.”", "“The right part saves more time than a quick guess.”", "“Let’s get it right the first time.”", "“This is one of those where accuracy matters.”"]}, {"title": "When You Know It’s the Wrong Part", "lead": "Correct the course without challenging ego:", "points": ["“That would fit, but it won’t last in that application.”", "“That option works in some cases — not this one.”", "“I’ve seen those fail in setups like yours.”", "“This is where the spec matters.”"]}, {"title": "When You Need to Escalate", "lead": "Frame escalation as quality control:", "points": ["“I want a second set of eyes on this.”", "“This one’s worth confirming before we send you off.”", "“Let me loop someone in so we get it spot on.”", "“This falls into the don’t guess category.”"]}, {"title": "Closing Language That Feels Calm and Certain", "lead": "No pressure, no hype:", "points": ["“This is the correct match for what you’ve described.”", "“This will suit the application you mentioned.”", "“That should solve the issue you’re seeing.”", "“This is the safest option for that setup.”"]}, {"title": "If the Customer Challenges You", "lead": "Stay grounded, not defensive:", "points": ["“Happy to walk through the reasoning if you like.”", "“Let’s compare it to the one you had.”", "“We’re aiming for reliability here.”", "“I’m comfortable with this recommendation.”"]}, {"title": "Universal Confidence Reset", "lead": "Works in almost every scenario:", "points": ["“Let’s slow it down and get it right.”", "“We’ll base it on what matters.”", "“We’ll go off facts, not guesses.”", "“We’ll match it to the application.”"]}]}, {"key": "value", "icon": "🎯", "label": "How We Add Value", "subtitle": "Language choices that protect trust, reduce rework, and lift perceived value.", "items": [{"title": "Phrases That Undermine Confidence", "lead": "Even when the information is correct:", "points": ["Avoid “I’m not really sure…”, “I think this is right…”, “I don’t know much about these…”, and “I’ve never seen one of these before…”.", "These hand control to the customer and invite pressure or dismissal.", "Say instead: “Let’s check this properly.”, “We’ll confirm the details.”, or “I want to make sure this matches.”"]}, {"title": "Phrases That Invite Guessing", "lead": "And future returns:", "points": ["Avoid “It should be fine.”, “That’ll probably work.”, “People usually use this.”, and “This is close enough.”", "Casual language creates casual decisions.", "Say instead: “This matches the dimensions.”, “This suits that application.”, or “This is the correct type for that setup.”"]}, {"title": "Phrases That Challenge the Customer", "lead": "These create resistance and ego conflict:", "points": ["Avoid “That’s wrong.”, “You can’t use that.”, “Who told you that?”, and “That’s not how it works.”", "Say instead: “That term gets used a few different ways.”, “Let’s line it up with what you’ve got.”, or “That works in some cases — not this one.”"]}, {"title": "Phrases That Over-Promise Expertise", "lead": "Risky and unnecessary:", "points": ["Avoid “I know exactly what you need.”, “Trust me.”, “I’ve been doing this for years.”, and “This is definitely the best option.”", "Say instead: “Based on what you’ve described…”, “This is the correct match for that setup.”, or “This aligns with the application.”"]}, {"title": "Phrases That Sound Defensive", "lead": "These weaken authority instantly:", "points": ["Avoid “That’s just what the book says.”, “That’s how we always do it.”, “I’m just following policy.”, and “Don’t blame me if…”.", "Say instead: “That’s the spec for this application.”, “That’s what prevents repeat failures.”, or “That’s the safest option here.”"]}, {"title": "Phrases That Invite Rushing", "lead": "Pressure leads to mistakes:", "points": ["Avoid “If you’re in a hurry…”, “We can just grab something quick.”, and “This should get you by.”", "Say instead: “Let’s take 30 seconds and confirm it.”, “The right part saves time later.”, or “Accuracy matters here.”"]}, {"title": "Phrases That Give Away Control", "lead": "Especially with confident customers:", "points": ["Avoid “What do you want to do?”, “Up to you.”, “You tell me.”, and “Whatever you think.”", "Say instead: “Here’s what I recommend.”, “This is the correct path for that issue.”, or “This option avoids the common problems.”"]}, {"title": "Phrases That Devalue Measurement", "lead": "Dangerous in bearings, seals, belts, and chain:", "points": ["Avoid “That looks about right.”, “They’re usually all the same.”, and “It should fit.”", "Say instead: “Let’s confirm the measurements.”, “Once we measure it, it’s clear.”, or “Size will tell us.”"]}, {"title": "Phrases That Kill Trust After the Sale", "lead": "Used when issues arise:", "points": ["Avoid “No one else has complained.”, “That’s never happened before.”, and “It must’ve been installed wrong.”", "Say instead: “Let’s work through what happened.”, “We’ll figure out why it failed.”, or “Let’s check the application again.”"]}, {"title": "The One Phrase to Never Use", "lead": "Under any circumstances:", "points": ["Avoid “That’s the only one we have.”", "It forces the customer into a bad decision.", "Say instead: “This is what we stock — let’s make sure it’s suitable.” or “We can look at alternatives if needed.”"]}]}, {"key": "reengagement", "icon": "🔁", "label": "Re-Engagement", "subtitle": "Reconnect with quiet accounts, old quotes, and customers who may have drifted away.", "items": [{"title": "Identify (Start Here)", "lead": "Research before you call so the contact has purpose.", "points": ["Check what the customer previously bought.", "Review how often they used to purchase.", "Identify how long since the account was last used.", "Compare the gap against their normal buying pattern.", "Look for repeat consumables, maintenance items, or seasonal patterns.", "Check old quotes or common parts that may now need replenishment.", "Decide whether the best opener is a stock check, price check, quote revisit, or simple service check-in."]}, {"title": "When To Use Re-Engagement", "lead": "Use this when a customer has gone quiet or a quote has stalled.", "points": ["No account activity in 30–90 days.", "Quote sent but no response.", "Previously regular customer has dropped off.", "Seasonal buyer is approaching their usual cycle.", "Customer has shifted from regular ordering to emergency-only buying.", "You notice a product line they used to buy but no longer order from us."]}, {"title": "How To Reconnect", "lead": "Keep it useful, specific, and low-pressure.", "points": ["Reference their history rather than making a generic follow-up call.", "Ask a simple question tied to their previous buying pattern.", "Offer value: stock check, price check, alternative option, or availability update.", "Create an easy next step: quote again, line up stock, or confirm current needs.", "Keep the message short enough that it feels helpful, not sales-heavy."]}, {"title": "Example Openers", "lead": "Use wording that sounds natural and useful.", "points": ["“Hey mate, just checking in — you were using a fair bit of 6205 last time, are you still going through those?”", "“I noticed it’s been a while since the account was used — anything coming up we can help with?”", "“You had a quote sitting for that chain job — do you want me to refresh availability?”", "“You normally grab these around maintenance time — want me to check stock before you need them?”"]}, {"title": "What To Avoid", "lead": "Avoid sounding desperate, vague, or pushy.", "points": ["Avoid “just following up” with no useful reason.", "Avoid long messages that make the customer work too hard.", "Avoid contacting them without checking history first.", "Avoid assuming they left because of price.", "Avoid pressuring them for an order before offering value."]}, {"title": "BW Principle", "lead": "Retention is a habit, not a one-off task.", "points": ["If they bought once, they can buy again — if we show up at the right time.", "A good re-engagement call should feel like service, not chasing.", "The account history tells you where to start."]}]}];
+
+const navRoot = document.getElementById('navRoot');
+const contentType = document.getElementById('contentType');
+const contentTitle = document.getElementById('contentTitle');
+const contentLead = document.getElementById('contentLead');
+const contentList = document.getElementById('contentList');
+const scriptActions = document.getElementById('scriptActions');
+const scriptOverlay = document.getElementById('scriptOverlay');
+
+let openTypeKey = salesData[0].key;
+let activeItemKey = `${salesData[0].key}-0`;
+
+function renderNav(){
+  navRoot.innerHTML = '';
+  salesData.forEach((type) => {
+    const block = document.createElement('div');
+    block.className = 'typeBlock' + (type.key === openTypeKey ? ' open' : '');
+
+    const btn = document.createElement('button');
+    btn.className = 'typeButton';
+    btn.type = 'button';
+    btn.innerHTML = `
+      <span class="typeLabel">
+        <span class="typeIcon">${type.icon}</span>
+        <span class="typeText">${type.label}</span>
+      </span>
+      <span class="typeChevron">›</span>
+    `;
+    btn.addEventListener('click', () => {
+      openTypeKey = type.key;
+      renderNav();
+    });
+
+    const subList = document.createElement('div');
+    subList.className = 'subList';
+
+    type.items.forEach((item, itemIndex) => {
+      const itemKey = `${type.key}-${itemIndex}`;
+      const subBtn = document.createElement('button');
+      subBtn.className = 'subButton' + (itemKey === activeItemKey ? ' active' : '');
+      subBtn.type = 'button';
+      subBtn.textContent = item.title;
+      subBtn.addEventListener('click', () => {
+        openTypeKey = type.key;
+        activeItemKey = itemKey;
+        renderNav();
+        renderContent(type, item);
+      });
+      subList.appendChild(subBtn);
+    });
+
+    block.appendChild(btn);
+    block.appendChild(subList);
+    navRoot.appendChild(block);
+  });
+}
+
+function renderContent(type, item){
+  contentType.textContent = `${type.icon} ${type.label}`;
+  contentTitle.textContent = item.title;
+  contentLead.textContent = item.lead;
+  contentList.innerHTML = '';
+  item.points.forEach(point => {
+    const li = document.createElement('li');
+    li.textContent = point;
+    contentList.appendChild(li);
+  });
+
+  if(type.key === 'reengagement'){
+    scriptActions.classList.add('show');
+  } else {
+    scriptActions.classList.remove('show');
+  }
+}
+
+function openScriptOverlay(){
+  scriptOverlay.classList.add('show');
+}
+
+function closeScriptOverlay(event){
+  if(event && event.target !== scriptOverlay) return;
+  scriptOverlay.classList.remove('show');
+}
+
+document.addEventListener('keydown', function(event){
+  if(event.key === 'Escape') scriptOverlay.classList.remove('show');
+});
+
+renderNav();
+renderContent(salesData[0], salesData[0].items[0]);
+</script>
+
+<script src="assets/js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,1246 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<title>CRM</title>
+<link href="assets/css/style.css" rel="stylesheet"/>
+<style>
+    .pageTitle{font-size: 40px; font-weight: 800; margin: 18px 0 6px 0;}
+    .pageSubtitle{opacity:.85; margin: 0 0 18px 0;}
+
+    .crmShell{
+      display:grid;
+      gap:18px;
+    }
+
+    .crmHero{
+      display:grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items:center;
+      gap:16px;
+      margin: 8px 0 2px 0;
+    }
+    .crmHeroSide{display:flex;}
+    .crmHeroSide.left{justify-content:flex-start;}
+    .crmHeroSide.right{justify-content:flex-end;}
+    .heroBtn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-height:54px;
+      padding: 12px 20px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(255,255,255,0.04);
+      color: #fff;
+      font-weight: 800;
+      text-decoration:none;
+      cursor:pointer;
+      transition: transform .08s ease, background .15s ease, border-color .15s ease;
+    }
+    .heroBtn:hover{
+      border-color: rgba(160,112,255,0.55);
+      background: rgba(160,112,255,0.12);
+    }
+    .heroBtn.center{min-width:240px; justify-self:center;}
+    .heroBtn.side{min-width:200px;}
+    @media (max-width: 920px){
+      .crmHero{grid-template-columns: 1fr; }
+      .crmHeroSide.left,.crmHeroSide.right{justify-content:center;}
+      .heroBtn.center{order:-1;}
+    }
+
+    .controlBar{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-bottom: 2px;
+    }
+    .salesControls{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    .topSelect, .field input, .field select, .field textarea{
+      width:100%;
+      background: rgba(255,255,255,0.04);
+      color:#fff;
+      border:1px solid rgba(255,255,255,0.14);
+      border-radius:14px;
+      padding: 12px 14px;
+      font: inherit;
+    }
+    .topSelect{min-width:220px; font-weight:700;}
+
+    .miniBtn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-height:46px;
+      padding: 10px 16px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(255,255,255,0.03);
+      color:#fff;
+      font-weight:700;
+      cursor:pointer;
+      text-decoration:none;
+      transition: transform .08s ease, background .15s ease, border-color .15s ease;
+    }
+    .miniBtn:hover{
+      border-color: rgba(160,112,255,0.55);
+      background: rgba(160,112,255,0.12);
+    }
+    .miniBtn.ghost{
+      border-style:dashed;
+      color: rgba(255,255,255,0.74);
+    }
+
+    .crmGrid{
+      display:grid;
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .card{
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.09);
+      border-radius: 22px;
+      padding: 18px;
+      box-shadow: 0 18px 55px rgba(0,0,0,0.40);
+    }
+    .metricCard{
+      grid-column: span 3;
+      min-height: 138px;
+    }
+    .metricLabel{
+      color: rgba(255,255,255,0.72);
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      letter-spacing:.02em;
+      text-transform: uppercase;
+    }
+    .metricValue{
+      font-size: 34px;
+      font-weight: 900;
+      line-height: 1;
+      margin-bottom: 12px;
+    }
+    .metricSub{
+      font-size: 12px;
+      color: rgba(255,255,255,0.62);
+    }
+
+    .span-8{grid-column: span 8;}
+    .span-4{grid-column: span 4;}
+    .span-6{grid-column: span 6;}
+    .span-12{grid-column: span 12;}
+
+    @media (max-width: 1200px){
+      .metricCard{grid-column: span 4;}
+      .span-8,.span-6,.span-4{grid-column: span 12;}
+    }
+    @media (max-width: 760px){
+      .metricCard{grid-column: span 6;}
+    }
+    @media (max-width: 560px){
+      .metricCard{grid-column: span 12;}
+      .pageTitle{font-size: 32px;}
+    }
+
+    .sectionHead{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:10px;
+      margin-bottom:14px;
+      flex-wrap:wrap;
+    }
+    .sectionHead h2{
+      margin:0;
+      font-size: 20px;
+    }
+    .muted{color: rgba(255,255,255,0.72);}
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(160,112,255,0.35);
+      background: rgba(160,112,255,0.10);
+      color:#fff;
+      font-size:12px;
+      font-weight:800;
+    }
+
+    .summaryTable{
+      width:100%;
+      border-collapse:collapse;
+    }
+    .summaryTable th,.summaryTable td{
+      padding: 12px 10px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      text-align:center;
+    }
+    .summaryTable th{
+      font-size:12px;
+      color: rgba(255,255,255,0.68);
+      text-transform:uppercase;
+      letter-spacing:.06em;
+    }
+    .scoreBadge{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-width:64px;
+      padding: 8px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,0.16);
+      background: rgba(255,255,255,0.03);
+      font-weight:900;
+    }
+
+    .list, .barGroup, .reportList{
+      display:grid;
+      gap:10px;
+    }
+    .listItem, .reportItem{
+      padding: 12px 14px;
+      border-radius: 16px;
+      background: rgba(0,0,0,0.10);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    .listItem strong, .reportItem strong{display:block; margin-bottom:6px;}
+    .tiny{font-size:12px; color: rgba(255,255,255,0.62);}
+
+    .barRow{display:grid; gap:12px;}
+    .barLabel{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      margin-bottom:6px;
+      font-size:14px;
+    }
+    .bar{
+      height:10px;
+      border-radius:999px;
+      overflow:hidden;
+      background: rgba(0,0,0,0.18);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    .bar > span{
+      display:block;
+      height:100%;
+      background: linear-gradient(90deg, rgba(160,112,255,0.95), rgba(222,94,114,0.95));
+    }
+
+    .overlay{
+      position:fixed;
+      inset:0;
+      background: rgba(5,10,22,0.76);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding: 20px;
+      z-index: 1000;
+    }
+    .overlay.show{display:flex;}
+    .modal{
+      width:min(1100px, 100%);
+      max-height:min(90vh, 920px);
+      overflow:auto;
+      background: #12204a;
+      border:1px solid rgba(255,255,255,0.12);
+      border-radius: 24px;
+      padding: 20px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.48);
+      position:relative;
+    }
+    .modal.large{width:min(1380px, 100%);}
+    .closeBtn{
+      position:absolute;
+      top:14px;
+      right:14px;
+      width:42px;
+      height:42px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,0.16);
+      background: rgba(255,255,255,0.05);
+      color:#fff;
+      font-size:20px;
+      cursor:pointer;
+    }
+    .modalHeader{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:12px;
+      margin-bottom:16px;
+      padding-right:54px;
+    }
+
+    .formGrid{
+      display:grid;
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      gap:14px;
+    }
+    .field{grid-column: span 12;}
+    .field.half{grid-column: span 6;}
+    .field.third{grid-column: span 4;}
+    .field textarea{
+      min-height: 110px;
+      resize: vertical;
+    }
+    .field label{
+      display:block;
+      font-size: 12px;
+      font-weight:800;
+      margin-bottom: 8px;
+      color: rgba(255,255,255,0.74);
+      letter-spacing:.04em;
+      text-transform:uppercase;
+    }
+    @media (max-width: 900px){
+      .field.half, .field.third{grid-column: span 12;}
+    }
+
+    .quoteFields{
+      display:none;
+      margin-top:14px;
+      border:1px solid rgba(160,112,255,0.26);
+      background: rgba(160,112,255,0.08);
+      border-radius: 18px;
+      padding:16px;
+    }
+    .quoteFields.show{display:block;}
+
+    .plannerToolbar{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-bottom:16px;
+    }
+    .plannerGrid{
+      display:grid;
+      grid-template-columns: repeat(5, minmax(240px, 1fr));
+      gap:14px;
+      overflow-x:auto;
+      padding-bottom:8px;
+    }
+    .dayCard{
+      min-width:240px;
+      background: rgba(0,0,0,0.10);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 18px;
+      padding: 14px;
+    }
+    .callList{display:grid; gap:10px;}
+    .callRow{
+      padding:10px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,0.10);
+      background: rgba(255,255,255,0.03);
+    }
+    .callRow.mandatory{
+      border-color: rgba(255,199,62,0.28);
+    }
+    .callRow label{
+      display:block;
+      margin-bottom:6px;
+      font-size:11px;
+      font-weight:800;
+      color: rgba(255,255,255,0.66);
+      text-transform:uppercase;
+      letter-spacing:.04em;
+    }
+    .callRow input{
+      width:100%;
+      padding:10px 12px;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,0.12);
+      background: rgba(0,0,0,0.18);
+      color:#fff;
+      font:inherit;
+    }
+
+    .emptyNote{
+      padding:18px;
+      text-align:center;
+      border:1px dashed rgba(255,255,255,0.18);
+      border-radius:16px;
+      color: rgba(255,255,255,0.68);
+      background: rgba(0,0,0,0.08);
+    }
+  </style>
+<link href="manifest.webmanifest" rel="manifest"/>
+<meta content="#0a1633" name="theme-color"/>
+<meta content="yes" name="apple-mobile-web-app-capable"/>
+<meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"/>
+<link href="assets/icons/icon-512.png" rel="apple-touch-icon"/>
+</head>
+<body>
+<div class="container"><div id="bw-global-header"></div><div class="bw-page-actions" hidden="">
+<button class="btn" data-action="devnotes" type="button">Dev notes</button>
+<button class="btn" data-action="admin" type="button">Admin</button>
+</div>
+<div class="pageTitle">CRM</div>
+<div class="pageSubtitle">Live operating board, planner, call log, and follow-up workflow.</div>
+<div class="crmShell">
+<div class="controlBar">
+<div class="salesControls">
+<span class="muted">Sales Person</span>
+<select class="topSelect" id="salesPersonFilter"></select>
+<button class="miniBtn" id="addSalesPersonBtn" type="button">+ Add Sales Person</button>
+<button class="miniBtn ghost" id="removeSalesPersonBtn" type="button">Authorised Remove</button>
+</div>
+</div>
+<div class="crmHero">
+<div class="crmHeroSide left">
+<button class="heroBtn side" id="openPlannerBtn" type="button">View / Edit Planner</button>
+</div>
+<button class="heroBtn center" id="openEntryBtn" type="button">+ New Entry</button>
+<div class="crmHeroSide right">
+<button class="heroBtn side" id="openReportBtn" type="button">View Call Report</button>
+</div>
+</div>
+<div class="crmGrid" id="metricGrid"></div>
+<div class="crmGrid">
+<article class="card span-8">
+<div class="sectionHead">
+<div>
+<h2>Scheduled Visits — Current Week</h2>
+<div class="muted">Monday to Friday summary for the selected sales person.</div>
+</div>
+<span class="pill">Current Week</span>
+</div>
+<div id="weekSummaryWrap"></div>
+</article>
+<article class="card span-4">
+<div class="sectionHead">
+<div>
+<h2>Recent Activity</h2>
+<div class="muted">Most recent actions attached to the selected view.</div>
+</div>
+</div>
+<div class="list" id="recentActivity"></div>
+</article>
+<article class="card span-4">
+<div class="sectionHead">
+<div>
+<h2>Activity by Sales Person</h2>
+<div class="muted">Quick view of overall logged activity.</div>
+</div>
+</div>
+<div class="barRow" id="activityBySales"></div>
+</article>
+<article class="card span-4">
+<div class="sectionHead">
+<div>
+<h2>Open Quotes by Urgency</h2>
+<div class="muted">Quote pressure for the selected dashboard context.</div>
+</div>
+</div>
+<div class="barRow" id="quotesByUrgency"></div>
+</article>
+<article class="card span-4">
+<div class="sectionHead">
+<div>
+<h2>Category Breakdown</h2>
+<div class="muted">Visible categories tied to activity.</div>
+</div>
+</div>
+<div class="barRow" id="categoryBreakdown"></div>
+</article>
+</div>
+</div>
+</div>
+<div aria-hidden="true" class="overlay" id="entryOverlay">
+<div class="modal">
+<button class="closeBtn" data-close="entryOverlay" type="button">×</button>
+<div class="modalHeader">
+<div>
+<h2 style="margin:0 0 6px 0;">New CRM Entry</h2>
+<div class="muted">Submitting now adds the entry into Call Report and Recent Activity.</div>
+</div>
+</div>
+<form id="crmForm">
+<div class="formGrid">
+<div class="field half">
+<label for="company">Company</label>
+<input id="company" name="company" type="text"/>
+</div>
+<div class="field half">
+<label for="contactName">Contact Name</label>
+<input id="contactName" name="contactName" type="text"/>
+</div>
+<div class="field half">
+<label for="contactNumber">Contact Number</label>
+<input id="contactNumber" name="contactNumber" type="tel"/>
+</div>
+<div class="field half">
+<label for="email">Email</label>
+<input id="email" name="email" type="email"/>
+</div>
+<div class="field third">
+<label for="salesPersonEntry">Sales Person</label>
+<select id="salesPersonEntry" name="salesPersonEntry"></select>
+</div>
+<div class="field third">
+<label for="category">Category</label>
+<select id="category" name="category">
+<option>Bearings</option>
+<option>Power Transmission</option>
+<option>Seals</option>
+<option>Lubrication</option>
+<option>General Industrial</option>
+<option>Other</option>
+</select>
+</div>
+<div class="field third">
+<label for="purpose">Purpose</label>
+<select id="purpose" name="purpose">
+<option value="">Select purpose</option>
+<option>Quote</option>
+<option>Order</option>
+<option>Enquiry</option>
+</select>
+</div>
+<div class="field half">
+<label for="result">Result</label>
+<select id="result" name="result">
+<option>Quoted</option>
+<option>Ordered</option>
+<option>Information Provided</option>
+<option>Waiting on Supplier</option>
+<option>Waiting on Customer</option>
+<option>No Sale</option>
+<option>Closed</option>
+</select>
+</div>
+<div class="field half">
+<label for="followUpRequired">Follow Up Required</label>
+<select id="followUpRequired" name="followUpRequired">
+<option>Yes</option>
+<option>No</option>
+</select>
+</div>
+<div class="field half">
+<label for="followUpDate">Follow Up Date</label>
+<input id="followUpDate" name="followUpDate" type="date"/>
+</div>
+<div class="field half">
+<label for="followUpAction">Follow Up Action</label>
+<select id="followUpAction" name="followUpAction">
+<option>Call</option>
+<option>Email</option>
+<option>Quote Check</option>
+<option>Await Response</option>
+<option>Visit</option>
+<option>Close Out</option>
+</select>
+</div>
+<div class="field half">
+<label for="createdDate">Created Date</label>
+<input id="createdDate" name="createdDate" type="date"/>
+</div>
+<div class="field half">
+<label for="updatedDate">Last Updated Date</label>
+<input id="updatedDate" name="updatedDate" type="date"/>
+</div>
+<div class="field half">
+<label for="status">Status</label>
+<select id="status" name="status">
+<option>Open</option>
+<option>In Progress</option>
+<option>Waiting</option>
+<option>Closed</option>
+</select>
+</div>
+<div class="field">
+<label for="notes">Notes</label>
+<textarea id="notes" name="notes"></textarea>
+</div>
+</div>
+<div class="quoteFields" id="quoteFields">
+<div class="formGrid">
+<div class="field third">
+<label for="quoteCompletionDate">Quote Prompt Completion Date</label>
+<input id="quoteCompletionDate" name="quoteCompletionDate" type="date"/>
+</div>
+<div class="field third">
+<label for="quoteFollowUpDate">Follow Up Date</label>
+<input id="quoteFollowUpDate" name="quoteFollowUpDate" type="date"/>
+</div>
+<div class="field third">
+<label for="urgency">Urgency</label>
+<select id="urgency" name="urgency">
+<option>Standard</option>
+<option>Priority</option>
+<option>Urgent</option>
+</select>
+</div>
+</div>
+</div>
+<div style="display:flex; justify-content:flex-end; gap:10px; margin-top:18px;">
+<button class="miniBtn" data-close="entryOverlay" type="button">Cancel</button>
+<button class="miniBtn" type="submit">Submit</button>
+</div>
+</form>
+</div>
+</div>
+<div aria-hidden="true" class="overlay" id="plannerOverlay">
+<div class="modal large">
+<button class="closeBtn" data-close="plannerOverlay" type="button">×</button>
+<div class="modalHeader">
+<div>
+<h2 style="margin:0 0 6px 0;">Weekly Call Planner</h2>
+<div class="muted">Three calls per day are prebooked by default. Additional calls can be added underneath each day.</div>
+</div>
+</div>
+<div class="plannerToolbar">
+<div class="salesControls">
+<span class="pill" id="plannerSalesChip">Sales Person</span>
+<span class="pill" id="plannerWeekChip">Current Week</span>
+</div>
+<div class="salesControls">
+<button class="miniBtn" id="showCurrentWeekBtn" type="button">Current Week</button>
+<button class="miniBtn" id="showNextWeekBtn" type="button">Next Week</button>
+</div>
+</div>
+<div class="plannerGrid" id="plannerGrid"></div>
+<div style="display:flex; justify-content:space-between; align-items:center; gap:12px; margin-top:16px; flex-wrap:wrap;">
+<div class="tiny">Each day shows Monday to Friday only. Add more calls as needed.</div>
+<button class="miniBtn" data-close="plannerOverlay" type="button">Close Planner</button>
+</div>
+</div>
+</div>
+<div aria-hidden="true" class="overlay" id="reportOverlay">
+<div class="modal">
+<button class="closeBtn" data-close="reportOverlay" type="button">×</button>
+<div class="modalHeader">
+<div>
+<h2 style="margin:0 0 6px 0;">Call Report</h2>
+<div class="muted">Shows sample entries and any new calls submitted through New Entry.</div>
+</div>
+</div>
+<div class="plannerToolbar">
+<div class="salesControls">
+<span class="pill" id="reportSalesChip">Sales Person</span>
+</div>
+</div>
+<div class="reportList" id="reportList"></div>
+<div style="display:flex; justify-content:flex-end; margin-top:18px;">
+<button class="miniBtn" data-close="reportOverlay" type="button">Close Report</button>
+</div>
+</div>
+</div>
+<script src="assets/js/app.js"></script>
+<script>
+(function(){
+  const STORAGE_KEY = 'bw.crm.phase2.v1';
+  const DAYS = ['Monday','Tuesday','Wednesday','Thursday','Friday'];
+
+  function todayIso(){
+    return new Date().toISOString().slice(0,10);
+  }
+
+  function defaultPlanner(){
+    return {
+      current: {
+        Monday: ['Acme Hydraulics','Bayside Pumps',''],
+        Tuesday: ['Metro Bearings','',''],
+        Wednesday: ['PlantFix Services','Delta Industrial',''],
+        Thursday: ['','',''],
+        Friday: ['Valley Engineering','','']
+      },
+      next: {
+        Monday: ['','',''],
+        Tuesday: ['','',''],
+        Wednesday: ['','',''],
+        Thursday: ['','',''],
+        Friday: ['','','']
+      }
+    };
+  }
+
+  function defaultState(){
+    return {
+      salesPeople: ['All Sales People','Hayden','Jess','Mitch'],
+      selectedSalesPerson: 'All Sales People',
+      visibleWeek: 'current',
+      plannerData: {
+        Hayden: defaultPlanner(),
+        Jess: {
+          current: {
+            Monday: ['Acme Hydraulics','Bayside Pumps',''],
+            Tuesday: ['Metro Bearings','Northside Trade',''],
+            Wednesday: ['PlantFix Services','Delta Industrial',''],
+            Thursday: ['','',''],
+            Friday: ['Valley Engineering','Eastern Conveyor','']
+          },
+          next: {
+            Monday: ['','',''],
+            Tuesday: ['','',''],
+            Wednesday: ['','',''],
+            Thursday: ['','',''],
+            Friday: ['','','']
+          }
+        },
+        Mitch: {
+          current: {
+            Monday: ['Acme Hydraulics','WestPro Maintenance',''],
+            Tuesday: ['Metro Bearings','',''],
+            Wednesday: ['PlantFix Services','Delta Industrial',''],
+            Thursday: ['RiverTech','Apex Ag','Southern Belting'],
+            Friday: ['Valley Engineering','','']
+          },
+          next: {
+            Monday: ['','',''],
+            Tuesday: ['','',''],
+            Wednesday: ['','',''],
+            Thursday: ['','',''],
+            Friday: ['','','']
+          }
+        }
+      },
+      entryLog: [
+        {
+          id: 'seed-1',
+          salesPerson: 'Hayden',
+          company: 'Acme Hydraulics',
+          contactName: 'Sam Turner',
+          contactNumber: '',
+          email: '',
+          purpose: 'Quote',
+          category: 'Bearings',
+          result: 'Quoted',
+          notes: '6205-2RS pricing discussed',
+          status: 'Open',
+          followUpRequired: 'Yes',
+          followUpDate: todayIso(),
+          followUpAction: 'Quote Check',
+          createdDate: todayIso(),
+          updatedDate: todayIso(),
+          urgency: 'Priority',
+          quoteCompletionDate: todayIso()
+        },
+        {
+          id: 'seed-2',
+          salesPerson: 'Jess',
+          company: 'Northside Trade',
+          contactName: 'Ben Ellis',
+          contactNumber: '',
+          email: '',
+          purpose: 'Enquiry',
+          category: 'General Industrial',
+          result: 'Information Provided',
+          notes: 'Requested lead time on motor stock',
+          status: 'Closed',
+          followUpRequired: 'No',
+          followUpDate: '',
+          followUpAction: '',
+          createdDate: todayIso(),
+          updatedDate: todayIso(),
+          urgency: '',
+          quoteCompletionDate: ''
+        },
+        {
+          id: 'seed-3',
+          salesPerson: 'Mitch',
+          company: 'RiverTech',
+          contactName: 'Paul Grant',
+          contactNumber: '',
+          email: '',
+          purpose: 'Order',
+          category: 'Power Transmission',
+          result: 'Ordered',
+          notes: 'Confirmed belt and pulley supply',
+          status: 'In Progress',
+          followUpRequired: 'Yes',
+          followUpDate: '',
+          followUpAction: 'Call',
+          createdDate: '2026-04-13',
+          updatedDate: '2026-04-13',
+          urgency: '',
+          quoteCompletionDate: ''
+        }
+      ]
+    };
+  }
+
+  function loadState(){
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if(!raw) return defaultState();
+      const parsed = JSON.parse(raw);
+      const fresh = defaultState();
+      return {
+        ...fresh,
+        ...parsed,
+        salesPeople: Array.isArray(parsed.salesPeople) && parsed.salesPeople.length ? parsed.salesPeople : fresh.salesPeople,
+        plannerData: parsed.plannerData || fresh.plannerData,
+        entryLog: Array.isArray(parsed.entryLog) ? parsed.entryLog : fresh.entryLog,
+        selectedSalesPerson: parsed.selectedSalesPerson || fresh.selectedSalesPerson,
+        visibleWeek: parsed.visibleWeek || fresh.visibleWeek
+      };
+    } catch (e) {
+      return defaultState();
+    }
+  }
+
+  let state = loadState();
+
+  function persistState(){
+    try{
+      const safe = {
+        salesPeople: state.salesPeople,
+        selectedSalesPerson: state.selectedSalesPerson,
+        visibleWeek: state.visibleWeek,
+        plannerData: state.plannerData,
+        entryLog: state.entryLog
+      };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(safe));
+    }catch(e){
+      window.alert('Unable to save CRM data in this browser session.');
+    }
+  }
+
+  function escapeHtml(value){
+    return String(value ?? '')
+      .replace(/&/g,'&amp;')
+      .replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;')
+      .replace(/"/g,'&quot;')
+      .replace(/'/g,'&#39;');
+  }
+
+  function ensurePlanner(name){
+    if(name === 'All Sales People') return null;
+    if(!state.plannerData[name]){
+      state.plannerData[name] = defaultPlanner();
+    }
+    return state.plannerData[name];
+  }
+
+  state.salesPeople.filter(n => n !== 'All Sales People').forEach(ensurePlanner);
+
+  const salesPersonFilter = document.getElementById('salesPersonFilter');
+  const salesPersonEntry = document.getElementById('salesPersonEntry');
+  const addSalesPersonBtn = document.getElementById('addSalesPersonBtn');
+  const removeSalesPersonBtn = document.getElementById('removeSalesPersonBtn');
+  const openEntryBtn = document.getElementById('openEntryBtn');
+  const openPlannerBtn = document.getElementById('openPlannerBtn');
+  const openReportBtn = document.getElementById('openReportBtn');
+  const entryOverlay = document.getElementById('entryOverlay');
+  const plannerOverlay = document.getElementById('plannerOverlay');
+  const reportOverlay = document.getElementById('reportOverlay');
+  const crmForm = document.getElementById('crmForm');
+  const purpose = document.getElementById('purpose');
+  const quoteFields = document.getElementById('quoteFields');
+  const metricGrid = document.getElementById('metricGrid');
+  const recentActivity = document.getElementById('recentActivity');
+  const activityBySales = document.getElementById('activityBySales');
+  const quotesByUrgency = document.getElementById('quotesByUrgency');
+  const categoryBreakdown = document.getElementById('categoryBreakdown');
+  const weekSummaryWrap = document.getElementById('weekSummaryWrap');
+  const plannerGrid = document.getElementById('plannerGrid');
+  const plannerSalesChip = document.getElementById('plannerSalesChip');
+  const plannerWeekChip = document.getElementById('plannerWeekChip');
+  const showCurrentWeekBtn = document.getElementById('showCurrentWeekBtn');
+  const showNextWeekBtn = document.getElementById('showNextWeekBtn');
+  const reportList = document.getElementById('reportList');
+  const reportSalesChip = document.getElementById('reportSalesChip');
+
+  function openOverlay(el){ el.classList.add('show'); }
+  function closeOverlay(el){ el.classList.remove('show'); }
+  function closeAllOverlays(){ [entryOverlay, plannerOverlay, reportOverlay].forEach(closeOverlay); }
+
+  function setTodayDefaults(){
+    document.getElementById('createdDate').value = todayIso();
+    document.getElementById('updatedDate').value = todayIso();
+  }
+
+  function populateSalesPeople(){
+    salesPersonFilter.innerHTML = state.salesPeople.map(name => `<option value="${escapeHtml(name)}">${escapeHtml(name)}</option>`).join('');
+    salesPersonFilter.value = state.selectedSalesPerson;
+
+    salesPersonEntry.innerHTML = state.salesPeople
+      .filter(name => name !== 'All Sales People')
+      .map(name => `<option value="${escapeHtml(name)}">${escapeHtml(name)}</option>`).join('');
+
+    if(state.selectedSalesPerson !== 'All Sales People' && state.salesPeople.includes(state.selectedSalesPerson)){
+      salesPersonEntry.value = state.selectedSalesPerson;
+    } else {
+      salesPersonEntry.selectedIndex = 0;
+    }
+  }
+
+  function filteredEntries(){
+    return state.selectedSalesPerson === 'All Sales People'
+      ? state.entryLog
+      : state.entryLog.filter(entry => entry.salesPerson === state.selectedSalesPerson);
+  }
+
+  function filteredEntriesFor(person){
+    return person === 'All Sales People'
+      ? state.entryLog
+      : state.entryLog.filter(entry => entry.salesPerson === person);
+  }
+
+  function computeMetrics(entries){
+    const today = todayIso();
+    const quotesDue = entries.filter(e => e.purpose === 'Quote' && e.quoteCompletionDate === today && e.status !== 'Closed').length;
+    const followupsDue = entries.filter(e => e.followUpRequired === 'Yes' && e.followUpDate === today && e.status !== 'Closed').length;
+    const overdue = entries.filter(e => e.followUpRequired === 'Yes' && e.followUpDate && e.followUpDate < today && e.status !== 'Closed').length;
+    const urgent = entries.filter(e => e.urgency === 'Urgent' && e.status !== 'Closed').length;
+    const callsToday = entries.filter(e => e.followUpAction === 'Call' && e.followUpDate === today && e.status !== 'Closed').length;
+    const recentCount = entries.slice(-5).length;
+    const openQuotes = entries.filter(e => e.purpose === 'Quote' && e.status !== 'Closed').length;
+    const activeCategories = new Set(entries.map(e => e.category).filter(Boolean)).size;
+    return { quotesDue, followupsDue, overdue, urgent, callsToday, recentCount, openQuotes, activeCategories };
+  }
+
+  function computeRecentActivity(entries){
+    return entries.slice().reverse().slice(0,5).map(e => ({
+      title: `${e.purpose} logged for ${e.company}`,
+      meta: `${e.salesPerson} • ${e.category} • ${e.updatedDate || e.createdDate || ''}`
+    }));
+  }
+
+  function computeQuotesByUrgency(entries){
+    const map = { Urgent:0, Priority:0, Standard:0 };
+    entries.forEach(e => {
+      if(e.purpose === 'Quote' && e.status !== 'Closed' && map.hasOwnProperty(e.urgency || '')){
+        map[e.urgency] += 1;
+      }
+    });
+    return Object.keys(map).map(label => ({ label, value: map[label] }));
+  }
+
+  function computeCategoryBreakdown(entries){
+    const counts = {};
+    entries.forEach(e => {
+      if(!e.category) return;
+      counts[e.category] = (counts[e.category] || 0) + 1;
+    });
+    return Object.keys(counts).map(label => ({ label, value: counts[label] })).sort((a,b) => b.value - a.value);
+  }
+
+  function computeActivityBySales(){
+    return state.salesPeople
+      .filter(name => name !== 'All Sales People')
+      .map(name => ({ label:name, value: filteredEntriesFor(name).length }));
+  }
+
+  function getDashboardData(){
+    const entries = filteredEntries();
+    return {
+      metrics: computeMetrics(entries),
+      recentActivity: computeRecentActivity(entries),
+      activityBySales: computeActivityBySales(),
+      quotesByUrgency: computeQuotesByUrgency(entries),
+      categoryBreakdown: computeCategoryBreakdown(entries)
+    };
+  }
+
+  function metricCards(data){
+    return [
+      { title:'Quotes Due Today', value:data.metrics.quotesDue, sub:'Open quote workload' },
+      { title:'Follow-Ups Due Today', value:data.metrics.followupsDue, sub:'Planned follow-up actions' },
+      { title:'Overdue Follow-Ups', value:data.metrics.overdue, sub:'Needs immediate attention' },
+      { title:'Urgent Items', value:data.metrics.urgent, sub:'High-priority pressure' },
+      { title:'Calls Scheduled Today', value:data.metrics.callsToday, sub:'Today’s call plan' },
+      { title:'Recent Activity', value:data.metrics.recentCount, sub:'Latest visible actions' },
+      { title:'Open Quotes', value:data.metrics.openQuotes, sub:'Tracked quote volume' },
+      { title:'Categories Active', value:data.metrics.activeCategories, sub:'Live category footprint' }
+    ];
+  }
+
+  function renderMetrics(data){
+    metricGrid.innerHTML = metricCards(data).map(item => `
+      <article class="card metricCard">
+        <div class="metricLabel">${escapeHtml(item.title)}</div>
+        <div class="metricValue">${item.value}</div>
+        <div class="metricSub">${escapeHtml(item.sub)}</div>
+      </article>
+    `).join('');
+  }
+
+  function renderList(target, items, formatter, emptyText){
+    if(!items || !items.length){
+      target.innerHTML = `<div class="emptyNote">${emptyText || 'Nothing to show here yet.'}</div>`;
+      return;
+    }
+    target.innerHTML = items.map(formatter).join('');
+  }
+
+  function renderBars(target, items){
+    if(!items || !items.length){
+      target.innerHTML = '<div class="emptyNote">No data yet.</div>';
+      return;
+    }
+    const max = Math.max(...items.map(item => item.value || 0), 1);
+    target.innerHTML = items.map(item => {
+      const pct = Math.round(((item.value || 0) / max) * 100);
+      return `
+        <div>
+          <div class="barLabel"><span>${escapeHtml(item.label)}</span><strong>${item.value || 0}</strong></div>
+          <div class="bar"><span style="width:${pct}%;"></span></div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function computeWeekSummary(person, weekKey){
+    const names = person === 'All Sales People'
+      ? state.salesPeople.filter(name => name !== 'All Sales People')
+      : [person];
+
+    return DAYS.map(day => {
+      let total = 0;
+      names.forEach(name => {
+        const planner = ensurePlanner(name);
+        total += (planner[weekKey][day] || []).filter(v => (v || '').trim() !== '').length;
+      });
+      return { day, total };
+    });
+  }
+
+  function scoreClass(value){
+    if(value < 3) return 'rgba(222,94,114,0.16)';
+    if(value === 3) return 'rgba(77,190,111,0.16)';
+    return 'rgba(255,199,62,0.16)';
+  }
+
+  function renderWeekSummary(){
+    const rows = computeWeekSummary(state.selectedSalesPerson, 'current');
+    weekSummaryWrap.innerHTML = `
+      <table class="summaryTable">
+        <thead><tr>${rows.map(row => `<th>${row.day.slice(0,3)}</th>`).join('')}</tr></thead>
+        <tbody><tr>${rows.map(row => `<td><span class="scoreBadge" style="background:${scoreClass(row.total)};">${row.total}/3</span></td>`).join('')}</tr></tbody>
+      </table>
+      <div class="tiny" style="margin-top:12px;">Scores are shown out of 3 even when more than 3 calls are booked.</div>
+    `;
+  }
+
+  function renderDashboard(){
+    const data = getDashboardData();
+    renderMetrics(data);
+    renderList(recentActivity, data.recentActivity, item => `
+      <div class="listItem"><strong>${escapeHtml(item.title)}</strong><span class="muted">${escapeHtml(item.meta)}</span></div>
+    `, 'No recent activity yet.');
+    renderBars(activityBySales, data.activityBySales);
+    renderBars(quotesByUrgency, data.quotesByUrgency);
+    renderBars(categoryBreakdown, data.categoryBreakdown);
+    renderWeekSummary();
+  }
+
+  function renderPlanner(){
+    plannerSalesChip.textContent = state.selectedSalesPerson;
+    plannerWeekChip.textContent = state.visibleWeek === 'current' ? 'Current Week' : 'Next Week';
+
+    if(state.selectedSalesPerson === 'All Sales People'){
+      plannerGrid.innerHTML = '<div class="emptyNote" style="grid-column:1/-1;">Select an individual sales person to edit the planner.</div>';
+      return;
+    }
+
+    const planner = ensurePlanner(state.selectedSalesPerson);
+    const weekKey = state.visibleWeek;
+    plannerGrid.innerHTML = DAYS.map(day => {
+      const calls = planner[weekKey][day] || [];
+      return `
+        <section class="dayCard">
+          <h3 style="margin:0 0 4px 0;">${day}</h3>
+          <div class="tiny" style="margin-bottom:12px;">Three default call slots plus extras</div>
+          <div class="callList">
+            ${calls.map((value, idx) => `
+              <div class="callRow ${idx < 3 ? 'mandatory' : ''}">
+                <label>${idx < 3 ? `Customer ${idx+1}` : 'Additional Call'}</label>
+                <input type="text" value="${escapeHtml(value || '')}" data-day="${day}" data-index="${idx}">
+              </div>
+            `).join('')}
+          </div>
+          <div style="margin-top:12px;">
+            <button class="miniBtn ghost add-call-btn" type="button" data-day="${day}">+ Add Call</button>
+          </div>
+        </section>
+      `;
+    }).join('');
+  }
+
+  function renderReport(){
+    reportSalesChip.textContent = state.selectedSalesPerson;
+    const items = filteredEntries().slice().reverse();
+    renderList(reportList, items, item => `
+      <div class="reportItem">
+        <strong>${escapeHtml(item.company)} — ${escapeHtml(item.purpose)}</strong>
+        <div class="tiny">${escapeHtml(item.salesPerson)} • ${escapeHtml(item.category)} • ${escapeHtml(item.result)} • ${escapeHtml(item.createdDate)}</div>
+        <div style="margin-top:8px;">${escapeHtml(item.contactName || 'No contact')}${item.notes ? ' • ' + escapeHtml(item.notes) : ''}</div>
+        ${item.followUpRequired === 'Yes' ? `<div class="tiny" style="margin-top:8px;">Follow-up: ${escapeHtml(item.followUpDate || 'Not set')} • ${escapeHtml(item.followUpAction || '')}</div>` : ''}
+      </div>
+    `, 'No call entries yet. Use New Entry to add one.');
+  }
+
+  function updatePlannerValue(day, index, value){
+    if(state.selectedSalesPerson === 'All Sales People') return;
+    const planner = ensurePlanner(state.selectedSalesPerson);
+    planner[state.visibleWeek][day][index] = value;
+    persistState();
+    renderWeekSummary();
+  }
+
+  function addSalesPerson(){
+    const newName = window.prompt('Enter new sales person name:');
+    if(!newName) return;
+    const trimmed = newName.trim();
+    if(!trimmed) return;
+    if(state.salesPeople.some(name => name.toLowerCase() === trimmed.toLowerCase())){
+      window.alert('That sales person already exists.');
+      return;
+    }
+    state.salesPeople.push(trimmed);
+    ensurePlanner(trimmed);
+    state.selectedSalesPerson = trimmed;
+    persistState();
+    populateSalesPeople();
+    renderDashboard();
+    renderPlanner();
+    renderReport();
+  }
+
+  function handlePurposeChange(){
+    quoteFields.classList.toggle('show', purpose.value === 'Quote');
+  }
+
+  function handleSalesPersonChange(){
+    state.selectedSalesPerson = salesPersonFilter.value;
+    persistState();
+    populateSalesPeople();
+    renderDashboard();
+    renderPlanner();
+    renderReport();
+  }
+
+  function addEntryFromForm(){
+    const entry = {
+      id: 'entry-' + Date.now(),
+      company: document.getElementById('company').value.trim() || 'Untitled Entry',
+      contactName: document.getElementById('contactName').value.trim(),
+      contactNumber: document.getElementById('contactNumber').value.trim(),
+      email: document.getElementById('email').value.trim(),
+      salesPerson: document.getElementById('salesPersonEntry').value,
+      purpose: document.getElementById('purpose').value || 'Enquiry',
+      category: document.getElementById('category').value,
+      result: document.getElementById('result').value,
+      notes: document.getElementById('notes').value.trim(),
+      status: document.getElementById('status').value,
+      followUpRequired: document.getElementById('followUpRequired').value,
+      followUpDate: document.getElementById('followUpDate').value,
+      followUpAction: document.getElementById('followUpAction').value,
+      createdDate: document.getElementById('createdDate').value || todayIso(),
+      updatedDate: document.getElementById('updatedDate').value || todayIso(),
+      quoteCompletionDate: document.getElementById('quoteCompletionDate').value,
+      urgency: document.getElementById('urgency').value
+    };
+    if(entry.purpose !== 'Quote'){
+      entry.quoteCompletionDate = '';
+      entry.urgency = '';
+    }
+    state.entryLog.push(entry);
+    persistState();
+  }
+
+  populateSalesPeople();
+  setTodayDefaults();
+  renderDashboard();
+  renderPlanner();
+  renderReport();
+
+  openEntryBtn.addEventListener('click', () => {
+    setTodayDefaults();
+    if(state.selectedSalesPerson !== 'All Sales People') salesPersonEntry.value = state.selectedSalesPerson;
+    openOverlay(entryOverlay);
+  });
+  openPlannerBtn.addEventListener('click', () => {
+    renderPlanner();
+    openOverlay(plannerOverlay);
+  });
+  openReportBtn.addEventListener('click', () => {
+    renderReport();
+    openOverlay(reportOverlay);
+  });
+
+  purpose.addEventListener('change', handlePurposeChange);
+  salesPersonFilter.addEventListener('change', handleSalesPersonChange);
+  addSalesPersonBtn.addEventListener('click', addSalesPerson);
+  removeSalesPersonBtn.addEventListener('click', () => {
+    window.alert('Removal is reserved for authorised users in the future build.');
+  });
+
+  crmForm.addEventListener('submit', function(e){
+    e.preventDefault();
+    addEntryFromForm();
+    closeOverlay(entryOverlay);
+    crmForm.reset();
+    setTodayDefaults();
+    quoteFields.classList.remove('show');
+    if(state.selectedSalesPerson !== 'All Sales People') salesPersonEntry.value = state.selectedSalesPerson;
+    renderDashboard();
+    renderReport();
+  });
+
+  document.querySelectorAll('[data-close]').forEach(btn => {
+    btn.addEventListener('click', () => closeOverlay(document.getElementById(btn.getAttribute('data-close'))));
+  });
+
+  [entryOverlay, plannerOverlay, reportOverlay].forEach(overlay => {
+    overlay.addEventListener('click', function(e){
+      if(e.target === overlay) closeOverlay(overlay);
+    });
+  });
+
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'Escape') closeAllOverlays();
+  });
+
+  showCurrentWeekBtn.addEventListener('click', function(){
+    state.visibleWeek = 'current';
+    persistState();
+    renderPlanner();
+  });
+  showNextWeekBtn.addEventListener('click', function(){
+    state.visibleWeek = 'next';
+    persistState();
+    renderPlanner();
+  });
+
+  plannerGrid.addEventListener('click', function(e){
+    const addBtn = e.target.closest('.add-call-btn');
+    if(!addBtn || state.selectedSalesPerson === 'All Sales People') return;
+    const day = addBtn.getAttribute('data-day');
+    const planner = ensurePlanner(state.selectedSalesPerson);
+    planner[state.visibleWeek][day].push('');
+    persistState();
+    renderPlanner();
+  });
+
+  plannerGrid.addEventListener('input', function(e){
+    if(e.target.tagName !== 'INPUT') return;
+    const day = e.target.getAttribute('data-day');
+    const index = parseInt(e.target.getAttribute('data-index'), 10);
+    updatePlannerValue(day, index, e.target.value);
+  });
+})();
+</script>
+<script src="assets/js/bw-header.js"></script></body>
+</html>
