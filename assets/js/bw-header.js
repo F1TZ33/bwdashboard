@@ -30,7 +30,12 @@
     if (folder === 'product-taxonomy') return rootPrefix + 'product-taxonomy.html';
 
     // New product-page system: all product detail pages use the same shell and return to Product Guide.
-    if (pageHasProductLayout() || pageLooksLikeProductGuideItem()) return rootPrefix + 'product-guide.html';
+    if (
+  file !== 'product-guide.html' &&
+  (pageHasProductLayout() || pageLooksLikeProductGuideItem())
+){
+  return rootPrefix + 'product-guide.html';
+}
 
     const parentMap = {
       // Secondary pages
