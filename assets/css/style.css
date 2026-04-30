@@ -813,7 +813,9 @@ a.productCard,
 .application-card{
   max-width:980px;
 }
-
+html{
+  overflow-y:scroll;
+}
 /* === Final product guide tile polish === */
 .cards.products .thumbSpace{
   border:0 !important;
