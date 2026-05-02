@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<title>Resources — Templates</title>
+<link href="assets/css/style.css" rel="stylesheet"/>
+</head>
+
+<body>
+<div class="container">
+  <div id="bw-global-header"></div>
+
+  <section class="browserHero">
+    <div class="browserHeroTop">
+      <div class="browserHeroIcon">📄</div>
+    </div>
+    <h1 class="pageTitle">Templates</h1>
+    <p class="pageSubtitle">Select a template category from the left menu.</p>
+  </section>
+
+  <main class="browserLayout">
+    <aside class="browserNav">
+      <div class="browserNavHead">
+        <h2>Template Library</h2>
+        <div class="subtitle" style="margin:0;">PDFs, forms and reusable documents.</div>
+      </div>
+
+      <div class="typeBlock open">
+        <button class="typeButton" type="button">
+          <span class="typeLabel">
+            <span class="typeIcon">📄</span>
+            PDF Templates
+          </span>
+          <span class="typeChevron">›</span>
+        </button>
+
+        <div class="subList">
+          <button class="subButton active" type="button" onclick="showTemplate('template01', this)">Template 01</button>
+          <button class="subButton" type="button" onclick="showTemplate('template02', this)">Template 02</button>
+        </div>
+      </div>
+    </aside>
+
+    <section class="browserContent">
+      <div class="contentBadge">📄 PDF Template</div>
+      <h2 class="contentTitle" id="templateTitle">Template 01</h2>
+      <p class="contentLead" id="templateDesc">Placeholder template ready for future content.</p>
+
+      <div class="actions">
+        <a class="smallbtn primary" id="templateLink" href="downloads/content-coming-soon.pdf" target="_blank" rel="noopener">
+          Open Template
+        </a>
+      </div>
+
+      <p class="contentHint">More templates can be added later without changing the page layout.</p>
+    </section>
+  </main>
+</div>
+
+<script>
+const templates = {
+  template01: {
+    title: "Template 01",
+    desc: "Placeholder template ready for future content.",
+    link: "downloads/content-coming-soon.pdf"
+  },
+  template02: {
+    title: "Template 02",
+    desc: "Placeholder template ready for future content.",
+    link: "downloads/content-coming-soon.pdf"
+  }
+};
+
+function showTemplate(key, btn){
+  const item = templates[key];
+  if(!item) return;
+
+  document.getElementById("templateTitle").textContent = item.title;
+  document.getElementById("templateDesc").textContent = item.desc;
+  document.getElementById("templateLink").href = item.link;
+
+  document.querySelectorAll(".subButton").forEach(b => b.classList.remove("active"));
+  btn.classList.add("active");
+}
+</script>
+
+<script src="assets/js/app.js"></script>
+<script src="assets/js/bw-header.js"></script>
+</body>
+</html>

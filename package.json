@@ -1,0 +1,8 @@
+{
+  "name": "bwdashboard",
+  "private": true,
+  "dependencies": {
+    "@vercel/blob": "^0.27.0",
+    "formidable": "^3.5.1"
+  }
+}
