@@ -449,12 +449,12 @@ body{
     el.innerHTML = `
       <div class="field orderPartBlock">
         <label>Part number</label>
-        <input class="partInput">
+        <input class="partInput" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false" value="">
       </div>
 
       <div class="field orderQtyBlock">
         <label>Qty</label>
-        <input class="qtyInput" type="number">
+        <input class="qtyInput" type="number" inputmode="numeric" autocomplete="off" value="">
       </div>
 
       <button class="orderMiniBtn orderRemoveBtn" type="button">×</button>
@@ -472,6 +472,20 @@ body{
 
     const part = el.querySelector('.partInput');
     const qty = el.querySelector('.qtyInput');
+
+    // Mobile Safari/Chrome can sometimes reuse the previous field value when a
+    // new DOM row is created and focused immediately. Give each input a unique
+    // name/id and force a blank value after insertion so every manual "new line"
+    // starts empty.
+    const rowId = `order-line-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+    part.id = `${rowId}-part`;
+    part.name = `${rowId}-part`;
+    qty.id = `${rowId}-qty`;
+    qty.name = `${rowId}-qty`;
+    part.defaultValue = '';
+    qty.defaultValue = '';
+    part.value = '';
+    qty.value = '';
 
     function defaultQty(){
       if(part.value.trim() && !qty.value.trim()){
