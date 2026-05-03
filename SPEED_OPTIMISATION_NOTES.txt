@@ -1,0 +1,14 @@
+Drop-in replacement files:
+- assets/js/content-store.js
+- assets/js/global.js
+- product-guide.html
+- sales.html
+- faqs.html
+- checklists.html
+
+What changed:
+- Pages render built-in/default content immediately.
+- Cached cloud content is applied instantly when available.
+- Azure content API refreshes in the background and updates the page when it returns.
+- User indicator uses a short session cache, then refreshes from /.auth/me.
+- The API/user wait timeout was reduced so pages do not sit waiting for backend cold starts.

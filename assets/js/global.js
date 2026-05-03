@@ -1,6 +1,7 @@
 (function(){
   const EDIT_ROLES = ['admin','editor'];
   const VIEW_ROLES = ['viewer','editor','admin','authenticated'];
+  const AUTH_CACHE_KEY = 'bwAuthPrincipalCache';
 
   function injectGlobalStyles(){
     if(document.getElementById('bw-global-js-styles')) return;
@@ -22,29 +23,48 @@
     document.head.appendChild(style);
   }
 
-  async function loadUser(){
-    injectGlobalStyles();
-    let principal=null;
-    try{
-      const res=await fetch('/.auth/me',{cache:'no-store'});
-      const data=await res.json();
-      principal=data.clientPrincipal||null;
-    }catch(e){}
-
+  function applyPrincipal(principal, source){
     const indicator=document.getElementById('userIndicator');
     if(indicator){
       if(principal){ indicator.textContent='Logged in as: '+(principal.userDetails||principal.userId||'Unknown user'); }
-      else{ indicator.textContent='Not logged in'; }
+      else{ indicator.textContent= source === 'cache' ? 'Checking login...' : 'Not logged in'; }
     }
-
     const roles=(principal && principal.userRoles) ? principal.userRoles : [];
     const canEdit=roles.some(r=>EDIT_ROLES.includes(String(r).toLowerCase()));
     const canView=roles.some(r=>VIEW_ROLES.includes(String(r).toLowerCase()));
-    if(canEdit) document.body.classList.add('bw-can-edit');
+    document.body.classList.toggle('bw-can-edit', !!canEdit);
     window.BWUser=principal;
     window.BWCanEdit=canEdit;
     window.BWCanView=canView;
-    document.dispatchEvent(new CustomEvent('bw:user-ready',{detail:{user:principal,canEdit,canView,roles}}));
+    document.dispatchEvent(new CustomEvent('bw:user-ready',{detail:{user:principal,canEdit,canView,roles,source}}));
+  }
+
+  function readCachedPrincipal(){
+    try{
+      const raw=sessionStorage.getItem(AUTH_CACHE_KEY);
+      return raw ? JSON.parse(raw) : null;
+    }catch(e){ return null; }
+  }
+
+  async function loadUser(){
+    injectGlobalStyles();
+
+    const cached=readCachedPrincipal();
+    if(cached){ applyPrincipal(cached, 'cache'); }
+    else{ applyPrincipal(null, 'initial'); }
+
+    try{
+      const res=await fetch('/.auth/me',{cache:'no-store'});
+      const data=await res.json();
+      const principal=data.clientPrincipal||null;
+      try{
+        if(principal) sessionStorage.setItem(AUTH_CACHE_KEY, JSON.stringify(principal));
+        else sessionStorage.removeItem(AUTH_CACHE_KEY);
+      }catch(e){}
+      applyPrincipal(principal, 'remote');
+    }catch(e){
+      if(!cached) applyPrincipal(null, 'error');
+    }
   }
 
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',loadUser);

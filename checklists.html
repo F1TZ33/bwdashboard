@@ -68,27 +68,30 @@ function renderContent(type,item){contentType.textContent=`${type.icon} ${type.l
 contentLead.textContent=leads[item[0]]||'Access checklist for onboarding and access reviews.';contentBody.innerHTML=renderAccess(item[0]);}
 document.addEventListener('change',event=>{const box=event.target.closest('input[data-access-key]');if(!box)return;localStorage.setItem(box.dataset.accessKey,box.checked?'1':'0');});
 
-async function saveChecklistContent(){if(!window.BWContentStore){alert('Shared save is not available yet. Changes will remain on this loaded page only.');return;}try{await BWContentStore.save('checklists-access-content-v3',{checklistData,accessData});}catch(e){alert('Save failed: '+e.message+'\nChanges have been cached locally only.');}}
+async function saveChecklistContent(){if(!window.BWContentStore){alert('Shared save is not available yet. Changes will remain on this loaded page only.');return;}try{await BWContentStore.save('checklists-access-content-v2',{checklistData,accessData});}catch(e){alert('Save failed: '+e.message+'\nChanges have been cached locally only.');}}
 window.bwChecklistEditor={
   async addAccessItem(){const name=prompt('Access item name:','New Access Item');if(!name)return;const who=prompt('Who needs it? Type all or managers:','all')||'all';(accessData[activeItemKey]||(accessData[activeItemKey]=[])).push([name, who.toLowerCase().includes('manager')?'managers':'all']);renderContent(checklistData[0], checklistData[0].items.find(i=>i[0]===activeItemKey)||checklistData[0].items[0]);await saveChecklistContent();},
   async deleteAccessItem(){const rows=accessData[activeItemKey]||[];const name=prompt('Exact item name to delete:');if(!name)return;const idx=rows.findIndex(r=>String(r[0]).toLowerCase()===name.toLowerCase());if(idx<0){alert('Item not found.');return;}if(!confirm('Delete '+rows[idx][0]+'?'))return;rows.splice(idx,1);renderContent(checklistData[0], checklistData[0].items.find(i=>i[0]===activeItemKey)||checklistData[0].items[0]);await saveChecklistContent();},
-  async reset(){if(!confirm('Reset shared checklist content?'))return;await BWContentStore.remove('checklists-access-content-v3').catch(e=>alert('Reset failed: '+e.message));location.reload();}
+  async reset(){if(!confirm('Reset shared checklist content?'))return;await BWContentStore.remove('checklists-access-content-v2').catch(e=>alert('Reset failed: '+e.message));location.reload();}
 };
-async function initChecklists(){
+function applyChecklistRemote(remote){
+  if(remote && remote.checklistData && remote.accessData){
+    checklistData=remote.checklistData;
+    accessData=remote.accessData;
+    renderNav();
+    renderContent(checklistData[0],checklistData[0].items[0]);
+  }
+}
+function initChecklists(){
   renderNav();
   renderContent(checklistData[0],checklistData[0].items[0]);
 
   if(!window.BWContentStore) return;
 
   try{
-    await BWContentStore.waitForUser();
-    const remote=await BWContentStore.get('checklists-access-content-v3', null);
-    if(remote && remote.checklistData && remote.accessData){
-      checklistData=remote.checklistData;
-      accessData=remote.accessData;
-      renderNav();
-      renderContent(checklistData[0],checklistData[0].items[0]);
-    }
+    const quick=BWContentStore.getFast('checklists-access-content-v2', null, applyChecklistRemote);
+    applyChecklistRemote(quick);
+    BWContentStore.waitForUser().catch(()=>{});
   }catch(e){
     console.warn('Checklist shared content unavailable; using built-in defaults.', e);
   }

@@ -264,13 +264,22 @@ function renderContent(type, item){
 }
 
 
-async function initSalesTips(){
-  await BWContentStore.waitForUser();
-  salesData = await BWContentStore.get(SALES_KEY, DEFAULT_SALES_DATA);
-  openTypeKey = salesData[0].key;
-  activeItemKey = `${salesData[0].key}-0`;
+function applySalesData(data){
+  if(Array.isArray(data) && data.length){
+    salesData = data;
+    openTypeKey = salesData[0].key;
+    activeItemKey = `${salesData[0].key}-0`;
+    renderNav();
+    renderContent(salesData[0], salesData[0].items[0]);
+  }
+}
+function initSalesTips(){
   renderNav();
   renderContent(salesData[0], salesData[0].items[0]);
+  if(!window.BWContentStore) return;
+  const quick = BWContentStore.getFast(SALES_KEY, DEFAULT_SALES_DATA, applySalesData);
+  applySalesData(quick);
+  BWContentStore.waitForUser().catch(()=>{});
 }
 initSalesTips();
 </script>

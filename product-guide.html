@@ -222,7 +222,14 @@
     async deleteSelected(){if(!currentData[selectedIndex])return;if(!confirm('Delete selected product tile?'))return;currentData.splice(selectedIndex,1);selectedIndex=Math.max(0,selectedIndex-1);render();await persist();},
     async reset(){if(confirm('Reset shared Product Guide edits?')){currentData=JSON.parse(JSON.stringify(initial));selectedIndex=0;render();await BWContentStore.remove(KEY).catch(e=>alert('Reset failed: '+e.message));}}
   };
-  async function init(){await BWContentStore.waitForUser();currentData=await BWContentStore.get(KEY, initial);render();}
+  function applyRemoteData(data){ if(Array.isArray(data) && data.length){ currentData=data; selectedIndex=Math.min(selectedIndex,currentData.length-1); render(); } }
+  function init(){
+    render();
+    if(!window.BWContentStore) return;
+    const quick=BWContentStore.getFast(KEY, initial, applyRemoteData);
+    applyRemoteData(quick);
+    BWContentStore.waitForUser().then(()=>highlight()).catch(()=>{});
+  }
   init();
 })();
 </script>
