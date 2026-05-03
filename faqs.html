@@ -38,6 +38,25 @@
 @media(max-width:980px){.browserLayout,.salesLayout{grid-template-columns:1fr}.browserNav,.salesNav{position:static}.browserContent,.salesContent{min-height:unset}}
 </style>
 
+
+<style id="bw-edit-refine-styles">
+.bw-sub-edit-row{position:relative;display:flex;align-items:center;gap:8px;margin:8px 0 0;}
+.bw-sub-edit-row .subButton{margin:0;flex:1;}
+.bw-sub-title{display:block;min-width:0;width:100%;outline:none;}
+.bw-sub-title[contenteditable="true"]{outline:1px dashed rgba(198,40,40,.55);outline-offset:2px;background:rgba(255,255,255,.04);border-radius:8px;padding:2px 4px;}
+.bw-sub-delete{width:22px;height:22px;border-radius:999px;border:1px solid rgba(198,40,40,.6);background:rgba(198,40,40,.22);color:#fff;display:grid;place-items:center;cursor:pointer;font-weight:900;font-size:13px;flex:0 0 22px;}
+.product-edit-list{display:grid;gap:8px;margin-top:8px;}
+.product-edit-row{position:relative;display:flex;align-items:flex-start;gap:10px;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:10px 38px 10px 12px;}
+.product-edit-text{flex:1;line-height:1.55;color:#e9eef7;min-height:22px;}
+.product-edit-text[contenteditable="true"]{outline:1px dashed rgba(198,40,40,.55);outline-offset:2px;background:rgba(255,255,255,.04);border-radius:8px;padding:2px 4px;}
+.product-edit-delete{position:absolute;right:8px;top:8px;width:22px;height:22px;border-radius:999px;border:1px solid rgba(198,40,40,.6);background:rgba(198,40,40,.22);color:#fff;display:grid;place-items:center;cursor:pointer;font-weight:900;font-size:13px;}
+.product-edit-add{margin-top:12px;border:1px solid rgba(198,40,40,.42);background:rgba(198,40,40,.16);color:#fff;border-radius:999px;padding:8px 12px;font-weight:800;cursor:pointer;}
+.bw-download-changes-wrap{display:none;text-align:center;margin:10px auto 14px;}
+body.bw-can-edit .bw-download-changes-wrap{display:block;}
+.bw-download-changes-btn{border:1px solid rgba(198,40,40,.48);background:rgba(198,40,40,.18);color:#fff;border-radius:999px;padding:8px 13px;font-size:12px;font-weight:900;cursor:pointer;}
+.bw-download-changes-btn:hover{background:rgba(198,40,40,.28);}
+</style>
+
 </head>
 <body data-page="page" data-back="index.html">
 <div class="container">
@@ -77,12 +96,52 @@ function renderNav(){
     const btn=document.createElement('button'); btn.className='typeButton'; btn.type='button';
     btn.innerHTML=`<span class="typeLabel"><span class="typeIcon">${type.icon}</span><span>${type.label}</span></span><span class="typeChevron">›</span>`;
     btn.onclick=()=>{openTypeKey=type.key;renderNav();};
+
     const sub=document.createElement('div'); sub.className='subList';
     type.items.forEach((item,i)=>{
       const key=`${type.key}-${i}`;
-      const b=document.createElement('button'); b.className='subButton'+(key===activeItemKey?' active':''); b.type='button'; b.textContent=item.title||'Description';
+      const row=document.createElement('div');
+      row.className='bw-sub-edit-row';
+
+      const b=document.createElement('button');
+      b.className='subButton'+(key===activeItemKey?' active':'');
+      b.type='button';
+
+      const title=document.createElement('span');
+      title.className='bw-sub-title';
+      title.textContent=item.title||'Description';
+
+      if(canEditInline()){
+        title.contentEditable='true';
+        title.addEventListener('click',e=>e.stopPropagation());
+        title.addEventListener('blur',async()=>{item.title=title.textContent.trim()||'Description';renderNav();renderContent(type,item);await savePageData();});
+        title.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();title.blur();}});
+      }
+
+      b.appendChild(title);
       b.onclick=()=>{openTypeKey=type.key;activeItemKey=key;renderNav();renderContent(type,item);};
-      sub.appendChild(b);
+      row.appendChild(b);
+
+      if(canEditInline()){
+        const del=document.createElement('button');
+        del.className='bw-sub-delete';
+        del.type='button';
+        del.textContent='×';
+        del.title='Delete sub heading';
+        del.onclick=async(e)=>{
+          e.stopPropagation();
+          if(!confirm('Delete '+(item.title||'this sub heading')+'?')) return;
+          type.items.splice(i,1);
+          const next=Math.max(0,i-1);
+          activeItemKey=`${type.key}-${next}`;
+          renderNav();
+          if(type.items[next]) renderContent(type,type.items[next]);
+          await savePageData();
+        };
+        row.appendChild(del);
+      }
+
+      sub.appendChild(row);
     });
     const add=document.createElement('button'); add.className='bw-inline-add'; add.type='button'; add.textContent='+ Add entry'; add.style.display=canEditInline()?'inline-block':'none';
     add.onclick=async()=>{type.items.push({title:'Description',lead:'',points:['Description']});activeItemKey=`${type.key}-${type.items.length-1}`;renderNav();renderContent(type,type.items[type.items.length-1]);await savePageData();};

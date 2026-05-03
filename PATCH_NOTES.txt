@@ -1,4 +1,7 @@
-Fix patch:
-- Sales: rerenders editable fields after Azure user role is loaded and saves inline edits.
-- Product pages: replaces weak detection with robust active-section editing for Identification, Application, Brands, Suppliers.
-- Product edits save per product + section to Azure storage and remain after reload.
+Patch contents:
+- Editable/removable left-nav subheadings for SOPs, FAQs and Sales.
+- Add-entry button retained at each branch/type level.
+- Product pages Identification/Application/Brands/Suppliers use structured editable single-line rows.
+- Brands behave like Suppliers: separate editable rows with add/remove.
+- Adds 'Download changes JSON' button below the logged-in user indicator for editor/admin Azure pages.
+- Export includes checklists, SOPs, FAQs, Sales and product section changes stored in Azure.
