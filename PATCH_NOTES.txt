@@ -1,0 +1,7 @@
+Drop-in patch to remove/hide legacy editor button panels from Azure editor pages. Replace included files.
+Changed files:
+sales.html
+sops.html
+faqs.html
+checklists.html
+assets/js/global.js

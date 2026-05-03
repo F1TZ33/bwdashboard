@@ -72,3 +72,17 @@
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',loadUser);
   else loadUser();
 })();
+
+
+// Azure editor cleanup: hide legacy popup/button editor panels in favour of inline editing.
+(function(){
+  function cleanupLegacyEditorPanels(){
+    document.querySelectorAll('.bw-editor-panel').forEach(function(panel){
+      panel.style.display='none';
+      panel.setAttribute('aria-hidden','true');
+    });
+  }
+  document.addEventListener('DOMContentLoaded', cleanupLegacyEditorPanels);
+  document.addEventListener('bw:user-ready', cleanupLegacyEditorPanels);
+  setTimeout(cleanupLegacyEditorPanels, 500);
+})();

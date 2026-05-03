@@ -13,6 +13,25 @@
 .contentBadge{display:inline-flex;align-items:center;gap:8px;min-height:38px;padding:0 14px;border-radius:999px;background:rgba(198,40,40,.16);border:1px solid rgba(198,40,40,.34);font-weight:800;margin-bottom:14px}.contentTitle{margin:0 0 8px!important;font-size:30px;line-height:1.1}.contentLead{margin:0 0 14px;color:#e5d1d1;font-weight:700;line-height:1.55}
 .checkGroup{background:rgba(0,0,0,.16);border:1px solid rgba(255,255,255,.10);border-radius:18px;padding:16px;margin-top:14px}.checkGroup h3{margin:0 0 12px;color:#fff}.checkRows{display:grid;gap:8px}.checkRow{display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:10px;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:10px 12px;position:relative}.checkText{font-weight:800;color:#fff;min-height:22px;outline:none;border-radius:8px;padding:2px 4px}.checkText[contenteditable="true"]{outline:1px dashed rgba(198,40,40,.38);background:rgba(255,255,255,.025)}.checkText[contenteditable="true"]:focus{outline:2px solid rgba(198,40,40,.78);background:rgba(198,40,40,.08)}.checkWho{font-size:11px;letter-spacing:.08em;text-transform:uppercase;border-radius:999px;padding:4px 9px;font-weight:900;border:1px solid rgba(255,255,255,.12)}.checkWho.all{background:rgba(22,101,52,.55);color:#dcfce7}.checkWho.managers{background:rgba(180,83,9,.60);color:#ffedd5}.checkBox{width:18px;height:18px;accent-color:#c62828}.checkActions{display:none;gap:8px;flex-wrap:wrap;margin-top:12px}.bw-can-edit .checkActions,.checkActions.always{display:flex}.checkBtn{border:1px solid rgba(198,40,40,.42);background:rgba(198,40,40,.16);color:#fff;border-radius:999px;padding:8px 12px;font-weight:800;cursor:pointer}.checkBtn.danger,.rowDelete{border-color:rgba(248,113,113,.58);background:rgba(127,29,29,.48)}.rowDelete{display:none;width:26px;height:26px;border-radius:999px;color:#fff;font-weight:900;cursor:pointer}.bw-can-edit .rowDelete{display:inline-grid;place-items:center}.toDoInput{font-weight:800;color:#fff;background:transparent;border:0;outline:0;width:100%;font:inherit}.toDoInput::placeholder{color:rgba(255,255,255,.42)}.checkNote{color:var(--muted);font-size:13px;margin:12px 0 0}@media print{body{background:#fff!important;color:#000!important}.browserNav,#bw-global-header,#userIndicator,.checkActions,.rowDelete,.contentBadge,.heroPanel{display:none!important}.browserLayout{display:block}.browserContent,.checkGroup{box-shadow:none!important;border:1px solid #ccc!important;background:#fff!important;color:#000!important}.checkText,.toDoInput{color:#000!important}.checkWho{border:1px solid #999;color:#000!important;background:#fff!important}}@media (max-width:980px){.browserLayout{grid-template-columns:1fr}.browserNav{position:static}.browserContent{min-height:unset}.checkRow{grid-template-columns:minmax(0,1fr) auto}.checkWho{display:none}}
 </style>
+
+<style id="bw-inline-editor-cleanup">
+.bw-editor-panel{display:none!important;}
+.bw-editing-enabled [data-inline-editable],
+.bw-editing-enabled [contenteditable="true"]{outline:1px dashed rgba(198,40,40,.55); outline-offset:2px;}
+.bw-inline-delete{
+  position:absolute; top:6px; right:6px;
+  width:22px; height:22px; border-radius:999px;
+  border:1px solid rgba(198,40,40,.6);
+  background:rgba(198,40,40,.22); color:#fff;
+  display:grid; place-items:center; cursor:pointer; font-weight:900; font-size:13px;
+}
+.bw-inline-add{
+  margin-top:10px; border:1px solid rgba(198,40,40,.42);
+  background:rgba(198,40,40,.16); color:#fff;
+  border-radius:999px; padding:8px 12px; font-weight:800; cursor:pointer;
+}
+</style>
+
 </head>
 <body data-page="page" data-back="index.html">
 <div class="container"><div id="bw-global-header"></div><div id="userIndicator">Loading user...</div>
