@@ -1,0 +1,16 @@
+{
+  "routes": [
+    {
+      "route": "/territory-builder/*",
+      "allowedRoles": [
+        "authenticated"
+      ]
+    },
+    {
+      "route": "/api/territory-analyse",
+      "allowedRoles": [
+        "authenticated"
+      ]
+    }
+  ]
+}
