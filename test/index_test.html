@@ -197,14 +197,6 @@ button:hover{
 let modules = [];
 
 const friendlyNames = {
-    "auto-x-ref": {
-        title: "Auto X-Ref",
-        description: "Dimensional and part number cross-reference search."
-    },
-    "supplier-directory": {
-        title: "Supplier Directory",
-        description: "Supplier, brand, product, category and state search."
-    }
 };
 
 function titleFromName(name){
@@ -317,18 +309,6 @@ async function loadDirectory(){
 
 function getLocalFallbackModules(){
     return [
-        {
-            title: "Auto X-Ref",
-            file: "auto-x-ref/",
-            description: "Folder-based test module.",
-            type: "Folder Module"
-        },
-        {
-            title: "Supplier Directory",
-            file: "supplier-directory/",
-            description: "Folder-based test module.",
-            type: "Folder Module"
-        }
     ];
 }
 
