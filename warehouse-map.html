@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<title>Warehouse Map</title>
+<link href="assets/css/style.css" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+<style>
+  html{overflow-x:auto;overflow-y:auto;}
+  body{padding-top:max(0px, env(safe-area-inset-top));padding-bottom:max(28px, calc(env(safe-area-inset-bottom) + 18px));overflow-x:auto;overflow-y:auto;}
+  .container{max-width:1180px;width:min(100% - 32px, 1180px);margin:0 auto;}
+  .heroPanel{margin:18px 0 16px;padding:22px 20px;border-radius:22px;border:1px solid rgba(255,255,255,.10);background:linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.025));box-shadow:0 14px 32px rgba(0,0,0,.16);text-align:center;}
+  .heroPanel h1{margin:0;font-size:clamp(28px,4vw,46px);line-height:1.05;color:var(--text,#fff);}
+  .rackCard{background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.025));border:1px solid rgba(255,255,255,.10);border-radius:20px;padding:18px;box-shadow:0 14px 32px rgba(0,0,0,.16);overflow:visible;}
+  .rackGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;}
+  .field label{display:block;margin:0 0 7px;color:var(--muted,rgba(255,255,255,.72));font-weight:800;font-size:13px;}
+  .field input{width:100%;height:48px;padding:0 14px;border-radius:12px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);color:var(--text,#fff);box-sizing:border-box;}
+  .btnRow{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px;align-items:center;}
+  .btn{display:inline-flex;align-items:center;justify-content:center;min-height:42px;padding:0 16px;border-radius:999px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.06);color:var(--text,#fff);font-weight:900;text-decoration:none;cursor:pointer;}
+  .btn:hover{background:rgba(255,255,255,.10);}
+  .btnDanger{background:rgba(198,40,40,.18);border-color:rgba(198,40,40,.45);}
+  .positionSummary{margin-top:12px;padding:10px 12px;border-radius:14px;border:1px solid rgba(255,255,255,.10);background:rgba(255,255,255,.035);color:var(--text,#fff);font-weight:800;display:flex;gap:14px;flex-wrap:wrap;}
+  .positionSummary span{color:var(--muted,rgba(255,255,255,.72));font-weight:700;}
+  .statusNote{margin-top:12px;color:var(--muted,rgba(255,255,255,.72));font-size:13px;line-height:1.45;}
+  .rackOutput{margin-top:18px;display:grid;gap:18px;min-width:0;}
+  .rackTableWrap{overflow:auto;border-radius:16px;border:1px solid rgba(255,255,255,.08);-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;max-width:100%;}
+  .rackTable{width:100%;border-collapse:collapse;min-width:860px;background:rgba(255,255,255,.03);color:var(--text,#fff);}
+  .rackTable th,.rackTable td{padding:8px 10px;border:1px solid rgba(255,255,255,.08);color:var(--text,#fff);vertical-align:middle;}
+  .rackTable th{font-weight:800;background:rgba(255,255,255,.06);text-align:left;white-space:nowrap;}
+  .rackTable input{width:100%;min-width:120px;height:34px;border-radius:9px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);color:var(--text,#fff);padding:0 9px;box-sizing:border-box;}
+  .rackTable input.smallInput{min-width:70px;width:76px;text-align:center;}
+  .shelfBtn{min-width:52px;height:34px;border-radius:9px;border:1px solid rgba(198,40,40,.28);background:linear-gradient(180deg, rgba(198,40,40,.12), rgba(198,40,40,.06));color:var(--text,#fff);font-weight:900;cursor:pointer;}
+  .rowCsvBtn{min-height:34px;padding:0 12px;border-radius:999px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.06);color:var(--text,#fff);font-weight:900;cursor:pointer;}
+  .emptyState{padding:24px;border-radius:16px;border:1px dashed rgba(255,255,255,.16);background:rgba(255,255,255,.025);color:var(--muted,rgba(255,255,255,.72));}
+  .shelfGap td{font-weight:900;background:rgba(255,255,255,.045);}
+  #csvUpload{display:none;}
+  @media(max-width:760px){.container{width:min(100% - 20px,1180px)}.rackGrid{grid-template-columns:1fr}.btn{width:100%;}.heroPanel{padding:18px 16px}.rackCard{padding:14px}}
+</style>
+</head>
+<body data-back="rack-builder.html">
+<div class="container">
+  <div id="bw-global-header"></div>
+  <section class="heroPanel"><h1>Warehouse Map</h1></section>
+  <section class="rackCard">
+    <form id="warehouseForm">
+      <div class="rackGrid">
+        <div class="field"><label>Customer / Site</label><input autocomplete="off" id="customer"/></div>
+        <div class="field"><label>Site / Branch</label><input autocomplete="off" id="site"/></div>
+        <div class="field"><label>Aisle Prefix</label><input autocomplete="off" id="aislePrefix"/></div>
+        <div class="field"><label>Number of Aisles</label><input autocomplete="off" id="aisleQty" min="1" type="number"/></div>
+        <div class="field"><label>Bays per Aisle</label><input autocomplete="off" id="bayQty" min="1" type="number"/></div>
+        <div class="field"><label>Default Shelves</label><input autocomplete="off" id="shelfQty" min="1" type="number"/></div>
+        <div class="field"><label>Aisle Letters Start</label><input autocomplete="off" id="startLetter" maxlength="2"/></div>
+      </div>
+      <div class="btnRow">
+        <button class="btn" id="generateBtn" type="button">Generate List</button>
+        <button class="btn" id="uploadBtn" type="button">Upload CSV</button><input accept=".csv,text/csv" id="csvUpload" type="file"/>
+        <button class="btn" id="downloadBtn" type="button">Download CSV</button>
+        <button class="btn" id="downloadCsvPdfBtn" type="button">Download CSV + PDF</button>
+        <button class="btn" id="downloadPackBtn" type="button">Download Rack CSV Pack</button>
+        <button class="btn btnDanger" id="resetBtn" type="button">Reset</button>
+      </div>
+      <div class="positionSummary"><span>Locations:</span> <strong id="locationCount">0</strong> <span>Total Shelves:</span> <strong id="shelfTotal">0</strong></div>
+      <div class="statusNote" id="statusNote">Generate or upload locations to begin. Download CSV saves the warehouse list. Download Rack CSV Pack creates one CSV per rack for use in the Individual Rack Builder.</div>
+    </form>
+    <div class="rackOutput" id="output"></div>
+  </section>
+</div>
+<script>
+let rows=[];
+const nl=String.fromCharCode(10);
+const cr=String.fromCharCode(13);
+
+document.getElementById('generateBtn').addEventListener('click',generateLocations);
+document.getElementById('downloadBtn').addEventListener('click',downloadCSV);
+document.getElementById('downloadCsvPdfBtn').addEventListener('click',function(){downloadCSV();setTimeout(downloadWarehousePdf,250)});
+document.getElementById('downloadPackBtn').addEventListener('click',downloadRackCsvPack);
+document.getElementById('resetBtn').addEventListener('click',clearAll);
+document.getElementById('uploadBtn').addEventListener('click',function(){document.getElementById('csvUpload').click()});
+document.getElementById('csvUpload').addEventListener('change',uploadCSV);
+
+function lettersFrom(start, qty){
+  const base=(start||'A').trim().toUpperCase().charCodeAt(0)-65;
+  const out=[];
+  for(let i=0;i<qty;i++) out.push(String.fromCharCode(65+base+i));
+  return out;
+}
+function bayNumber(index,total){return index+1}
+function generateLocations(){
+  const customer=document.getElementById('customer').value.trim();
+  const site=document.getElementById('site').value.trim();
+  const prefix=document.getElementById('aislePrefix').value.trim();
+  const aisleQty=Math.max(1,parseInt(document.getElementById('aisleQty').value||'1'));
+  const bayQty=Math.max(1,parseInt(document.getElementById('bayQty').value||'1'));
+  const shelves=Math.max(1,parseInt(document.getElementById('shelfQty').value||'1'));
+  const start=document.getElementById('startLetter').value.trim()||'A';
+  const aisleLetters=lettersFrom(start,aisleQty);
+  const newRows=[];
+  aisleLetters.forEach(function(letter){
+    const location=prefix+letter;
+    for(let i=0;i<bayQty;i++){
+      const rackId=String(bayNumber(i,bayQty));
+      newRows.push({customer:customer,site:site,location:location,rackId:rackId,shelves:shelves,label:location+rackId});
+    }
+  });
+  const existing=new Set(rows.map(function(r){return r.location+'|'+r.rackId}));
+  newRows.forEach(function(r){if(!existing.has(r.location+'|'+r.rackId))rows.push(r)});
+  render();
+}
+function render(){
+  const output=document.getElementById('output');
+  document.getElementById('locationCount').textContent=String(rows.length);
+  document.getElementById('shelfTotal').textContent=String(rows.reduce(function(a,r){return a+(parseInt(r.shelves)||0)},0));
+  if(!rows.length){
+    output.innerHTML='<div class="emptyState">No warehouse locations yet. Use Generate List or Upload CSV.</div>';
+    return;
+  }
+  let html='<div class="rackTableWrap"><table class="rackTable"><thead><tr><th>Customer / Site</th><th>Site / Branch</th><th>Rack Number</th><th>Number of Shelves</th><th>Rack Location / Identifier</th><th>Rack CSV</th><th>Delete</th></tr></thead><tbody>';
+  let lastCategory=null;
+  rows.forEach(function(r,i){
+    if(r.location!==lastCategory){html+='<tr class="shelfGap"><td colspan="7">Aisle: '+esc(r.location)+'</td></tr>';lastCategory=r.location;}
+    html+='<tr>'+ 
+      '<td><input value="'+esc(r.customer)+'" onchange="editRow('+i+',\'customer\',this.value)"></td>'+ 
+      '<td><input value="'+esc(r.site)+'" onchange="editRow('+i+',\'site\',this.value)"></td>'+ 
+      '<td><input class="smallInput" value="'+esc(r.rackId)+'" onchange="editRow('+i+',\'rackId\',this.value)"></td>'+ 
+      '<td><button class="shelfBtn" onclick="cycleShelves('+i+')">'+esc(r.shelves)+'</button></td>'+ 
+      '<td><input value="'+esc(r.label||'')+'" onchange="editRow('+i+',\'label\',this.value)"></td>'+ 
+      '<td><button class="rowCsvBtn" onclick="downloadSingleRackCSV('+i+')">CSV</button></td>'+ 
+      '<td><button class="btn btnDanger" style="min-height:34px;padding:0 12px" onclick="deleteRow('+i+')">X</button></td>'+ 
+      '</tr>';
+  });
+  html+='</tbody></table></div>';
+  output.innerHTML=html;
+}
+function editRow(i,field,value){rows[i][field]=value;render()}
+function cycleShelves(i){const max=Math.max(1,parseInt(document.getElementById('shelfQty').value||rows[i].shelves||1));let n=parseInt(rows[i].shelves||1);n=n<=1?max:n-1;rows[i].shelves=n;render()}
+function deleteRow(i){rows.splice(i,1);render()}
+function makeWarehouseCSV(){const header=['Customer','Site','Location','RackCategory','RackID','RackNumber','Shelves','RackLocation','Label'];const data=rows.map(function(r){return [r.customer,r.site,r.location,r.location,r.rackId,r.rackId,r.shelves,r.label||r.location+r.rackId,r.label||'']});return [header].concat(data).map(function(row){return row.map(csv).join(',')}).join(nl)}
+function downloadCSV(){const name=safeFileName(document.getElementById('customer').value+'-'+document.getElementById('site').value+'-warehouse-locations')+'.csv';downloadFile(name,makeWarehouseCSV(),'text/csv')}
+function makeRackCSV(r){const header=['Customer','Site','RackLocation','RackCategory','RackNumber','Shelf','Bin','Position','PartNumber','Description','MaxQty','Notes'];const data=[];const shelves=Math.max(1,parseInt(r.shelves||1));for(let s=1;s<=shelves;s++){data.push([r.customer,r.site,r.label||r.location+r.rackId,r.location,r.rackId,s,'','','','','',''])}return [header].concat(data).map(function(row){return row.map(csv).join(',')}).join(nl)}
+function downloadSingleRackCSV(i){const r=rows[i];if(!r)return;downloadFile(safeFileName((r.label||r.location+r.rackId)+'-rack-template')+'.csv',makeRackCSV(r),'text/csv')}
+async function downloadRackCsvPack(){if(!rows.length){alert('No locations to export.');return;}if(window.JSZip){const zip=new JSZip();rows.forEach(function(r){zip.file(safeFileName((r.label||r.location+r.rackId)+'-rack-template')+'.csv',makeRackCSV(r))});const blob=await zip.generateAsync({type:'blob'});downloadBlob(safeFileName(document.getElementById('customer').value+'-'+document.getElementById('site').value+'-rack-csv-pack')+'.zip',blob)}else{rows.forEach(function(r,i){setTimeout(function(){downloadSingleRackCSV(i)},i*150)})}}
+function downloadWarehousePdf(){
+  if(!rows.length){alert('No locations to export.');return;}
+  const jsPDF=window.jspdf&&window.jspdf.jsPDF;if(!jsPDF){alert('PDF library not available.');return;}
+  const doc=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+  const customer=document.getElementById('customer').value||'Customer';
+  const site=document.getElementById('site').value||'Site';
+  const date=new Date().toLocaleDateString();
+  let y=18;
+  doc.setFillColor(6,27,53);doc.rect(0,0,210,28,'F');
+  doc.setTextColor(255,255,255);doc.setFont('helvetica','bold');doc.setFontSize(18);doc.text('Warehouse Map',14,17);
+  doc.setFontSize(9);doc.setFont('helvetica','normal');doc.text(customer+' / '+site+'    '+date,14,24);
+  y=40;doc.setTextColor(6,27,53);doc.setFont('helvetica','bold');doc.setFontSize(12);doc.text('Summary',14,y);y+=7;
+  doc.setFont('helvetica','normal');doc.setFontSize(10);doc.text('Locations: '+rows.length,14,y);doc.text('Total Shelves: '+rows.reduce(function(a,r){return a+(parseInt(r.shelves)||0)},0),64,y);y+=10;
+  let last='';
+  rows.forEach(function(r){
+    if(y>275){doc.addPage();y=18;}
+    if(r.location!==last){doc.setFillColor(226,27,45);doc.rect(14,y-4,182,7,'F');doc.setTextColor(255,255,255);doc.setFont('helvetica','bold');doc.setFontSize(10);doc.text('Aisle: '+r.location,16,y+1);y+=9;last=r.location;doc.setTextColor(6,27,53);}
+    doc.setFont('helvetica','normal');doc.setFontSize(9);doc.text('Rack '+r.rackId,18,y);doc.text('Shelves: '+r.shelves,50,y);doc.text('Identifier: '+(r.label||r.location+r.rackId),82,y);y+=6;
+  });
+  doc.save(safeFileName(customer+'-'+site+'-warehouse-map')+'.pdf');
+}
+function uploadCSV(e){const file=e.target.files[0];if(!file)return;const reader=new FileReader();reader.onload=function(){rows=parseCSV(reader.result);render();document.getElementById('statusNote').textContent='CSV uploaded and location list rebuilt.'};reader.readAsText(file)}
+function parseCSV(text){const clean=String(text).split(cr).join('');const lines=clean.split(nl).filter(function(x){return x.trim()!==''});if(!lines.length)return[];const headers=splitCSVLine(lines[0]);return lines.slice(1).map(function(line){const vals=splitCSVLine(line);const obj={};headers.forEach(function(h,i){obj[h]=vals[i]||''});const location=obj.Location||obj.RackCategory||'';const rackId=obj.RackID||obj.RackNumber||'';return {customer:obj.Customer||'',site:obj.Site||'',location:location,rackId:rackId,shelves:Math.max(1,parseInt(obj.Shelves||'1')),label:obj.RackLocation||obj.Label||location+rackId}}).filter(function(r){return r.location&&r.rackId})}
+function splitCSVLine(line){const out=[];let cur='',q=false;for(let i=0;i<line.length;i++){const ch=line[i];if(ch==='"'){if(q&&line[i+1]==='"'){cur+='"';i++}else q=!q}else if(ch===','&&!q){out.push(cur);cur=''}else cur+=ch}out.push(cur);return out}
+function clearAll(){if(confirm('Reset warehouse map?')){rows=[];document.getElementById('customer').value='';document.getElementById('site').value='';document.getElementById('aislePrefix').value='';document.getElementById('aisleQty').value='';document.getElementById('bayQty').value='';document.getElementById('shelfQty').value='';document.getElementById('startLetter').value='';render();document.getElementById('statusNote').textContent='Warehouse map reset.'}}
+function downloadFile(filename,content,type){const blob=new Blob([content],{type:type});downloadBlob(filename,blob)}
+function downloadBlob(filename,blob){const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url)}
+function csv(v){const s=String(v==null?'':v);return s.indexOf(',')>-1||s.indexOf('"')>-1||s.indexOf(nl)>-1?'"'+s.split('"').join('""')+'"':s}
+function esc(v){return String(v==null?'':v).split('&').join('&amp;').split('<').join('&lt;').split('>').join('&gt;').split('"').join('&quot;')}
+function safeFileName(v){let out='';String(v||'warehouse').split('').forEach(function(ch){if('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_.-'.indexOf(ch)>-1)out+=ch;else if(out.slice(-1)!=='-')out+='-'});return out.replace(/-$/,'')||'warehouse'}
+render();
+</script>
+<script src="assets/js/bw-header.js"></script>
+</body>
+</html>

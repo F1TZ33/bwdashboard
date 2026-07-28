@@ -1,0 +1,27 @@
+[
+    {
+        "title": "Supplier Directory",
+        "file": "supplier-directory.html",
+        "description": "Supplier lookup and availability directory."
+    },
+    {
+        "title": "Bearing Decoder",
+        "file": "bearing-decoder-autodetect.html",
+        "description": "Bearing nomenclature and suffix interpretation tool."
+    },
+    {
+        "title": "Rack Builder",
+        "file": "rack-builder.html",
+        "description": "Interactive rack mapping and QR allocation."
+    },
+    {
+        "title": "Warehouse Mapper",
+        "file": "warehouse-map.html",
+        "description": "Warehouse planning and bay allocation system."
+    },
+    {
+        "title": "Order Capture",
+        "file": "order-capture.html",
+        "description": "Mobile-friendly order capture and QR scanning."
+    }
+]

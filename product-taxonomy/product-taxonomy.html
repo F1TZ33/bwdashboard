@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>Product Categories</title>
+<link href="assets/css/style.css" rel="stylesheet"/>
+<style>
+    .taxLayout{
+      display:grid;
+      grid-template-columns:320px minmax(0,1fr);
+      gap:18px;
+      align-items:start;
+    }
+
+    .taxNav,.taxContent{
+      background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+      border:1px solid rgba(255,255,255,.10);
+      border-radius:24px;
+      box-shadow:0 18px 55px rgba(0,0,0,.30);
+    }
+
+    .taxNav{
+      padding:14px;
+      position:sticky;
+      top:12px;
+    }
+
+    .taxContent{
+      padding:24px 22px;
+      min-height:620px;
+    }
+
+    .navTitle{
+      margin:2px 4px 14px;
+      font-size:12px;
+      font-weight:800;
+      letter-spacing:.16em;
+      text-transform:uppercase;
+      color:#e5d1d1;
+    }
+
+    .catButton{
+      width:100%;
+      display:flex;
+      align-items:center;
+      gap:12px;
+      background:rgba(255,255,255,.02);
+      color:#d8dee7;
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:16px;
+      padding:14px;
+      margin-bottom:10px;
+      text-align:left;
+      font:inherit;
+      cursor:pointer;
+    }
+
+    .catButton:hover,
+    .catButton.active{
+      background:rgba(198,40,40,.16);
+      border-color:rgba(198,40,40,.34);
+      color:#fff;
+    }
+
+    .catIcon{
+      width:38px;
+      height:38px;
+      border-radius:12px;
+      display:grid;
+      place-items:center;
+      background:rgba(198,40,40,.16);
+      border:1px solid rgba(198,40,40,.34);
+      flex:0 0 38px;
+    }
+
+    .catName{
+      font-weight:900;
+      line-height:1.2;
+    }
+
+    .catCount{
+      color:var(--muted);
+      font-size:12px;
+      margin-top:3px;
+    }
+
+    .contentBadge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      min-height:38px;
+      padding:0 14px;
+      border-radius:999px;
+      background:rgba(198,40,40,.16);
+      border:1px solid rgba(198,40,40,.34);
+      font-weight:800;
+      margin-bottom:14px;
+    }
+
+    .contentTitle{
+      margin:0 0 10px !important;
+      font-size:30px;
+      line-height:1.1;
+    }
+
+    .productList{
+      margin:18px 0 0;
+      padding:0;
+      list-style:none;
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:10px;
+    }
+
+    .productList li{
+      padding:12px 14px;
+      border-radius:14px;
+      background:rgba(255,255,255,.03);
+      border:1px solid rgba(255,255,255,.08);
+      color:#d8dee7;
+      line-height:1.35;
+    }
+
+    @media(max-width:980px){
+      .taxLayout{grid-template-columns:1fr}
+      .taxNav{position:static}
+    }
+
+    @media(max-width:680px){
+      .productList{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body data-page="page">
+<div class="container"><div id="bw-global-header"></div>
+<section class="heroPanel">
+<div class="heroIcon">⚙️</div>
+<h1>Product Categories</h1>
+<p class="subtitle">
+        Select a category on the left to view the full static product list.
+      </p>
+</section>
+<section class="taxLayout">
+<aside class="taxNav">
+<div class="navTitle">Categories</div>
+<div id="catNav"></div>
+</aside>
+<main class="taxContent">
+<div class="contentBadge" id="contentBadge">⚙️ Category</div>
+<h2 class="contentTitle" id="contentTitle">Choose a category</h2>
+<p class="subtitle" id="contentSubtitle">Product list will display here.</p>
+<ul class="productList" id="productList"></ul>
+</main>
+</section>
+</div>
+<script>
+    const taxonomyData = [
+      {
+        icon:"⚙️",
+        name:"Bearings",
+        products:[
+          "Deep Groove Ball Bearings",
+          "Angular Contact Ball Bearings",
+          "Self-Aligning Ball Bearings",
+          "Cylindrical Roller Bearings",
+          "Spherical Roller Bearings",
+          "Needle Roller Bearings",
+          "Tapered Roller Bearings",
+          "Thrust Bearings",
+          "Plain / Bush Bearings",
+          "Super Precision Bearings",
+          "Thin Section Bearings",
+          "Slewing Rings / Turntable Bearings",
+          "Mounted Bearings / Insert Bearings",
+          "Bearing Units",
+          "Linear Bearings",
+          "Cam Followers / Track Rollers",
+          "Magnetic Bearings"
+        ]
+      },
+      {
+        icon:"🔩",
+        name:"Bearing Components & Accessories",
+        products:[
+          "Bearing Housings",
+          "Sleeves",
+          "Locknuts & Lockwashers",
+          "Shaft Collars",
+          "Retaining Rings / Circlips",
+          "Precision Locking Devices"
+        ]
+      },
+      {
+        icon:"🛡️",
+        name:"Seals & Sealing Systems",
+        products:[
+          "Oil Seals",
+          "O-Rings",
+          "V-Rings",
+          "Mechanical Seals",
+          "Hydraulic Seals",
+          "Pneumatic Seals",
+          "Gaskets",
+          "Seal Kits"
+        ]
+      },
+      {
+        icon:"🔗",
+        name:"Power Transmission",
+        products:[
+          "V-Belts",
+          "Timing Belts",
+          "Pulleys",
+          "Sprockets",
+          "Roller Chain",
+          "Couplings",
+          "Taper Lock Bushes",
+          "Gearboxes",
+          "Motors"
+        ]
+      },
+      {
+        icon:"📏",
+        name:"Linear Motion & Precision Motion",
+        products:[
+          "Linear Rails",
+          "Linear Carriages",
+          "Ball Screws",
+          "Lead Screws",
+          "Shafting",
+          "Linear Bushings"
+        ]
+      },
+      {
+        icon:"🛢️",
+        name:"Lubrication & Reliability",
+        products:[
+          "Grease",
+          "Oil",
+          "Lubricators",
+          "Grease Nipples",
+          "Condition Monitoring",
+          "Maintenance Products"
+        ]
+      },
+      {
+        icon:"💨",
+        name:"Fluid Power & Pneumatics",
+        products:[
+          "Hose",
+          "Fittings",
+          "Valves",
+          "Cylinders",
+          "Air Preparation",
+          "Tubing"
+        ]
+      },
+      {
+        icon:"🧰",
+        name:"Tools, Maintenance & Workshop",
+        products:[
+          "Pullers",
+          "Bearing Heaters",
+          "Measuring Tools",
+          "Hand Tools",
+          "Workshop Consumables"
+        ]
+      }
+    ];
+
+    const catNav = document.getElementById("catNav");
+    const contentBadge = document.getElementById("contentBadge");
+    const contentTitle = document.getElementById("contentTitle");
+    const contentSubtitle = document.getElementById("contentSubtitle");
+    const productList = document.getElementById("productList");
+
+    let activeIndex = 0;
+
+    function renderNav(){
+      catNav.innerHTML = "";
+
+      taxonomyData.forEach((cat, index) => {
+        const btn = document.createElement("button");
+        btn.className = "catButton" + (index === activeIndex ? " active" : "");
+        btn.type = "button";
+        btn.innerHTML = `
+          <span class="catIcon">${cat.icon}</span>
+          <span>
+            <span class="catName">${cat.name}</span>
+            <span class="catCount">${cat.products.length} items</span>
+          </span>
+        `;
+
+        btn.addEventListener("click", () => {
+          activeIndex = index;
+          renderNav();
+          renderContent();
+        });
+
+        catNav.appendChild(btn);
+      });
+    }
+
+    function renderContent(){
+      const cat = taxonomyData[activeIndex];
+
+      contentBadge.textContent = `${cat.icon} ${cat.name}`;
+      contentTitle.textContent = cat.name;
+      contentSubtitle.textContent = `${cat.products.length} products in this category.`;
+      productList.innerHTML = "";
+
+      cat.products.forEach(product => {
+        const li = document.createElement("li");
+        li.textContent = product;
+        productList.appendChild(li);
+      });
+    }
+
+    renderNav();
+    renderContent();
+  </script>
+<script src="../assets/js/bw-header.js"></script></body>
+</html>

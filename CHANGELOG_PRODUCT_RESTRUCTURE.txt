@@ -1,0 +1,44 @@
+Product restructure package generated.
+
+Changed:
+- rack-builder.html replaced with supplied preserved-clean version.
+- product-guide.html now links each product tile directly to a full product guide page.
+- Generated/updated 32 product guide pages at site root using the Angular Contact style structure:
+  Images, Identification, Application, Brands, Suppliers, Brief Rundown, Detailed Rundown.
+- Brief and Detailed loading preserved from docs/content-sources.json using DOCX and XLSX source files.
+- Universal tile/image sizing rules appended to assets/css/style.css.
+- Resource icons copied to assets/icons and resources.html wired to them.
+
+Products:
+- Angular Contact Ball Bearings (angular-contact-ball-bearings.html)
+- Ball Bearings (ball-bearings.html)
+- Bearing Housings (bearing-housings.html)
+- Brass Fittings (brass-bsp-npt-fittings.html)
+- Bronze Bushings (bronze-bushings.html)
+- Bushings & Hubs (bushings-hubs.html)
+- Cam Followers (cam-followers.html)
+- Cylindrical Roller Bearings (cylindrical-roller-bearings.html)
+- Electric Motors (electric-motors.html)
+- Gearboxes & Gear Reducers (gearboxes-gear-reducers.html)
+- Idlers (Pulley & Sprocket) (idlers.html)
+- Insert Bearing (insert-bearings.html)
+- Needle Roller Bearings (needle-roller-bearings.html)
+- Nuts & Bolts (nuts-bolts.html)
+- O-Rings (o-rings.html)
+- Oils & Greases (oils-greases.html)
+- Pressure Gauges (pressure-gauges.html)
+- Pulleys (Sheaves) (pulleys.html)
+- Push-Fit Fittings (push-fit-fittings-for-nylon-tube.html)
+- Rod Ends (rod-ends.html)
+- Rotary Seals (rotary-seals.html)
+- Shaft Collars & Shrink Rings (shaft-collars-shrink-rings.html)
+- Spherical Plain Bearings (spherical-plain-bearings.html)
+- Spherical Roller Bearings (spherical-roller-bearings.html)
+- Sprockets (sprockets.html)
+- Tapered Roller Bearings (tapered-roller-bearings.html)
+- Thrust Bearings (thrust-bearings.html)
+- Timing Belts (timing-belts.html)
+- Timing Pulleys (timing-pulleys.html)
+- Transmission & Conveyor Chain (transmission-chain-conveyor-chain.html)
+- Universal Joints (U-Joints) (universal-joints.html)
+- V-Belts (v-belts.html)

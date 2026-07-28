@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Supplier Directory</title>
+  <link rel="stylesheet" href="../../assets/css/style.css" />
+  <link rel="stylesheet" href="styles.css?v=20260611-2" />
+
+<style>
+.testTopNav{height:58px;display:flex;align-items:center;gap:10px;padding:0 14px;background:#080d19;border-bottom:1px solid rgba(148,163,184,.22);color:#fff;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;position:sticky;top:0;z-index:9999;}
+.testTopNav .brand{font-weight:900;margin-right:8px;white-space:nowrap;}
+.testTopNav a,.testTopNav button{display:inline-flex;align-items:center;justify-content:center;min-height:34px;padding:7px 13px;border-radius:10px;border:1px solid rgba(148,163,184,.35);background:#111827;color:#fff;text-decoration:none;font-weight:800;font-size:14px;line-height:1;box-shadow:none;cursor:pointer;font-family:inherit;}
+.testTopNav a:hover,.testTopNav button:hover{border-color:#ef4444;background:#182235;box-shadow:0 0 0 2px rgba(239,68,68,.16);}
+@media(max-width:560px){.testTopNav{gap:7px;padding:0 9px}.testTopNav .brand{font-size:14px;margin-right:2px}.testTopNav a,.testTopNav button{font-size:13px;padding:7px 10px;}}
+</style>
+</head>
+<body data-page="page" data-back="../../resources-tools.html">
+  <nav class="testTopNav" aria-label="Module navigation">
+    <span class="brand">BW Playbook</span>
+    <a href="../../index.html">Dashboard</a>
+    <a href="../../resources-tools.html">Tools</a>
+    <button type="button" onclick="if(history.length>1){history.back();}else{location.href='../../resources-tools.html';}">Back</button>
+  </nav>
+
+  <div class="container supplierDirectory">
+    <main class="supplierPanel">
+      <section class="searchPanel moduleIntro" aria-label="Supplier directory introduction">
+        <h2>Supplier Directory</h2>
+        <p>Search from any point in supplier, brand, category, product, account, state, phone, email, or notes.</p>
+      </section>
+      <section class="searchPanel" aria-label="Supplier search">
+        <div class="searchGrid">
+          <div class="fieldWrap quickField">
+            <label for="q">Quick supplier / brand / product search</label>
+            <input id="q" type="search" placeholder="enter text starting from any point" autocomplete="off" autofocus />
+          </div>
+          <div class="fieldWrap"><label for="categoryFilter">Category</label><select id="categoryFilter"><option value="">All categories</option></select></div>
+          <div class="fieldWrap"><label for="brandFilter">Brand</label><select id="brandFilter"><option value="">All brands</option></select></div>
+          <div class="fieldWrap"><label for="stateFilter">State</label><select id="stateFilter"><option value="">All states</option></select></div>
+          <label class="preferredToggle"><input id="preferredOnly" type="checkbox" /> Preferred only</label>
+        </div>
+        <div class="actionRow">
+          <button id="clearBtn" class="smallbtn" type="button">Clear search</button>
+          <span id="stats" class="statsText">Start typing to filter suppliers.</span>
+        </div>
+      </section>
+
+      <details class="addPanel">
+        <summary>Add supplier / product</summary>
+        <div class="addModeRow">
+          <button id="modeSupplierBtn" type="button" class="modeBtn active">Add by Supplier</button>
+          <button id="modeProductBtn" type="button" class="modeBtn">Add by Product</button>
+        </div>
+
+        <section id="supplierFlow" class="guidedAddFlow">
+          <div class="stepHeader"><span>1</span><div><h3>Choose or create supplier</h3><p>Start typing. Existing suppliers appear below so you can select one instead of doubling up.</p></div></div>
+          <div class="addGrid twoCol">
+            <div class="fieldWrap wide"><label for="supplierSearchAdd">Supplier</label><input id="supplierSearchAdd" type="text" placeholder="Start typing supplier name..." autocomplete="off" /><div id="supplierMatches" class="liveMatchList"></div></div>
+            <div class="selectedBox"><b>Selected supplier</b><span id="selectedSupplierText">None selected yet</span></div>
+          </div>
+          <div id="newSupplierFields" class="addGrid">
+            <div class="fieldWrap"><label for="newAccount">Account</label><input id="newAccount" type="text" placeholder="Optional" /></div>
+            <div class="fieldWrap"><label for="newState">State/s</label><input id="newState" type="text" list="stateOptions" placeholder="VIC, NSW, QLD" /></div>
+            <div class="fieldWrap"><label for="newPhone">Phone</label><input id="newPhone" type="text" placeholder="Optional" /></div>
+            <div class="fieldWrap"><label for="newEmail">Email</label><input id="newEmail" type="email" placeholder="Optional" /></div>
+            <div class="fieldWrap wide"><label for="newCategory">Categories</label><input id="newCategory" type="text" list="categoryOptions" placeholder="Bearings, Seals, Power Transmission" /></div>
+            <div class="fieldWrap wide"><label for="newBrands">Brands</label><input id="newBrands" type="text" list="brandOptions" placeholder="NSK, NTN, SKF" /></div>
+            <div class="fieldWrap wide"><label for="newNotes">Notes</label><input id="newNotes" type="text" placeholder="Login note, branch note, contact note etc." /></div>
+            <label class="preferredToggle addPref"><input id="newPreferred" type="checkbox" /> Preferred supplier</label>
+          </div>
+          <div class="stepHeader secondStep"><span>2</span><div><h3>Add product to supplier</h3><p>Start typing the product. Similar existing products appear below.</p></div></div>
+          <div class="addGrid twoCol">
+            <div class="fieldWrap wide"><label for="productSearchForSupplier">Product</label><input id="productSearchForSupplier" type="text" placeholder="Start typing product..." autocomplete="off" /><div id="productMatchesForSupplier" class="liveMatchList"></div></div>
+            <div class="selectedBox"><b>Selected product</b><span id="selectedProductForSupplierText">None selected yet</span></div>
+          </div>
+          <div class="actionRow"><button id="saveSupplierProductBtn" class="smallbtn primary" type="button">Save supplier/product link</button><span id="supplierFlowStatus" class="statsText"></span></div>
+        </section>
+
+        <section id="productFlow" class="guidedAddFlow hidden">
+          <div class="stepHeader"><span>1</span><div><h3>Choose or create product</h3><p>Start typing. Existing products appear below so you can select one instead of doubling up.</p></div></div>
+          <div class="addGrid twoCol">
+            <div class="fieldWrap wide"><label for="productSearchAdd">Product</label><input id="productSearchAdd" type="text" placeholder="Start typing product..." autocomplete="off" /><div id="productMatches" class="liveMatchList"></div></div>
+            <div class="selectedBox"><b>Selected product</b><span id="selectedProductText">None selected yet</span></div>
+          </div>
+          <div class="stepHeader secondStep"><span>2</span><div><h3>Add supplier to product</h3><p>Start typing the supplier. Existing suppliers appear below, or create a new supplier if no match exists.</p></div></div>
+          <div class="addGrid twoCol">
+            <div class="fieldWrap wide"><label for="supplierSearchForProduct">Supplier</label><input id="supplierSearchForProduct" type="text" placeholder="Start typing supplier name..." autocomplete="off" /><div id="supplierMatchesForProduct" class="liveMatchList"></div></div>
+            <div class="selectedBox"><b>Selected supplier</b><span id="selectedSupplierForProductText">None selected yet</span></div>
+          </div>
+          <div id="newSupplierFieldsProductFlow" class="addGrid">
+            <div class="fieldWrap"><label for="pfNewAccount">Account</label><input id="pfNewAccount" type="text" placeholder="Optional" /></div>
+            <div class="fieldWrap"><label for="pfNewState">State/s</label><input id="pfNewState" type="text" list="stateOptions" placeholder="VIC, NSW, QLD" /></div>
+            <div class="fieldWrap"><label for="pfNewPhone">Phone</label><input id="pfNewPhone" type="text" placeholder="Optional" /></div>
+            <div class="fieldWrap"><label for="pfNewEmail">Email</label><input id="pfNewEmail" type="email" placeholder="Optional" /></div>
+            <div class="fieldWrap wide"><label for="pfNewCategory">Categories</label><input id="pfNewCategory" type="text" list="categoryOptions" placeholder="Bearings, Seals, Power Transmission" /></div>
+            <div class="fieldWrap wide"><label for="pfNewBrands">Brands</label><input id="pfNewBrands" type="text" list="brandOptions" placeholder="NSK, NTN, SKF" /></div>
+            <div class="fieldWrap wide"><label for="pfNewNotes">Notes</label><input id="pfNewNotes" type="text" placeholder="Login note, branch note, contact note etc." /></div>
+            <label class="preferredToggle addPref"><input id="pfNewPreferred" type="checkbox" /> Preferred supplier</label>
+          </div>
+          <div class="actionRow"><button id="saveProductSupplierBtn" class="smallbtn primary" type="button">Save product/supplier link</button><span id="productFlowStatus" class="statsText"></span></div>
+        </section>
+
+        <div class="actionRow adminRow"><button id="exportAddedBtn" class="smallbtn" type="button">Export added entries</button><button id="clearAddedBtn" class="smallbtn" type="button">Clear added entries</button><span id="addStatus" class="statsText"></span></div>
+        <p class="addNote">Testing version: added/edited links are saved to this browser only. Export added entries before changing device or clearing browser data.</p>
+      </details>
+      <div id="results" class="resultsArea"></div>
+    </main>
+
+    <datalist id="categoryOptions"></datalist><datalist id="brandOptions"></datalist><datalist id="stateOptions"><option value="VIC"></option><option value="NSW"></option><option value="QLD"></option><option value="SA"></option><option value="WA"></option><option value="TAS"></option><option value="ACT"></option><option value="NT"></option></datalist>
+    <footer class="supplierFooter">Designed and built by H. Fitzgerald</footer>
+  </div>
+  <script src="data.js?v=20260611-2"></script>
+  <script src="app-live.js?v=20260611-2"></script>
+</body>
+</html>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Mounted Unit Interchange</title>
+<link rel="stylesheet" href="styles.css" />
+
+<style id="playbook-tool-header-style">
+.playbookToolHeader{background:#071020;border-bottom:1px solid rgba(255,255,255,.14);padding:12px 18px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-family:Arial,Helvetica,sans-serif;position:relative;z-index:1000}
+.playbookToolHeader .brand{color:#fff;font-weight:900;margin-right:8px}
+.playbookToolHeader a{color:#fff!important;text-decoration:none!important;background:#111a2d;border:1px solid rgba(255,255,255,.18);border-radius:10px;padding:8px 12px;font-weight:800;line-height:1.1}
+.playbookToolHeader a:hover{border-color:rgba(239,68,68,.85);background:rgba(198,40,40,.25)}
+@media print{.playbookToolHeader{display:none!important}}
+</style>
+</head>
+<body>
+<div class="playbookToolHeader"><span class="brand">BW Playbook</span><a href="../../../index.html">Dashboard</a><a href="../../../resources-tools.html">Tools</a><a href="javascript:history.back()">Back</a></div>
+
+<div class="page">
+  <header class="hero">
+    <h1>Mounted Unit Interchange</h1>
+    <p>Search any listed part number and convert it to available direct interchange alternatives from the source table.</p>
+  </header>
+
+  <section class="controls">
+    <div>
+      <label for="searchInput">Search Part Number</label>
+      <input id="searchInput" placeholder="Example: P2B-SC-100, NP-16, UCP205-16" autocomplete="off" />
+    </div>
+    <div>
+      <label for="brandFilter">Brand Filter</label>
+      <select id="brandFilter">
+        <option value="">All brands</option>
+      </select>
+    </div>
+    <div>
+      <label for="categoryFilter">Unit Type</label>
+      <select id="categoryFilter">
+        <option value="">All unit types</option>
+      </select>
+    </div>
+    <button id="clearBtn">Clear</button>
+  </section>
+
+  <section class="info-strip">
+    <span id="countInfo">Loading interchange rules...</span>
+    <span class="confidence">Confidence: Direct table match where part appears in same source row.</span>
+  </section>
+
+  <main id="results" class="results"></main>
+
+  <footer>Designed and built by H. Fitzgerald</footer>
+</div>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

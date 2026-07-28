@@ -1,0 +1,19 @@
+Azure editor/staging workflow locked in:
+
+- Azure Static Web App is for private editing/staging only.
+- GitHub Pages remains the live staff dashboard.
+- Azure access is restricted to users with either editor or admin role only.
+- Invite editors/admins from Azure Static Web App > Role management > Invite.
+- Use role names exactly: editor or admin.
+- Do not assign general staff to Azure.
+- Inline editor changes save to Azure Storage as draft/staging content.
+- Admin can review/tweak Azure content, then export/copy approved JSON into GitHub and push to publish to the live dashboard.
+
+Files changed in this patch:
+- staticwebapp.config.json
+- assets/js/global.js
+- assets/js/bw-inline-editor.js
+- checklists.html
+- sops.html
+- faqs.html
+- all root product page HTML files except product-guide.html

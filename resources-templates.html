@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<title>Templates</title>
+<link href="assets/css/style.css" rel="stylesheet"/>
+<style>
+.templatePane{display:grid;gap:16px;}
+.templateIntro{border:1px solid rgba(255,255,255,.10);background:rgba(255,255,255,.035);border-radius:16px;padding:14px;color:var(--text);}
+.templateIntro p{margin:8px 0 0;color:var(--muted);line-height:1.45;}
+.templateCard{border:1px solid rgba(255,255,255,.10);background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.025));border-radius:18px;padding:16px;}
+.templateGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;}
+.templateField label{display:block;margin-bottom:6px;font-weight:800;color:var(--text);}
+.templateField input,.templateField textarea{width:100%;min-height:46px;padding:10px 14px;border-radius:12px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);color:var(--text);box-sizing:border-box;}
+.templateField textarea{min-height:92px;resize:vertical;}
+.templateCheckGrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:12px;}
+.templateCheck{border:1px solid rgba(255,255,255,.10);border-radius:12px;padding:10px;background:rgba(255,255,255,.03);color:var(--text);font-weight:700;}
+.templateCheck input{margin-right:6px;}
+.templateSummary{margin-top:14px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;}
+.templateSummaryBox{border:1px solid rgba(255,255,255,.10);background:rgba(255,255,255,.035);border-radius:14px;padding:12px;}
+.templateSummaryBox span{display:block;color:var(--muted);font-size:12px;font-weight:700;}
+.templateSummaryBox strong{display:block;color:var(--text);font-size:22px;margin-top:3px;}
+.templateBtnRow{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px;}
+.templateHint{color:var(--muted);font-size:13px;line-height:1.45;margin-top:10px;}
+.templatePreview{margin-top:16px;overflow:auto;border-radius:16px;border:1px solid rgba(255,255,255,.08);}
+.templatePreview table{width:100%;border-collapse:collapse;min-width:720px;background:rgba(255,255,255,.03);color:var(--text);}
+.templatePreview th,.templatePreview td{padding:8px 10px;border:1px solid rgba(255,255,255,.08);text-align:left;}
+.templatePreview th{background:rgba(255,255,255,.06);font-weight:900;}
+.placeholderBox{border:1px dashed rgba(255,255,255,.20);border-radius:16px;padding:18px;background:rgba(255,255,255,.025);color:var(--muted);line-height:1.45;}
+@media(max-width:860px){.templateGrid,.templateCheckGrid,.templateSummary{grid-template-columns:1fr;}}
+</style>
+</head>
+
+<body>
+<div class="container">
+  <div id="bw-global-header"></div>
+
+  <section class="browserHero">
+    <div class="browserHeroTop">
+      <div class="browserHeroIcon">📄</div>
+    </div>
+    <h1 class="pageTitle">Templates</h1>
+    <p class="pageSubtitle">Assorted templates to improve efficiency.</p>
+  </section>
+
+  <main class="browserLayout">
+    <aside class="browserNav">
+      <div class="browserNavHead">
+        <h2>Templates</h2>
+        <div class="subtitle" style="margin:0;">Prefill templates.</div>
+      </div>
+
+      <div class="typeBlock open">
+        <button class="typeButton" type="button">
+          <span class="typeLabel">
+            <span class="typeIcon">📄</span>
+            PREFILL TEMPLATES
+          </span>
+          <span class="typeChevron">›</span>
+        </button>
+
+        <div class="subList">
+          <button class="subButton active" type="button" onclick="showTemplate('fasteners', this)">Fasteners</button>
+          <button class="subButton" type="button" onclick="showTemplate('fittings', this)">Fittings</button>
+          <button class="subButton" type="button" onclick="showTemplate('bearings', this)">Bearings</button>
+        </div>
+      </div>
+    </aside>
+
+    <section class="browserContent">
+      <div class="contentBadge" id="templateBadge">📄 Prefill Template</div>
+      <h2 class="contentTitle" id="templateTitle">Fasteners</h2>
+      <p class="contentLead" id="templateDesc">Generate a nuts, bolts, washers and nuts CSV ready for the Rack Builder.</p>
+      <div id="templatePane" class="templatePane"></div>
+    </section>
+  </main>
+</div>
+
+<script>
+const templateMeta = {
+  fasteners: {
+    title: "Fasteners",
+    desc: "Generate a nuts, bolts, washers and nuts CSV ready for the Rack Builder."
+  },
+  fittings: {
+    title: "Fittings",
+    desc: "Prefill template space for fittings lists."
+  },
+  bearings: {
+    title: "Bearings",
+    desc: "Prefill template space for bearing lists."
+  }
+};
+
+function showTemplate(key, btn){
+  const item = templateMeta[key];
+  if(!item) return;
+
+  document.getElementById("templateTitle").textContent = item.title;
+  document.getElementById("templateDesc").textContent = item.desc;
+
+  document.querySelectorAll(".subButton").forEach(b => b.classList.remove("active"));
+  if(btn) btn.classList.add("active");
+
+  if(key === "fasteners") renderFastenerTemplate();
+  if(key === "fittings") renderPlaceholder("Fittings", "Use this section later to generate common fitting ranges such as BSP, NPT, push-fit, compression fittings, nipples, elbows, tees and adaptors.");
+  if(key === "bearings") renderPlaceholder("Bearings", "Use this section later to generate bearing prefill lists such as common 6000, 6200, 6300, 30200, 32000, UC, UCP and seal/kit ranges.");
+}
+
+function renderPlaceholder(title, text){
+  document.getElementById("templatePane").innerHTML = `
+    <div class="templateIntro">
+      <strong>${escapeHtml(title)} Prefill Template</strong>
+      <p>${escapeHtml(text)}</p>
+    </div>
+    <div class="placeholderBox">
+      This template is reserved for the next prefill build. It will load here in the right pane, the same way the Fasteners template does, rather than opening a separate page.
+    </div>
+  `;
+}
+
+function renderFastenerTemplate(){
+  document.getElementById("templatePane").innerHTML = `
+    <div class="templateIntro">
+      <strong>How to use this template</strong>
+      <p>Generate an abbreviated <strong>Part Number</strong> and <strong>Description</strong> CSV. Build the customer rack first, then upload this CSV into the Rack Builder to fill each shelf, bin and position in order. Fraction sizes such as 5/16 and 1/2 are preserved in the CSV. If there are more generated items than rack positions, the Rack Builder will place the extra items under <strong>Excess</strong>.</p>
+    </div>
+
+    <div class="templateCard">
+      <div class="templateGrid">
+        <div class="templateField">
+          <label>Metric Coarse Diameters</label>
+          <input id="metricCoarseDiameters" value="m8,m10,m12"/>
+        </div>
+        <div class="templateField">
+          <label>Metric Coarse Lengths (mm)</label>
+          <input id="metricCoarseLengths" value="20,40,60,80"/>
+        </div>
+        <div class="templateField">
+          <label>Metric Fine Diameters</label>
+          <input id="metricFineDiameters" value="m8,m10,m12"/>
+        </div>
+        <div class="templateField">
+          <label>Metric Fine Lengths (mm)</label>
+          <input id="metricFineLengths" value="20,40,60,80"/>
+        </div>
+        <div class="templateField">
+          <label>UNC Diameters</label>
+          <input id="uncDiameters" value="5/16,3/8,1/2"/>
+        </div>
+        <div class="templateField">
+          <label>UNC Lengths (inches)</label>
+          <input id="uncLengths" value="1/2,1,1.1/2,2,2.1/2,3"/>
+        </div>
+        <div class="templateField">
+          <label>UNF Diameters</label>
+          <input id="unfDiameters" value="5/16,3/8,1/2"/>
+        </div>
+        <div class="templateField">
+          <label>UNF Lengths (inches)</label>
+          <input id="unfLengths" value="1/2,1,1.1/2,2,2.1/2,3"/>
+        </div>
+      </div>
+
+      <div class="templateCheckGrid">
+        <label class="templateCheck"><input type="checkbox" id="includeMetricCoarseBolts" checked> Metric Coarse Bolts</label>
+        <label class="templateCheck"><input type="checkbox" id="includeMetricFineBolts" checked> Metric Fine Bolts</label>
+        <label class="templateCheck"><input type="checkbox" id="includeUncBolts" checked> UNC Bolts</label>
+        <label class="templateCheck"><input type="checkbox" id="includeUnfBolts" checked> UNF Bolts</label>
+        <label class="templateCheck"><input type="checkbox" id="includeWashersNuts" checked> F/W, S/W, Nut + Nyloc</label>
+        <div class="templateCheck">Part numbers export in UPPERCASE. Descriptions export expanded.</div>
+      </div>
+
+      <div class="templateSummary">
+        <div class="templateSummaryBox"><span>Bins / Positions Required</span><strong id="generatedOut">0</strong></div>
+      </div>
+
+      <div class="templateBtnRow">
+        <button class="btn" type="button" id="generateBtn">Generate List</button>
+        <button class="btn" type="button" id="downloadBtn">Download CSV</button>
+        <button class="btn" type="button" id="copyBtn">Copy List</button>
+      </div>
+
+      <div class="templatePreview">
+        <table>
+          <thead><tr><th>#</th><th>Part Number</th><th>Description</th></tr></thead>
+          <tbody id="previewBody"><tr><td colspan="3">Generate a list to preview items.</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  `;
+
+  attachFastenerHandlers();
+}
+
+function attachFastenerHandlers(){
+  let rows=[];
+  const $=id=>document.getElementById(id);
+  const splitList=value=>String(value||'').split(',').map(v=>v.trim()).filter(Boolean);
+  const csvEscape=value=>{const text=String(value??'');return /[",\n\r]/.test(text)?'"'+text.replace(/"/g,'""')+'"':text;};
+
+  function upper(value){ return String(value||'').trim().toUpperCase(); }
+  function add(part, description){ rows.push({part:upper(part),desc:String(description||'').trim()}); }
+
+  function generateRows(){
+    rows=[];
+    const mcDiameters=splitList($('metricCoarseDiameters').value).map(normaliseMetric);
+    const mcLengths=splitList($('metricCoarseLengths').value);
+    const mfDiameters=splitList($('metricFineDiameters').value).map(normaliseMetric);
+    const mfLengths=splitList($('metricFineLengths').value);
+    const uncDiameters=splitList($('uncDiameters').value).map(normaliseImperialDiameter);
+    const uncLengths=splitList($('uncLengths').value).map(normaliseImperialLength);
+    const unfDiameters=splitList($('unfDiameters').value).map(normaliseImperialDiameter);
+    const unfLengths=splitList($('unfLengths').value).map(normaliseImperialLength);
+
+    if($('includeMetricCoarseBolts').checked){
+      mcDiameters.forEach(d=>mcLengths.forEach(l=>{
+        add(`Bolt ${d}x${l}mm`, `Metric coarse hex bolt ${d.toUpperCase()} x ${l}mm`);
+      }));
+    }
+
+    if($('includeMetricFineBolts').checked){
+      mfDiameters.forEach(d=>mfLengths.forEach(l=>{
+        add(`Bolt ${d}x${l}mm fine`, `Metric fine hex bolt ${d.toUpperCase()} x ${l}mm`);
+      }));
+    }
+
+    if($('includeUncBolts').checked){
+      uncDiameters.forEach(d=>uncLengths.forEach(l=>{
+        add(`Bolt ${d} unc ${l}`, `UNC hex bolt ${d} x ${l}`);
+      }));
+    }
+
+    if($('includeUnfBolts').checked){
+      unfDiameters.forEach(d=>unfLengths.forEach(l=>{
+        add(`Bolt ${d} unf ${l}`, `UNF hex bolt ${d} x ${l}`);
+      }));
+    }
+
+    if($('includeWashersNuts').checked){
+      mcDiameters.forEach(d=>{
+        add(`F/W ${d}`, `Flat washer ${d.toUpperCase()}`);
+        add(`S/W ${d}`, `Spring washer ${d.toUpperCase()}`);
+        add(`Nut ${d}`, `Hex nut ${d.toUpperCase()}`);
+        add(`Nyloc ${d}`, `Nyloc nut ${d.toUpperCase()}`);
+      });
+
+      uncDiameters.forEach(d=>{
+        add(`F/W ${d}`, `Flat washer ${d}`);
+        add(`S/W ${d}`, `Spring washer ${d}`);
+        add(`Nut ${d} unc`, `UNC hex nut ${d}`);
+        add(`Nyloc ${d} unc`, `UNC nyloc nut ${d}`);
+      });
+
+      unfDiameters.forEach(d=>{
+        add(`F/W ${d}`, `Flat washer ${d}`);
+        add(`S/W ${d}`, `Spring washer ${d}`);
+        add(`Nut ${d} unf`, `UNF hex nut ${d}`);
+        add(`Nyloc ${d} unf`, `UNF nyloc nut ${d}`);
+      });
+    }
+
+    renderRows();
+  }
+
+  function normaliseMetric(value){
+    const v=String(value||'').trim();
+    if(!v)return v;
+    return v.toLowerCase().startsWith('m') ? v.toLowerCase() : 'm'+v;
+  }
+
+  function normaliseImperialDiameter(value){ return String(value||'').trim().replace(/\s+/g,''); }
+  function normaliseImperialLength(value){ return String(value||'').trim().replace(/\s+/g,'').replace('-', '.'); }
+
+  function updateSummary(){ $('generatedOut').textContent=String(rows.length); }
+
+  function renderRows(){
+    updateSummary();
+    const body=$('previewBody');
+    if(!rows.length){ body.innerHTML='<tr><td colspan="3">Generate a list to preview items.</td></tr>'; return; }
+    body.innerHTML=rows.map((r,i)=>`<tr><td>${i+1}</td><td>${escapeHtml(r.part)}</td><td>${escapeHtml(r.desc)}</td></tr>`).join('');
+  }
+
+  function downloadCsv(){
+    if(!rows.length) generateRows();
+    const lines=[['Part Number','Description'].join(',')];
+    rows.forEach(r=>lines.push([upper(r.part),r.desc].map(csvEscape).join(',')));
+    const blob=new Blob(['\uFEFF'+lines.join('\r\n')],{type:'text/csv;charset=utf-8;'});
+    const a=document.createElement('a');
+    const href=URL.createObjectURL(blob);
+    a.href=href;
+    a.download=`fastener_prefill_${new Date().toISOString().slice(0,10)}.csv`;
+    document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(href),1000);
+  }
+
+  async function copyList(){
+    if(!rows.length) generateRows();
+    const text=rows.map(r=>`${upper(r.part)}\t${r.desc}`).join('\n');
+    try{await navigator.clipboard.writeText(text);alert('Fastener list copied.');}
+    catch(e){alert('Could not copy automatically. Use Download CSV instead.');}
+  }
+
+  $('generateBtn').addEventListener('click',generateRows);
+  $('downloadBtn').addEventListener('click',downloadCsv);
+  $('copyBtn').addEventListener('click',copyList);
+  ['metricCoarseDiameters','metricCoarseLengths','metricFineDiameters','metricFineLengths','uncDiameters','uncLengths','unfDiameters','unfLengths'].forEach(id=>$(id).addEventListener('input',()=>{if(rows.length) generateRows(); else updateSummary();}));
+  ['includeMetricCoarseBolts','includeMetricFineBolts','includeUncBolts','includeUnfBolts','includeWashersNuts'].forEach(id=>$(id).addEventListener('change',generateRows));
+  updateSummary();
+}
+
+function escapeHtml(value){return String(value??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+showTemplate('fasteners', document.querySelector('.subButton.active'));
+</script>
+
+<script src="assets/js/app.js"></script>
+<script src="assets/js/bw-header.js"></script>
+</body>
+</html>

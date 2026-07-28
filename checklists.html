@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Checklists</title>
+<link href="assets/css/style.css" rel="stylesheet"/>
+<style>
+.browserLayout{display:grid;grid-template-columns:320px minmax(0,1fr);gap:18px;align-items:start;margin-top:18px;}
+.browserNav,.browserContent{background:linear-gradient(135deg, rgba(198,40,40,.10), transparent 42%),linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.10);border-radius:24px;box-shadow:0 18px 55px rgba(0,0,0,.30);} 
+.browserNav{padding:14px;position:sticky;top:12px}.browserContent{padding:24px 22px 20px;min-height:620px}.navTitle{margin:2px 4px 14px;font-size:12px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:#e5d1d1;opacity:.9;}
+.typeBlock{margin:10px 0;border:1px solid rgba(255,255,255,.08);border-radius:18px;overflow:hidden;background:rgba(255,255,255,.02)}.typeButton{width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;background:transparent;border:0;color:#fff;padding:16px;font:inherit;font-weight:800;text-align:left;cursor:pointer}.typeButton:hover{background:rgba(255,255,255,.04)}.typeLabel{display:flex;align-items:center;gap:10px;min-width:0}.typeIcon{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;background:rgba(198,40,40,.16);border:1px solid rgba(198,40,40,.34);font-size:18px;flex:0 0 38px}.typeBlock.open .typeChevron{transform:rotate(90deg)}.subButton{width:100%;background:rgba(255,255,255,.02);color:#d8dee7;border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:12px 13px;margin:8px 0 0;text-align:left;font:inherit;cursor:pointer;line-height:1.35}.subButton:hover{background:rgba(255,255,255,.05);color:#fff}.subButton.active{background:rgba(198,40,40,.16);border-color:rgba(198,40,40,.34);color:#fff}
+.contentBadge{display:inline-flex;align-items:center;gap:8px;min-height:38px;padding:0 14px;border-radius:999px;background:rgba(198,40,40,.16);border:1px solid rgba(198,40,40,.34);font-weight:800;margin-bottom:14px}.contentTitle{margin:0 0 8px!important;font-size:30px;line-height:1.1}.contentLead{margin:0 0 14px;color:#e5d1d1;font-weight:700;line-height:1.55}
+.checkGroup{background:rgba(0,0,0,.16);border:1px solid rgba(255,255,255,.10);border-radius:18px;padding:16px;margin-top:14px}.checkGroup h3{margin:0 0 12px;color:#fff}.checkRows{display:grid;gap:8px}.checkRow{display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:10px;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:10px 12px;position:relative}.checkText{font-weight:800;color:#fff;min-height:22px;outline:none;border-radius:8px;padding:2px 4px}.checkText[contenteditable="true"]{outline:1px dashed rgba(198,40,40,.38);background:rgba(255,255,255,.025)}.checkText[contenteditable="true"]:focus{outline:2px solid rgba(198,40,40,.78);background:rgba(198,40,40,.08)}.checkWho{font-size:11px;letter-spacing:.08em;text-transform:uppercase;border-radius:999px;padding:4px 9px;font-weight:900;border:1px solid rgba(255,255,255,.12)}.checkWho.all{background:rgba(22,101,52,.55);color:#dcfce7}.checkWho.managers{background:rgba(180,83,9,.60);color:#ffedd5}.checkBox{width:18px;height:18px;accent-color:#c62828}.checkActions{display:none;gap:8px;flex-wrap:wrap;margin-top:12px}.bw-can-edit .checkActions,.checkActions.always{display:flex}.checkBtn{border:1px solid rgba(198,40,40,.42);background:rgba(198,40,40,.16);color:#fff;border-radius:999px;padding:8px 12px;font-weight:800;cursor:pointer}.checkBtn.danger,.rowDelete{border-color:rgba(248,113,113,.58);background:rgba(127,29,29,.48)}.rowDelete{display:none;width:26px;height:26px;border-radius:999px;color:#fff;font-weight:900;cursor:pointer}.bw-can-edit .rowDelete{display:inline-grid;place-items:center}.toDoInput{font-weight:800;color:#fff;background:transparent;border:0;outline:0;width:100%;font:inherit}.toDoInput::placeholder{color:rgba(255,255,255,.42)}.checkNote{color:var(--muted);font-size:13px;margin:12px 0 0}.pdfSaveWrap{display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap;margin:0 0 12px}.pdfSaveBtn{border:1px solid rgba(198,40,40,.48);background:rgba(198,40,40,.18);color:#fff;border-radius:999px;padding:10px 14px;font-weight:900;cursor:pointer;box-shadow:0 10px 24px rgba(0,0,0,.18)}.pdfSaveBtn:hover{background:rgba(198,40,40,.28)}@media print{body{background:#fff!important;color:#000!important}.browserNav,#bw-global-header,#userIndicator,.checkActions,.rowDelete,.contentBadge,.heroPanel{display:none!important}.browserLayout{display:block}.browserContent,.checkGroup{box-shadow:none!important;border:1px solid #ccc!important;background:#fff!important;color:#000!important}.checkText,.toDoInput{color:#000!important}.checkWho{border:1px solid #999;color:#000!important;background:#fff!important}}@media (max-width:980px){.browserLayout{grid-template-columns:1fr}.browserNav{position:static}.browserContent{min-height:unset}.checkRow{grid-template-columns:minmax(0,1fr) auto}.checkWho{display:none}}
+</style>
+
+<style id="bw-inline-editor-cleanup">
+.bw-editor-panel{display:none!important;}
+.bw-editing-enabled [data-inline-editable],
+.bw-editing-enabled [contenteditable="true"]{outline:1px dashed rgba(198,40,40,.55); outline-offset:2px;}
+.bw-inline-delete{
+  position:absolute; top:6px; right:6px;
+  width:22px; height:22px; border-radius:999px;
+  border:1px solid rgba(198,40,40,.6);
+  background:rgba(198,40,40,.22); color:#fff;
+  display:grid; place-items:center; cursor:pointer; font-weight:900; font-size:13px;
+}
+.bw-inline-add{
+  margin-top:10px; border:1px solid rgba(198,40,40,.42);
+  background:rgba(198,40,40,.16); color:#fff;
+  border-radius:999px; padding:8px 12px; font-weight:800; cursor:pointer;
+}
+</style>
+
+
+<style id="bw-edit-refine-styles">
+.bw-sub-edit-row{position:relative;display:flex;align-items:center;gap:8px;margin:8px 0 0;}
+.bw-sub-edit-row .subButton{margin:0;flex:1;}
+.bw-sub-title{display:block;min-width:0;width:100%;outline:none;}
+.bw-sub-title[contenteditable="true"]{outline:1px dashed rgba(198,40,40,.55);outline-offset:2px;background:rgba(255,255,255,.04);border-radius:8px;padding:2px 4px;}
+.bw-sub-delete{width:22px;height:22px;border-radius:999px;border:1px solid rgba(198,40,40,.6);background:rgba(198,40,40,.22);color:#fff;display:grid;place-items:center;cursor:pointer;font-weight:900;font-size:13px;flex:0 0 22px;}
+.product-edit-list{display:grid;gap:8px;margin-top:8px;}
+.product-edit-row{position:relative;display:flex;align-items:flex-start;gap:10px;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:10px 38px 10px 12px;}
+.product-edit-text{flex:1;line-height:1.55;color:#e9eef7;min-height:22px;}
+.product-edit-text[contenteditable="true"]{outline:1px dashed rgba(198,40,40,.55);outline-offset:2px;background:rgba(255,255,255,.04);border-radius:8px;padding:2px 4px;}
+.product-edit-delete{position:absolute;right:8px;top:8px;width:22px;height:22px;border-radius:999px;border:1px solid rgba(198,40,40,.6);background:rgba(198,40,40,.22);color:#fff;display:grid;place-items:center;cursor:pointer;font-weight:900;font-size:13px;}
+.product-edit-add{margin-top:12px;border:1px solid rgba(198,40,40,.42);background:rgba(198,40,40,.16);color:#fff;border-radius:999px;padding:8px 12px;font-weight:800;cursor:pointer;}
+.bw-download-changes-wrap{display:none;text-align:center;margin:10px auto 14px;}
+body.bw-can-edit .bw-download-changes-wrap{display:block;}
+.bw-download-changes-btn{border:1px solid rgba(198,40,40,.48);background:rgba(198,40,40,.18);color:#fff;border-radius:999px;padding:8px 13px;font-size:12px;font-weight:900;cursor:pointer;}
+.bw-download-changes-btn:hover{background:rgba(198,40,40,.28);}
+</style>
+
+</head>
+<body data-page="page" data-back="index.html">
+<div class="container"><div id="bw-global-header"></div><div id="userIndicator">Loading user...</div>
+<section class="heroPanel"><div class="heroIcon">✅</div><h1>Checklists</h1><p class="subtitle" style="text-align:center;max-width:820px;margin:10px auto 0">Access and task checklists. Access content is edited in Azure staging; To Do checklists save locally per user/browser.</p></section>
+<section class="browserLayout"><aside class="browserNav"><div class="navTitle">Checklist Areas</div><div id="checklistNavRoot"></div></aside><main class="browserContent"><div class="contentBadge" id="contentType">🔐 Access</div><h2 class="contentTitle" id="contentTitle">Access Checklist</h2><p class="contentLead" id="contentLead">Grouped access checklist for onboarding and access reviews.</p><div id="contentBody"></div></main></section>
+</div>
+<script src="assets/js/bw-header.js"></script>
+<script src="assets/js/content-store.js"></script>
+<script>
+const ACCESS_KEY='checklists-access-structured-v1';
+const TODO_KEY='bwLocalTodoChecklistV1';
+let checklistMode='access';
+const DEFAULT_ACCESS_GROUPS=[
+  {key:'shared-bw',title:'Shared BW',items:[{text:'NSK',who:'all'}]},
+  {key:'shared-branch',title:'Shared Branch',items:[{text:'Bearing Net',who:'all'},{text:'Sutton',who:'all'},{text:'ITM',who:'all'},{text:'Industrial World',who:'all'},{text:'Smart Freight',who:'all'},{text:'Teams Channel (Branch)',who:'all'},{text:'Spared',who:'all'},{text:'Optibelt',who:'all'}]},
+  {key:'individual',title:'Individual',items:[{text:'Australian Bearings',who:'all'},{text:'Sealing Australia',who:'all'},{text:'Koyo',who:'all'},{text:'Timken',who:'all'},{text:'Finer',who:'all'},{text:'BW Trade Teams Channel',who:'all'},{text:'BW Everyone Teams Channel',who:'all'},{text:'Oscar',who:'all'},{text:'Momentum Pro - with PIN',who:'all'},{text:'Core Training / Preceda',who:'all'},{text:'Service Now',who:'all'},{text:'Teams - SOP’s',who:'managers'},{text:'Custom Fleet',who:'managers'}]}
+];
+const DEFAULT_TODO_GROUPS=[
+  {key:'daily',title:'Daily',items:[{text:'Description',done:false}]},
+  {key:'weekly',title:'Weekly',items:[{text:'Description',done:false}]},
+  {key:'monthly',title:'Monthly',items:[{text:'Description',done:false}]}
+];
+let accessGroups=JSON.parse(JSON.stringify(DEFAULT_ACCESS_GROUPS));
+let todoGroups=loadLocalTodo();
+const navRoot=document.getElementById('checklistNavRoot'),contentType=document.getElementById('contentType'),contentTitle=document.getElementById('contentTitle'),contentLead=document.getElementById('contentLead'),contentBody=document.getElementById('contentBody');
+function esc(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));}
+function slug(s){return String(s||'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'')||'item';}
+function localTickKey(mode,group,item){return 'bwChecklistTick::'+mode+'::'+group+'::'+slug(item);}
+function loadLocalTodo(){try{const raw=localStorage.getItem(TODO_KEY);if(raw)return JSON.parse(raw);}catch(e){}return JSON.parse(JSON.stringify(DEFAULT_TODO_GROUPS));}
+function saveLocalTodo(){try{localStorage.setItem(TODO_KEY,JSON.stringify(todoGroups));}catch(e){}}
+async function saveAccess(){if(!window.BWContentStore)return;try{await BWContentStore.save(ACCESS_KEY,accessGroups);}catch(e){console.warn(e);alert('Access checklist save failed: '+e.message);}}
+function renderNav(){navRoot.innerHTML='';[['access','🔐','Access'],['todo','🧾','To Do']].forEach(([key,icon,label])=>{const btn=document.createElement('button');btn.className='subButton'+(checklistMode===key?' active':'');btn.type='button';btn.innerHTML=`<span class="typeLabel"><span class="typeIcon">${icon}</span><span>${label}</span></span>`;btn.onclick=()=>{checklistMode=key;renderContent();};navRoot.appendChild(btn);});}
+function renderContent(){renderNav();if(checklistMode==='todo')renderTodo();else renderAccess();}
+function renderAccess(){contentType.textContent='🔐 Access';contentTitle.textContent='Access Checklist';contentLead.textContent='Grouped checklist for onboarding and access reviews.';contentBody.innerHTML='<div class="pdfSaveWrap"><button class="pdfSaveBtn" type="button" data-action="save-pdf">Save checklist PDF</button></div>'+accessGroups.map((g,gi)=>`<section class="checkGroup" data-group-index="${gi}"><h3 class="checkText" data-field="group-title" contenteditable="${document.body.classList.contains('bw-can-edit')}">${esc(g.title)}</h3><div class="checkRows">${g.items.map((it,ii)=>{const tick=localStorage.getItem(localTickKey('access',g.key,it.text))==='1'?'checked':'';const cls=it.who==='managers'?'managers':'all';return `<div class="checkRow" data-item-index="${ii}"><span class="checkText" data-field="item-text" contenteditable="${document.body.classList.contains('bw-can-edit')}">${esc(it.text)}</span><span class="checkWho ${cls}" data-field="item-who">${cls==='managers'?'MANAGER':'ALL'}</span><input class="checkBox" type="checkbox" ${tick}><button class="rowDelete" type="button" title="Delete">×</button></div>`;}).join('')}</div><div class="checkActions"><button class="checkBtn" type="button" data-action="add">Add entry</button><button class="checkBtn" type="button" data-action="mark">Mark group complete</button><button class="checkBtn" type="button" data-action="clear">Clear group</button></div></section>`).join('')+'<p class="checkNote">Edit text directly in Azure editor mode. Click ALL/MANAGER to toggle item type.</p>';}
+function renderTodo(){contentType.textContent='🧾 To Do';contentTitle.textContent='To Do Checklist';contentLead.textContent='Local checklist for daily, weekly and monthly activity. This saves per user/browser on the GitHub version.';contentBody.innerHTML='<div class="pdfSaveWrap"><button class="pdfSaveBtn" type="button" data-action="save-pdf">Save checklist PDF</button></div>'+todoGroups.map((g,gi)=>`<section class="checkGroup" data-group-index="${gi}"><h3>${esc(g.title)}</h3><div class="checkRows">${g.items.map((it,ii)=>`<div class="checkRow" data-item-index="${ii}"><input class="toDoInput" value="${esc(it.text)}" placeholder="Description"><input class="checkBox" type="checkbox" ${it.done?'checked':''}><button class="rowDelete" style="display:inline-grid" type="button" title="Delete">×</button></div>`).join('')}</div><div class="checkActions always"><button class="checkBtn" type="button" data-action="add-todo">Add entry</button><button class="checkBtn" type="button" data-action="clear-complete">Clear completed items</button></div></section>`).join('')+'<p class="checkNote">Press Enter in a description field to create a new blank row below.</p>';}
+
+function getChecklistExportData(){
+  if(checklistMode==='access'){
+    return {
+      title:'Access Checklist',
+      lead:'Grouped checklist for onboarding and access reviews.',
+      groups:accessGroups.map(g=>({
+        title:g.title,
+        items:g.items.map(it=>({
+          text:it.text,
+          meta:it.who==='managers'?'MANAGER':'ALL',
+          done:localStorage.getItem(localTickKey('access',g.key,it.text))==='1'
+        }))
+      }))
+    };
+  }
+  return {
+    title:'To Do Checklist',
+    lead:'Local checklist for daily, weekly and monthly activity.',
+    groups:todoGroups.map(g=>({
+      title:g.title,
+      items:g.items.map(it=>({text:it.text,meta:'',done:!!it.done}))
+    }))
+  };
+}
+function loadJsPdf(){
+  if(window.jspdf&&window.jspdf.jsPDF)return Promise.resolve(window.jspdf.jsPDF);
+  return new Promise((resolve,reject)=>{
+    const existing=document.querySelector('script[data-jspdf-loader="true"]');
+    if(existing){existing.addEventListener('load',()=>resolve(window.jspdf.jsPDF));existing.addEventListener('error',reject);return;}
+    const s=document.createElement('script');
+    s.src='https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+    s.dataset.jspdfLoader='true';
+    s.onload=()=>resolve(window.jspdf.jsPDF);
+    s.onerror=()=>reject(new Error('PDF library could not be loaded.'));
+    document.head.appendChild(s);
+  });
+}
+function safeFileName(s){return String(s||'checklist').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'')||'checklist';}
+function wrapPdfText(doc,text,maxWidth){return doc.splitTextToSize(String(text||''),maxWidth);}
+async function saveChecklistPdf(){
+  const btn=document.querySelector('[data-action="save-pdf"]');
+  const oldText=btn?btn.textContent:'';
+  try{
+    if(btn){btn.textContent='Generating PDF...';btn.disabled=true;}
+    const jsPDF=await loadJsPdf();
+    const data=getChecklistExportData();
+    const doc=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+    const pageW=210,pageH=297,margin=14;
+    let y=18;
+    const drawPageBg=()=>{
+      doc.setFillColor(11,24,39);doc.rect(0,0,pageW,pageH,'F');
+      doc.setFillColor(31,41,55);doc.roundedRect(margin,12,pageW-margin*2,pageH-24,5,5,'F');
+      doc.setDrawColor(198,40,40);doc.setLineWidth(.6);doc.roundedRect(margin,12,pageW-margin*2,pageH-24,5,5,'S');
+    };
+    const newPage=()=>{doc.addPage();drawPageBg();y=20;};
+    const checkSpace=(need)=>{if(y+need>pageH-18)newPage();};
+    drawPageBg();
+    doc.setFillColor(198,40,40);doc.roundedRect(margin+6,y,12,12,3,3,'F');
+    doc.setTextColor(255,255,255);doc.setFont('helvetica','bold');doc.setFontSize(8);doc.text('BW',margin+8.4,y+7.8);
+    doc.setFontSize(20);doc.text(data.title,margin+22,y+8.5);
+    y+=17;
+    doc.setTextColor(229,209,209);doc.setFont('helvetica','normal');doc.setFontSize(10);
+    doc.text(data.lead,margin+6,y);y+=6;
+    doc.setTextColor(180,190,205);doc.setFontSize(8);
+    doc.text('Saved: '+new Date().toLocaleString(),margin+6,y);y+=8;
+    data.groups.forEach(group=>{
+      const count=group.items.length,done=group.items.filter(x=>x.done).length;
+      checkSpace(24);
+      doc.setFillColor(17,24,39);doc.setDrawColor(70,80,96);doc.roundedRect(margin+6,y,pageW-margin*2-12,11,3,3,'FD');
+      doc.setTextColor(255,255,255);doc.setFont('helvetica','bold');doc.setFontSize(12);doc.text(String(group.title||'Group'),margin+10,y+7);
+      doc.setTextColor(229,209,209);doc.setFontSize(8);doc.text(`${done}/${count} complete`,pageW-margin-38,y+7);
+      y+=15;
+      group.items.forEach(item=>{
+        const lines=wrapPdfText(doc,item.text,pageW-margin*2-47);
+        const rowH=Math.max(10,lines.length*4.2+5);
+        checkSpace(rowH+2);
+        doc.setFillColor(255,255,255);doc.setDrawColor(226,232,240);doc.roundedRect(margin+8,y,pageW-margin*2-16,rowH,3,3,'FD');
+        doc.setDrawColor(198,40,40);doc.setLineWidth(.45);doc.rect(margin+12,y+3,4.2,4.2,'S');
+        if(item.done){doc.setTextColor(198,40,40);doc.setFont('helvetica','bold');doc.setFontSize(8);doc.text('✓',margin+12.7,y+6.7);}
+        doc.setTextColor(17,24,39);doc.setFont('helvetica','bold');doc.setFontSize(9.5);doc.text(lines,margin+20,y+6.6);
+        if(item.meta){
+          doc.setFillColor(item.meta==='MANAGER'?180:22,item.meta==='MANAGER'?83:101,item.meta==='MANAGER'?9:52);
+          doc.roundedRect(pageW-margin-32,y+3,20,5.5,2.5,2.5,'F');
+          doc.setTextColor(255,255,255);doc.setFontSize(6.5);doc.text(item.meta,pageW-margin-29.5,y+6.8);
+        }
+        y+=rowH+2;
+      });
+      y+=3;
+    });
+    const pages=doc.getNumberOfPages();
+    for(let i=1;i<=pages;i++){doc.setPage(i);doc.setTextColor(148,163,184);doc.setFontSize(8);doc.text(`Page ${i} of ${pages}`,pageW-margin-28,pageH-8);}
+    doc.save(`${safeFileName(data.title)}-${new Date().toISOString().slice(0,10)}.pdf`);
+  }catch(err){console.warn(err);alert('PDF download failed. Check your internet connection and try again.');}
+  finally{if(btn){btn.textContent=oldText||'Save checklist PDF';btn.disabled=false;}}
+}
+contentBody.addEventListener('click',async e=>{if(e.target.matches('[data-action="save-pdf"]')){await saveChecklistPdf();return;}const groupEl=e.target.closest('.checkGroup');if(!groupEl)return;const gi=Number(groupEl.dataset.groupIndex);if(checklistMode==='access'){const g=accessGroups[gi];const row=e.target.closest('.checkRow');if(e.target.matches('[data-action="add"]')){g.items.push({text:'New entry',who:'all'});renderAccess();await saveAccess();return;}if(e.target.matches('[data-action="mark"],[data-action="clear"]')){const val=e.target.dataset.action==='mark';groupEl.querySelectorAll('.checkBox').forEach((box,i)=>{box.checked=val;const it=g.items[i];localStorage.setItem(localTickKey('access',g.key,it.text),val?'1':'0');});return;}if(e.target.matches('.rowDelete')&&row){const ii=Number(row.dataset.itemIndex);if(confirm('Delete this access item?')){g.items.splice(ii,1);renderAccess();await saveAccess();}return;}if(e.target.matches('.checkWho')&&row){const ii=Number(row.dataset.itemIndex);g.items[ii].who=g.items[ii].who==='managers'?'all':'managers';renderAccess();await saveAccess();return;}}else{const g=todoGroups[gi];const row=e.target.closest('.checkRow');if(e.target.matches('[data-action="add-todo"]')){g.items.push({text:'Description',done:false});saveLocalTodo();renderTodo();return;}if(e.target.matches('[data-action="clear-complete"]')){g.items=g.items.filter(x=>!x.done);if(!g.items.length)g.items.push({text:'Description',done:false});saveLocalTodo();renderTodo();return;}if(e.target.matches('.rowDelete')&&row){const ii=Number(row.dataset.itemIndex);g.items.splice(ii,1);if(!g.items.length)g.items.push({text:'Description',done:false});saveLocalTodo();renderTodo();return;}}});
+contentBody.addEventListener('change',e=>{const groupEl=e.target.closest('.checkGroup'),row=e.target.closest('.checkRow');if(!groupEl||!row)return;const gi=Number(groupEl.dataset.groupIndex),ii=Number(row.dataset.itemIndex);if(checklistMode==='access'&&e.target.matches('.checkBox')){const g=accessGroups[gi],it=g.items[ii];localStorage.setItem(localTickKey('access',g.key,it.text),e.target.checked?'1':'0');}if(checklistMode==='todo'&&e.target.matches('.checkBox')){todoGroups[gi].items[ii].done=e.target.checked;saveLocalTodo();}});
+contentBody.addEventListener('input',e=>{const groupEl=e.target.closest('.checkGroup'),row=e.target.closest('.checkRow');if(!groupEl)return;const gi=Number(groupEl.dataset.groupIndex);if(checklistMode==='access'){if(e.target.matches('[data-field="group-title"]')){accessGroups[gi].title=e.target.textContent.trim()||'Group';saveAccess();}if(row&&e.target.matches('[data-field="item-text"]')){accessGroups[gi].items[Number(row.dataset.itemIndex)].text=e.target.textContent.trim()||'New entry';saveAccess();}}else if(checklistMode==='todo'&&row&&e.target.matches('.toDoInput')){todoGroups[gi].items[Number(row.dataset.itemIndex)].text=e.target.value||'Description';saveLocalTodo();}});
+contentBody.addEventListener('keydown',e=>{if(checklistMode==='todo'&&e.target.matches('.toDoInput')&&e.key==='Enter'){e.preventDefault();const groupEl=e.target.closest('.checkGroup'),row=e.target.closest('.checkRow');const gi=Number(groupEl.dataset.groupIndex),ii=Number(row.dataset.itemIndex);todoGroups[gi].items.splice(ii+1,0,{text:'Description',done:false});saveLocalTodo();renderTodo();setTimeout(()=>{const next=document.querySelector(`.checkGroup[data-group-index="${gi}"] .checkRow[data-item-index="${ii+1}"] .toDoInput`);if(next){next.focus();next.select();}},0);}});
+function applyRemote(remote){if(Array.isArray(remote)&&remote.length){accessGroups=remote;renderContent();}}
+function init(){renderNav();renderContent();if(window.BWContentStore){const quick=BWContentStore.getFast(ACCESS_KEY,null,applyRemote);applyRemote(quick);BWContentStore.waitForUser().then(()=>renderContent()).catch(()=>{});}document.addEventListener('bw:user-ready',()=>renderContent());}
+init();
+</script>
+<script src="assets/js/global.js"></script>
+</body>
+</html>

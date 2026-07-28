@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Medium Avery Labels</title>
+<style>
+@page { size:A4; margin:0; }
+body{
+  margin:0;
+  padding:8mm;
+  font-family:Arial,sans-serif;
+}
+.sheet{
+  display:grid;
+  grid-template-columns:repeat(2,90mm);
+  grid-auto-rows:40mm;
+  gap:2mm;
+}
+.label{
+  width:90mm;
+  height:40mm;
+  display:flex;
+  align-items:center;
+  gap:4mm;
+  padding:2mm;
+  border:1px solid #ddd;
+}
+.qr{
+  width:32mm;
+  height:32mm;
+}
+.part{
+  font-size:16pt;
+  font-weight:bold;
+}
+.desc{
+  font-size:10pt;
+}
+</style>
+
+<style id="bwUniversalFooterSignatureStyle">
+.siteSignature{width:100%;text-align:center;font-size:11px;letter-spacing:.08em;color:rgba(255,255,255,.22);padding:18px 10px 12px;margin-top:auto;user-select:none;pointer-events:none;text-transform:uppercase;font-weight:600}.siteSignature::after{content:'Designed and built by H. Fitzgerald'}@media print{.siteSignature{position:fixed;bottom:4mm;right:6mm;width:auto;font-size:6px;color:rgba(0,0,0,.30)!important;padding:0;margin:0;text-align:right}}
+</style>
+</head>
+<body>
+<div class="sheet">
+  <div class="label">
+    <img class="qr" src="bw-qr-placeholder.png">
+    <div>
+      <div class="part">6205-2RS</div>
+      <div class="desc">Deep Groove Bearing</div>
+    </div>
+  </div>
+</div>
+<footer class="siteSignature" aria-label="Designed and built by H. Fitzgerald" data-build-credit="H. Fitzgerald"></footer>
+</body>
+</html>
