@@ -1,0 +1,524 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Territory Builder | BW Playbook</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.css">
+<style>
+:root{--bg:#0f1720;--panel:#17212b;--panel2:#1f2b36;--line:#324252;--text:#eef4f7;--muted:#9fb0bd;--accent:#ef7d00;--accent2:#ff9b2f;--ok:#38a169;--warn:#d69e2e;--danger:#e05252}
+*{box-sizing:border-box}html,body{height:100%;margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text)}
+.app{height:100%;display:grid;grid-template-columns:minmax(0,1fr) 445px}#map{height:100%;background:#d9e2e8}
+.sidebar{height:100%;overflow:auto;border-left:1px solid var(--line);background:var(--panel);padding:18px}
+.brand{display:flex;align-items:center;gap:10px;margin-bottom:12px}.logo{width:42px;height:42px;border-radius:10px;background:var(--accent);display:grid;place-items:center;font-weight:900;color:#111}
+h1{font-size:23px;margin:0}.subtitle{color:var(--muted);font-size:13px}.badge{display:inline-block;padding:2px 7px;border-radius:10px;background:#304252;color:#d7e3ea;font-size:11px;margin-left:6px}
+.card{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:13px;margin:12px 0}.card h2{font-size:15px;margin:0 0 9px}
+label{display:block;color:var(--muted);font-size:12px;font-weight:700;margin:9px 0 4px}
+input{width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;background:#111a22;color:var(--text);font-size:14px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+button{width:100%;padding:11px 12px;border:0;border-radius:8px;background:var(--accent);color:#151515;font-weight:800;font-size:14px;cursor:pointer;margin-top:8px}
+button:hover{background:var(--accent2)}button.secondary{background:#283744;color:var(--text);border:1px solid var(--line)}button:disabled{opacity:.45;cursor:not-allowed}
+.status{border:1px solid var(--line);background:#111a22;border-radius:9px;padding:10px;font-size:13px;line-height:1.4;color:var(--muted)}
+.status.ok{border-color:#2f8057;color:#9ee2ba}.status.warn{border-color:#8c6e22;color:#f3d889}.status.error{border-color:#8f3535;color:#ffb1b1}
+.metrics{display:grid;grid-template-columns:1fr 1fr;gap:8px}.metric{border:1px solid var(--line);border-radius:9px;padding:9px;background:#111a22;color:var(--muted);font-size:12px}.metric b{display:block;color:var(--text);font-size:20px;margin-top:4px}
+.sector{background:#111a22;border:1px solid var(--line);border-left:5px solid #777;border-radius:9px;padding:10px;margin:9px 0}.sector h3{margin:0 0 5px;font-size:15px}.sector small{color:var(--muted)}.sector ol{margin:7px 0 0;padding-left:20px;font-size:12px;color:#cbd6dd}
+.note{font-size:12px;color:var(--muted);line-height:1.45}.sector-label{background:#fff;color:#111;border:2px solid #333;border-radius:7px;padding:3px 6px;font:bold 12px Arial;white-space:nowrap;box-shadow:0 1px 5px rgba(0,0,0,.3)}
+.good{color:#9ee2ba}.review{color:#f3d889}.poor{color:#ffb1b1}
+
+.sector{cursor:pointer;transition:.15s ease}
+.sector:hover{transform:translateY(-1px);border-color:#617689}
+.sector.selected{outline:2px solid #fff;background:#172737}
+.print-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.route-step-marker{background:#fff;color:#111;border:2px solid #111;border-radius:50%;width:26px;height:26px;display:grid;place-items:center;font:bold 12px Arial;box-shadow:0 1px 4px rgba(0,0,0,.35)}
+.start-marker{background:#d7f5e3;color:#0b5b30;border:2px solid #147a43;border-radius:8px;padding:4px 7px;font:bold 12px Arial;white-space:nowrap}
+.finish-marker{background:#ffe2df;color:#8a1c16;border:2px solid #c43b32;border-radius:8px;padding:4px 7px;font:bold 12px Arial;white-space:nowrap}
+@media print{
+  body{background:#fff;color:#000}
+  .sidebar{display:none!important}
+  .app{display:block}
+  #map{height:72vh!important}
+  .leaflet-control-container{display:none!important}
+  #printSheet{display:block!important;page-break-before:always;padding:14mm;font-family:Arial;color:#000;background:#fff}
+  #printSheet h1{font-size:22pt;margin:0 0 4mm}
+  #printSheet .print-meta{display:grid;grid-template-columns:repeat(3,1fr);gap:4mm;margin-bottom:6mm}
+  #printSheet .print-meta div{border:1px solid #aaa;padding:3mm}
+  #printSheet ol{font-size:12pt;line-height:1.5}
+}
+
+@media(max-width:900px){.app{grid-template-columns:1fr;grid-template-rows:58vh auto}.sidebar{height:auto;border-left:0;border-top:1px solid var(--line)}}
+</style>
+</head>
+<body>
+<div class="app">
+<div id="map"></div>
+<aside class="sidebar">
+  <div class="brand"><div class="logo">BW</div><div><h1>Territory Builder <span class="badge">v3.2</span></h1><div class="subtitle">Playbook-hosted walker route planner</div></div></div>
+  <a href="../" style="display:inline-block;margin:0 0 10px;color:#ffb05c;text-decoration:none;font-size:13px">← Back to BW Playbook</a>
+
+  <div class="card">
+    <h2>1. Define the total area</h2>
+    <div class="note">Use the polygon or rectangle tool in the top-left of the map.</div>
+    <label>Territory code</label><input id="prefix" value="BAY" maxlength="6">
+    <div class="grid2">
+      <div><label>Target minutes</label><input id="target" type="number" value="120" min="30" max="480"></div>
+      <div><label>Walking speed km/h</label><input id="speed" type="number" value="4" min="1" max="8" step="0.1"></div>
+    </div>
+    <div class="grid2">
+      <div><label>Preferred tolerance ± min</label><input id="preferredTolerance" type="number" value="10" min="0" max="60"></div>
+      <div><label>Maximum tolerance ± min</label><input id="maximumTolerance" type="number" value="20" min="0" max="120"></div>
+    </div>
+    <div class="grid2">
+      <div><label>Seconds per premises</label><input id="dropSeconds" type="number" value="25" min="5" max="180"></div>
+      <div><label>Access factor</label><input id="accessFactor" type="number" value="1.25" min="1" max="3" step="0.05"></div>
+    </div>
+    <div class="grid2">
+      <div><label>Mini-sector threshold %</label><input id="miniThresholdPct" type="number" value="25" min="5" max="60"></div>
+      <div><label>Maximum merge distance m</label><input id="mergeDistanceM" type="number" value="180" min="20" max="1000"></div>
+    </div>
+    <button id="analyseBtn" disabled>Analyse Area</button>
+    <button id="generateBtn" disabled>Generate Road-Side Sectors</button>
+    <button id="clearBtn" class="secondary">Clear</button>
+  </div>
+
+  <div id="status" class="status">Draw a polygon or rectangle to begin.</div>
+
+  <div class="card">
+    <h2>Area summary</h2>
+    <div class="metrics">
+      <div class="metric">Road records<b id="roadCount">0</b></div>
+      <div class="metric">Road-side units<b id="sideCount">0</b></div>
+      <div class="metric">Mapped premises<b id="buildingCount">0</b></div>
+      <div class="metric">Draft sectors<b id="sectorCount">0</b></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Draft sectors</h2>
+    <div class="note">Select a sector to isolate its map and prepare a walker printout.</div>
+    <div id="sectorList" class="note">No sectors generated.</div>
+    <div class="print-actions">
+      <button id="showAllBtn" class="secondary" disabled>Show All</button>
+      <button id="printSectorBtn" disabled>Print Selected</button>
+    </div>
+  </div>
+
+  <button id="saveBtn" class="secondary" disabled>Save Project JSON</button>
+  <button id="loadBtn" class="secondary">Load Project JSON</button>
+  <input id="fileInput" type="file" accept=".json" hidden>
+  <button id="csvBtn" class="secondary" disabled>Export Sector CSV</button>
+
+  <div class="card note">
+    <strong>Version 3.2 logic</strong><br>
+    Every road record is split into two side-units. Buildings are assigned to the correct side. Non-delivery roads are excluded by default. After generation, undersized leftover sectors are absorbed into the most logical nearby run.
+  </div>
+</aside>
+</div>
+
+<section id="printSheet" style="display:none"></section>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.js"></script>
+<script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
+<script>
+const map=L.map('map').setView([-37.8426,145.2680],15);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:20,attribution:'&copy; OpenStreetMap contributors'}).addTo(map);
+const drawn=new L.FeatureGroup().addTo(map),sectorsLayer=new L.FeatureGroup().addTo(map);
+map.addControl(new L.Control.Draw({position:'topleft',draw:{polygon:{allowIntersection:false,showArea:true,shapeOptions:{color:'#ef7d00',weight:3,fillOpacity:.08}},rectangle:{shapeOptions:{color:'#ef7d00',weight:3,fillOpacity:.08}},polyline:false,circle:false,marker:false,circlemarker:false},edit:{featureGroup:drawn,remove:true}}));
+
+let boundary=null,areaData=null,generatedSectors=[],selectedSectorId=null;
+const $=id=>document.getElementById(id);
+function setStatus(msg,type=''){$('status').className='status'+(type?' '+type:'');$('status').textContent=msg}
+function resetAnalysis(){areaData=null;generatedSectors=[];sectorsLayer.clearLayers();['roadCount','sideCount','buildingCount','sectorCount'].forEach(id=>$(id).textContent='0');$('sectorList').innerHTML='No sectors generated.';$('generateBtn').disabled=true;$('saveBtn').disabled=true;$('csvBtn').disabled=true}
+map.on(L.Draw.Event.CREATED,e=>{drawn.clearLayers();resetAnalysis();boundary=e.layer;drawn.addLayer(boundary);$('analyseBtn').disabled=false;setStatus('Area selected. Press “Analyse Area”.')});
+map.on(L.Draw.Event.EDITED,()=>{resetAnalysis();setStatus('Boundary changed. Analyse the area again.')});
+map.on(L.Draw.Event.DELETED,()=>clearAll());
+function clearAll(){drawn.clearLayers();sectorsLayer.clearLayers();boundary=null;resetAnalysis();$('analyseBtn').disabled=true;setStatus('Draw a polygon or rectangle to begin.')}
+$('clearBtn').onclick=clearAll;
+
+function polygonCoords(){return boundary.toGeoJSON().geometry.coordinates[0]}
+function haversine(a,b){const r=x=>x*Math.PI/180,R=6371.0088,[x1,y1]=a,[x2,y2]=b,p1=r(y1),p2=r(y2),dp=r(y2-y1),dl=r(x2-x1),h=Math.sin(dp/2)**2+Math.cos(p1)*Math.cos(p2)*Math.sin(dl/2)**2;return 2*R*Math.asin(Math.sqrt(h))}
+function lineLength(c){let km=0;for(let i=1;i<c.length;i++)km+=haversine(c[i-1],c[i]);return km}
+function centroid(c){return c.length?[c.reduce((n,p)=>n+p[0],0)/c.length,c.reduce((n,p)=>n+p[1],0)/c.length]:[0,0]}
+function endpointDistance(a,b){const ae=[a.coords[0],a.coords[a.coords.length-1]],be=[b.coords[0],b.coords[b.coords.length-1]];return Math.min(...ae.flatMap(x=>be.map(y=>haversine(x,y))))}
+function roadOrientation(coords){
+  const a=coords[0],b=coords[coords.length-1],dx=Math.abs(b[0]-a[0]),dy=Math.abs(b[1]-a[1]);
+  return dx>=dy?'EW':'NS';
+}
+function sideLabels(coords){
+  return roadOrientation(coords)==='EW'?['North side','South side']:['West side','East side'];
+}
+function crossSign(a,b,p){
+  return (b[0]-a[0])*(p[1]-a[1])-(b[1]-a[1])*(p[0]-a[0]);
+}
+function nearestSegmentAndSide(point,coords){
+  let best={dist:Infinity,side:0,index:0};
+  for(let i=1;i<coords.length;i++){
+    const a=coords[i-1],b=coords[i];
+    const line=turf.lineString([a,b]);
+    const snap=turf.nearestPointOnLine(line,turf.point(point),{units:'kilometers'});
+    if(snap.properties.dist<best.dist){
+      best={dist:snap.properties.dist,side:crossSign(a,b,point)>=0?0:1,index:i-1};
+    }
+  }
+  return best;
+}
+function connected(a,b){
+  if(endpointDistance(a,b)<=0.035)return true;
+  try{
+    if(turf.booleanIntersects(a.feature,b.feature))return true;
+    return endpointDistance(a,b)<=0.05;
+  }catch{return false}
+}
+function sideConnected(a,b){
+  if(!connected(a,b))return false;
+  const sameRoad=a.roadId===b.roadId;
+  if(sameRoad)return a.sideIndex===b.sideIndex;
+  return true;
+}
+
+$('analyseBtn').onclick=async()=>{
+  if(!boundary)return;resetAnalysis();$('analyseBtn').disabled=true;setStatus('Downloading and analysing map data…');
+  try{
+    const response=await fetch('/api/territory-analyse',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({polygon:polygonCoords()})});
+    const payload=await response.json();if(!response.ok)throw new Error(payload.error||'Map-data request failed');
+    areaData=payload;$('roadCount').textContent=payload.roads.length;$('buildingCount').textContent=payload.buildings.length;$('generateBtn').disabled=!payload.roads.length;$('saveBtn').disabled=false;
+    setStatus(`Area ready: ${payload.roads.length} road records and ${payload.buildings.length} mapped premises.`, 'ok');
+  }catch(err){setStatus('Analysis failed: '+err.message,'error')}finally{$('analyseBtn').disabled=false}
+};
+
+
+function isEligibleDeliveryRoad(road){
+  const type=(road.highway||'').toLowerCase();
+  const name=(road.name||'').toLowerCase();
+  const excludedTypes=new Set([
+    'footway','path','cycleway','bridleway','steps','track',
+    'construction','proposed','raceway','corridor'
+  ]);
+  if(excludedTypes.has(type))return false;
+  if(type==='service' && /(slip|ramp|parking|driveway|access)/i.test(name))return false;
+  if(/trail|shared path|bike path|cycle path|recreation trail|rail trail|slip lane/i.test(name))return false;
+  return true;
+}
+function unitDistanceKm(a,b){
+  return Math.min(endpointDistance(a,b),haversine(a.centroid,b.centroid));
+}
+function sectorDistanceKm(a,b,units){
+  let best=Infinity;
+  for(const ai of a.indices){
+    for(const bi of b.indices){
+      best=Math.min(best,unitDistanceKm(units[ai],units[bi]));
+    }
+  }
+  return best;
+}
+function sameStreetAffinity(a,b,units){
+  const namesA=new Set(a.indices.map(i=>units[i].name));
+  let score=0;
+  for(const i of b.indices)if(namesA.has(units[i].name))score+=1;
+  return score;
+}
+function sectorHasDirectConnection(a,b,units){
+  const bSet=new Set(b.indices);
+  for(const ai of a.indices){
+    for(const nb of units[ai].neighbors)if(bSet.has(nb))return true;
+  }
+  return false;
+}
+function mergeSectorInto(target,source,units){
+  const combined=[...new Set([...target.indices,...source.indices])];
+  const seed=target.order?.[0] ?? combined[0];
+  target.indices=combined;
+  target.order=routeOrder(units,combined,seed);
+  target.minutes+=source.minutes;
+  target.mergedFrom=[...(target.mergedFrom||[]),...(source.mergedFrom||[]),source.originalIndex];
+}
+function absorbMiniSectors(sectors,units,target,maxTol,miniPct,maxMergeDistanceM){
+  const miniThreshold=target*(miniPct/100);
+  const maxAllowed=target+maxTol;
+  sectors.forEach((s,i)=>s.originalIndex=i);
+  let working=[...sectors];
+  let changed=true;
+  while(changed){
+    changed=false;
+    const minis=working
+      .map((s,i)=>({s,i}))
+      .filter(x=>x.s.minutes<miniThreshold)
+      .sort((a,b)=>a.s.minutes-b.s.minutes);
+    if(!minis.length)break;
+
+    for(const item of minis){
+      const source=working[item.i];
+      if(!source)continue;
+      const candidates=working.map((targetSector,j)=>{
+        if(j===item.i)return null;
+        const distanceKm=sectorDistanceKm(source,targetSector,units);
+        const connected=sectorHasDirectConnection(source,targetSector,units);
+        const sameStreet=sameStreetAffinity(source,targetSector,units);
+        const projected=source.minutes+targetSector.minutes;
+        const overrun=Math.max(0,projected-maxAllowed);
+        const distancePenalty=distanceKm*1000;
+        let score=distancePenalty + overrun*8;
+        if(connected)score-=220;
+        if(sameStreet)score-=sameStreet*140;
+        if(projected<=maxAllowed)score-=80;
+        return {j,targetSector,distanceKm,projected,score,connected,sameStreet};
+      }).filter(Boolean).sort((a,b)=>a.score-b.score);
+
+      const best=candidates[0];
+      if(!best)continue;
+      const canMerge=
+        best.connected ||
+        best.sameStreet>0 ||
+        best.distanceKm*1000<=maxMergeDistanceM;
+
+      if(canMerge){
+        mergeSectorInto(best.targetSector,source,units);
+        working.splice(item.i,1);
+        changed=true;
+        break;
+      }
+    }
+  }
+  return working;
+}
+function buildSideUnits(){
+  const speed=+$('speed').value||4,dropSec=+$('dropSeconds').value||25,access=+$('accessFactor').value||1.25;
+  const roads=areaData.roads
+    .filter(isEligibleDeliveryRoad)
+    .map((r,index)=>({
+      index,id:r.id,name:r.name,highway:r.highway||'',coords:r.coords,
+      feature:turf.lineString(r.coords),lengthKm:lineLength(r.coords),centroid:centroid(r.coords)
+    }));
+  const units=[];
+  roads.forEach((r,roadIndex)=>{
+    const labels=sideLabels(r.coords);
+    for(let sideIndex=0;sideIndex<2;sideIndex++){
+      units.push({
+        index:units.length,roadIndex,roadId:r.id,name:r.name,coords:r.coords,feature:r.feature,
+        sideIndex,sideLabel:labels[sideIndex],label:`${r.name} — ${labels[sideIndex]}`,
+        lengthKm:r.lengthKm,centroid:r.centroid,buildings:0,neighbors:new Set()
+      });
+    }
+  });
+  const buildings=areaData.buildings.map(b=>({id:b.id,feature:turf.polygon([b.coords]),centroid:turf.centroid(turf.polygon([b.coords])).geometry.coordinates}));
+  buildings.forEach(b=>{
+    let bestRoad=null,bestInfo=null;
+    roads.forEach(r=>{
+      const info=nearestSegmentAndSide(b.centroid,r.coords);
+      if(!bestInfo||info.dist<bestInfo.dist){bestInfo=info;bestRoad=r;}
+    });
+    if(bestRoad&&bestInfo.dist<=0.18){
+      const unit=units.find(u=>u.roadId===bestRoad.id&&u.sideIndex===bestInfo.side);
+      if(unit)unit.buildings++;
+    }
+  });
+  units.forEach(u=>{
+    u.walkMinutes=((u.lengthKm/2)/speed)*60*access;
+    u.dropMinutes=u.buildings*dropSec/60;
+    u.totalMinutes=u.walkMinutes+u.dropMinutes;
+  });
+  for(let i=0;i<units.length;i++)for(let j=i+1;j<units.length;j++){
+    if(sideConnected(units[i],units[j])){units[i].neighbors.add(j);units[j].neighbors.add(i)}
+  }
+  return {units,buildings};
+}
+
+function sectorFrontier(units,selected,remaining){
+  const out=new Set();
+  selected.forEach(i=>units[i].neighbors.forEach(nb=>{if(remaining.has(nb))out.add(nb)}));
+  return [...out];
+}
+function componentSizes(units,remaining){
+  const seen=new Set(),sizes=[];
+  for(const idx of remaining){
+    if(seen.has(idx))continue;
+    const q=[idx];seen.add(idx);let n=0;
+    while(q.length){const x=q.shift();n++;for(const nb of units[x].neighbors)if(remaining.has(nb)&&!seen.has(nb)){seen.add(nb);q.push(nb)}}
+    sizes.push(n);
+  }
+  return sizes;
+}
+function fragmentPenalty(units,remaining,candidate){
+  const before=componentSizes(units,remaining),afterSet=new Set(remaining);afterSet.delete(candidate),after=componentSizes(units,afterSet);
+  return after.filter(x=>x<=2).length*28+Math.max(0,after.length-before.length)*40;
+}
+function routeOrder(units,indices,seed){
+  const set=new Set(indices),order=[seed],used=new Set([seed]);let current=seed;
+  while(order.length<indices.length){
+    const direct=[...units[current].neighbors].filter(x=>set.has(x)&&!used.has(x));
+    let next=direct.sort((a,b)=>haversine(units[current].centroid,units[a].centroid)-haversine(units[current].centroid,units[b].centroid))[0];
+    if(next===undefined){
+      next=indices.filter(x=>!used.has(x)).sort((a,b)=>haversine(units[current].centroid,units[a].centroid)-haversine(units[current].centroid,units[b].centroid))[0];
+    }
+    used.add(next);order.push(next);current=next;
+  }
+  return order;
+}
+function makeSectors(units,target,prefTol,maxTol){
+  const minPref=target-prefTol,maxPref=target+prefTol,maxAllowed=target+maxTol,minAllowed=Math.max(0,target-maxTol);
+  const anchor=centroid(polygonCoords()),remaining=new Set(units.map(u=>u.index)),sectors=[];
+  while(remaining.size){
+    const seed=[...remaining].sort((a,b)=>haversine(units[b].centroid,anchor)-haversine(units[a].centroid,anchor))[0];
+    const selected=new Set([seed]);remaining.delete(seed);let minutes=units[seed].totalMinutes,current=seed;
+    while(true){
+      const frontier=sectorFrontier(units,selected,remaining);if(!frontier.length)break;
+      const candidates=frontier.map(idx=>{
+        const u=units[idx],projected=minutes+u.totalMinutes,sameRoad=[...selected].some(x=>units[x].roadId===u.roadId),sameSide=[...selected].some(x=>units[x].roadId===u.roadId&&units[x].sideIndex===u.sideIndex);
+        const distance=haversine(units[current].centroid,u.centroid),fragment=fragmentPenalty(units,remaining,idx);
+        let timePenalty=0;
+        if(projected<minPref)timePenalty=(minPref-projected)*0.2;
+        else if(projected<=maxPref)timePenalty=Math.abs(projected-target)*0.12;
+        else if(projected<=maxAllowed)timePenalty=(projected-maxPref)*0.4+3;
+        else timePenalty=(projected-maxAllowed)*6+120;
+        const score=timePenalty+distance*12+fragment-(sameSide?22:sameRoad?8:0);
+        return {idx,u,projected,score,fragment,sameSide};
+      }).sort((a,b)=>a.score-b.score);
+      const best=candidates[0];
+      if(minutes>=minPref){
+        const logical=best.projected<=maxAllowed&&(best.sameSide||best.fragment>=20||best.score<Math.abs(minutes-target)*0.2);
+        if(!logical&&minutes>=minAllowed)break;
+      }
+      if(best.projected>maxAllowed&&minutes>=minAllowed)break;
+      selected.add(best.idx);remaining.delete(best.idx);minutes=best.projected;current=best.idx;
+      if(minutes>=maxAllowed)break;
+    }
+    const ordered=routeOrder(units,[...selected],seed);
+    sectors.push({indices:[...selected],order:ordered,minutes});
+  }
+  return sectors;
+}
+function offsetPolyline(coords,sideIndex){
+  const line=turf.lineString(coords);
+  try{
+    const offset=turf.lineOffset(line,sideIndex===0?0.012:-0.012,{units:'kilometers'});
+    return offset.geometry.coordinates;
+  }catch{return coords}
+}
+
+function arrowSymbol(from,to){
+  const dx=to[0]-from[0],dy=to[1]-from[1];
+  const angle=Math.atan2(dy,dx)*180/Math.PI;
+  return L.divIcon({className:'',html:`<div style="font-size:24px;color:#111;transform:rotate(${angle}deg);text-shadow:0 0 3px #fff">➜</div>`,iconSize:[28,28],iconAnchor:[14,14]});
+}
+function sectorBounds(sector){
+  const points=[];
+  sector.units.forEach(u=>u.coords.forEach(p=>points.push([p[1],p[0]])));
+  return points.length?L.latLngBounds(points):null;
+}
+function drawSector(sector,showSteps=true){
+  sector.units.forEach((u,step)=>{
+    const drawCoords=offsetPolyline(u.coords,u.sideIndex);
+    const latlngs=drawCoords.map(p=>[p[1],p[0]]);
+    L.polyline(latlngs,{color:sector.colour,weight:7,opacity:.9})
+      .bindTooltip(`${sector.id} · Step ${step+1}: ${u.label}`,{sticky:true})
+      .addTo(sectorsLayer);
+    if(showSteps && latlngs.length){
+      const mid=latlngs[Math.floor(latlngs.length/2)];
+      L.marker(mid,{icon:L.divIcon({className:'',html:`<div class="route-step-marker">${step+1}</div>`,iconSize:[26,26],iconAnchor:[13,13]})}).addTo(sectorsLayer);
+      if(latlngs.length>1){
+        const ai=Math.max(0,Math.floor(latlngs.length/2)-1);
+        const a=latlngs[ai],b=latlngs[Math.min(latlngs.length-1,ai+1)];
+        L.marker([(a[0]+b[0])/2,(a[1]+b[1])/2],{icon:arrowSymbol([a[1],a[0]],[b[1],b[0]])}).addTo(sectorsLayer);
+      }
+    }
+  });
+  if(showSteps && sector.units.length){
+    const first=offsetPolyline(sector.units[0].coords,sector.units[0].sideIndex);
+    const last=offsetPolyline(sector.units[sector.units.length-1].coords,sector.units[sector.units.length-1].sideIndex);
+    if(first.length)L.marker([first[0][1],first[0][0]],{icon:L.divIcon({className:'',html:'<div class="start-marker">START</div>'})}).addTo(sectorsLayer);
+    if(last.length)L.marker([last[last.length-1][1],last[last.length-1][0]],{icon:L.divIcon({className:'',html:'<div class="finish-marker">FINISH</div>'})}).addTo(sectorsLayer);
+  }
+}
+function selectSector(id){
+  selectedSectorId=id;
+  document.querySelectorAll('.sector').forEach(card=>card.classList.toggle('selected',card.dataset.id===id));
+  sectorsLayer.clearLayers();
+  const sector=generatedSectors.find(s=>s.id===id);
+  if(!sector)return;
+  drawSector(sector,true);
+  const bounds=sectorBounds(sector);
+  if(bounds)map.fitBounds(bounds,{padding:[60,60]});
+  $('showAllBtn').disabled=false;
+  $('printSectorBtn').disabled=false;
+  setStatus(`${sector.id} selected. The map shows route steps, arrows, start and finish.`, 'ok');
+}
+function showAllSectors(){
+  selectedSectorId=null;
+  document.querySelectorAll('.sector').forEach(card=>card.classList.remove('selected'));
+  sectorsLayer.clearLayers();
+  generatedSectors.forEach(s=>drawSector(s,false));
+  $('printSectorBtn').disabled=true;
+  if(boundary)map.fitBounds(boundary.getBounds(),{padding:[25,25]});
+}
+function preparePrintSheet(sector){
+  $('printSheet').innerHTML=`
+    <h1>${sector.id} — Walker Route</h1>
+    <div class="print-meta">
+      <div><strong>Estimated time</strong><br>${Math.round(sector.minutes)} minutes</div>
+      <div><strong>Mapped premises</strong><br>${sector.buildings}</div>
+      <div><strong>Status</strong><br>${sector.status}</div>
+    </div>
+    <h2>Directions</h2>
+    <ol>${sector.units.map((u,i)=>`<li><strong>${u.label}</strong>${i===0?' — Start here':i===sector.units.length-1?' — Finish here':''}</li>`).join('')}</ol>
+    <p><strong>Instruction:</strong> Follow the numbered steps and arrows on the map. Complete only the nominated side of each road.</p>`;
+}
+function renderSectors(raw,units,target,prefTol,maxTol){
+  sectorsLayer.clearLayers();
+  const prefix=($('prefix').value||'SEC').toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,6)||'SEC';
+  const palette=['#0b74b8','#d81b60','#6a4bc3','#009688','#f57c00','#607d8b','#7b1fa2','#388e3c','#c62828','#5d4037'],cards=[];
+  generatedSectors=raw.map((s,i)=>{
+    const id=`${prefix}-${String(i+1).padStart(3,'0')}`,colour=palette[i%palette.length],items=s.order.map(x=>units[x]);
+    const buildings=items.reduce((n,u)=>n+u.buildings,0),lengthKm=items.reduce((n,u)=>n+u.lengthKm/2,0);
+    const variance=Math.abs(s.minutes-target),status=variance<=prefTol?'Preferred':variance<=maxTol?'Acceptable':'Review',statusClass=status==='Preferred'?'good':status==='Acceptable'?'review':'poor';
+    cards.push(`<div class="sector" data-id="${id}" style="border-left-color:${colour}" onclick="selectSector('${id}')"><h3>${id} — ${Math.round(s.minutes)} min</h3><small>${buildings} mapped premises · ${lengthKm.toFixed(2)} km side-walk estimate · <span class="${statusClass}">${status}</span></small><ol>${items.map(u=>`<li>${u.label}</li>`).join('')}</ol></div>`);
+    return {id,minutes:+s.minutes.toFixed(1),status,buildings,lengthKm:+lengthKm.toFixed(3),route:items.map(u=>u.label),colour,units:items.map(u=>({label:u.label,name:u.name,sideLabel:u.sideLabel,sideIndex:u.sideIndex,coords:u.coords}))};
+  });
+  $('sectorList').innerHTML=cards.join('');
+  $('sectorCount').textContent=generatedSectors.length;
+  $('csvBtn').disabled=!generatedSectors.length;
+  $('showAllBtn').disabled=true;
+  $('printSectorBtn').disabled=true;
+  showAllSectors();
+}
+$('showAllBtn').onclick=showAllSectors;
+$('printSectorBtn').onclick=()=>{
+  const sector=generatedSectors.find(s=>s.id===selectedSectorId);
+  if(!sector)return;
+  preparePrintSheet(sector);
+  setTimeout(()=>window.print(),300);
+};
+$('generateBtn').onclick=()=>{
+  if(!areaData)return;
+  const target=+$('target').value||120;
+  const pref=+$('preferredTolerance').value||10;
+  const max=Math.max(pref,+$('maximumTolerance').value||20);
+  const miniPct=+$('miniThresholdPct').value||25;
+  const mergeDistanceM=+$('mergeDistanceM').value||180;
+  const prepared=buildSideUnits();
+  $('sideCount').textContent=prepared.units.length;
+  const initial=makeSectors(prepared.units,target,pref,max);
+  const raw=absorbMiniSectors(initial,prepared.units,target,max,miniPct,mergeDistanceM);
+  raw.forEach((s,i)=>{if(!s.order||!s.order.length)s.order=routeOrder(prepared.units,s.indices,s.indices[0]);});
+  renderSectors(raw,prepared.units,target,pref,max);
+  const excluded=areaData.roads.length-(prepared.units.length/2);
+  const minis=raw.filter(s=>s.minutes<target*(miniPct/100)).length;
+  setStatus(`Generated ${raw.length} road-side sectors after cleanup. ${excluded} non-delivery road record(s) excluded.${minis?` ${minis} undersized sector(s) remain for review.`:' No mini-runs remain.'}`, minis?'warn':'ok');
+};
+
+function projectPayload(){return{version:3,savedAt:new Date().toISOString(),boundary:boundary?boundary.toGeoJSON():null,settings:{prefix:$('prefix').value,target:$('target').value,speed:$('speed').value,dropSeconds:$('dropSeconds').value,accessFactor:$('accessFactor').value,preferredTolerance:$('preferredTolerance').value,maximumTolerance:$('maximumTolerance').value,miniThresholdPct:$('miniThresholdPct').value,mergeDistanceM:$('mergeDistanceM').value},areaData,sectors:generatedSectors}}
+$('saveBtn').onclick=()=>{const blob=new Blob([JSON.stringify(projectPayload(),null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='territory-project-v3.json';a.click();URL.revokeObjectURL(url)};
+$('loadBtn').onclick=()=>$('fileInput').click();
+$('fileInput').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const d=JSON.parse(await f.text());clearAll();const coords=d.boundary.geometry.coordinates[0];boundary=L.polygon(coords.map(p=>[p[1],p[0]]),{color:'#ef7d00',weight:3,fillOpacity:.08}).addTo(drawn);map.fitBounds(boundary.getBounds(),{padding:[25,25]});for(const [k,v] of Object.entries(d.settings||{}))if($(k))$(k).value=v;areaData=d.areaData||null;$('analyseBtn').disabled=false;$('generateBtn').disabled=!areaData;$('saveBtn').disabled=false;if(areaData){$('roadCount').textContent=areaData.roads.length;$('buildingCount').textContent=areaData.buildings.length}setStatus('Project loaded. Press Generate Road-Side Sectors to apply v3 logic.','ok')}catch(err){setStatus('Could not load project: '+err.message,'error')}};
+
+$('csvBtn').onclick=()=>{
+  const rows=[['Sector','Step','Street','Side','Estimated sector minutes','Status','Mapped premises','Side-walk estimate km']];
+  generatedSectors.forEach(s=>{
+    s.units.forEach((u,index)=>rows.push([s.id,index+1,u.name,u.sideLabel,s.minutes,s.status,s.buildings,s.lengthKm]));
+  });
+  const csv=rows.map(row=>row.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');
+  a.href=url;a.download='sector-route-steps-v3-2.csv';a.click();URL.revokeObjectURL(url);
+};
+</script>
+</body>
+</html>

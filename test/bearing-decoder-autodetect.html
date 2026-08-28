@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bearing Decoder</title>
+  <style>
+    body { margin: 0; font-family: Arial, sans-serif; background: #111; color: #fff; }
+    .page { max-width: 1200px; margin: 0 auto; padding: 24px; }
+    .hero { border: 1px solid #c40000; border-radius: 14px; padding: 18px 22px; margin-bottom: 22px; background: #181818; box-shadow: 0 0 12px rgba(196, 0, 0, 0.35); }
+    .hero h1 { margin: 0 0 6px; font-size: 28px; }
+    .hero p { margin: 0; color: #ccc; font-size: 15px; }
+    .layout { display: grid; grid-template-columns: 360px 1fr; gap: 22px; }
+    .panel { background: #181818; border: 1px solid #333; border-radius: 14px; padding: 18px; }
+    .panel h2 { margin-top: 0; font-size: 20px; border-bottom: 1px solid #333; padding-bottom: 10px; }
+    label { display: block; margin-top: 14px; margin-bottom: 6px; color: #ddd; font-size: 14px; font-weight: bold; }
+    input, select { width: 100%; box-sizing: border-box; padding: 11px; border-radius: 8px; border: 1px solid #555; background: #0f0f0f; color: #fff; font-size: 15px; text-transform: uppercase; }
+    input:focus, select:focus { outline: none; border-color: #c40000; box-shadow: 0 0 0 2px rgba(196, 0, 0, 0.25); }
+    .dimension-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+    .button-row { display: flex; gap: 10px; margin-top: 18px; }
+    button { border: 1px solid #c40000; background: #111; color: #fff; padding: 11px 14px; border-radius: 8px; cursor: pointer; font-weight: bold; box-shadow: 0 3px 0 #7a0000; }
+    button:hover { background: #1d1d1d; }
+    button.secondary { border-color: #555; box-shadow: 0 3px 0 #333; }
+    .result-card { border: 1px solid #333; border-radius: 12px; padding: 16px; margin-bottom: 16px; background: #101010; }
+    .result-card h3 { margin-top: 0; color: #ff3333; font-size: 18px; }
+    .placeholder, .hint { color: #aaa; line-height: 1.5; }
+    .field-summary { display: grid; grid-template-columns: 160px 1fr; gap: 8px; margin-top: 8px; }
+    .field-summary strong { color: #fff; }
+    .field-summary span { color: #bbb; }
+    .tag-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+    .tag { border: 1px solid #333; background: #181818; color: #ddd; border-radius: 999px; padding: 6px 10px; font-size: 13px; }
+    .warning { color: #ffb347; }
+    .footer { text-align: center; margin-top: 28px; color: #666; font-size: 12px; }
+    @media (max-width: 800px) {
+      .layout { grid-template-columns: 1fr; }
+      .dimension-row { grid-template-columns: 1fr; }
+      .button-row { flex-direction: column; }
+    }
+  </style>
+
+<style id="playbook-tool-header-style">
+.playbookToolHeader{background:#071020;border-bottom:1px solid rgba(255,255,255,.14);padding:12px 18px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-family:Arial,Helvetica,sans-serif;position:relative;z-index:1000}
+.playbookToolHeader .brand{color:#fff;font-weight:900;margin-right:8px}
+.playbookToolHeader a{color:#fff!important;text-decoration:none!important;background:#111a2d;border:1px solid rgba(255,255,255,.18);border-radius:10px;padding:8px 12px;font-weight:800;line-height:1.1}
+.playbookToolHeader a:hover{border-color:rgba(239,68,68,.85);background:rgba(198,40,40,.25)}
+@media print{.playbookToolHeader{display:none!important}}
+</style>
+</head>
+<body>
+<div class="playbookToolHeader"><span class="brand">BW Playbook</span><a href="../index.html">Dashboard</a><a href="../resources-tools.html">Tools</a><a href="javascript:history.back()">Back</a></div>
+
+  <div class="page">
+    <section class="hero">
+      <h1>Bearing Decoder</h1>
+      <p>Enter a bearing number and brand to auto-detect the prefix, base code, suffix, bore code and common bearing features.</p>
+    </section>
+
+    <main class="layout">
+      <section class="panel">
+        <h2>User Fields</h2>
+
+        <label for="partNumber">Part Number</label>
+        <input id="partNumber" type="text" placeholder="Example: 6205DDUC3" />
+
+        <label for="brand">Brand</label>
+        <select id="brand">
+          <option value="">Select brand</option>
+          <option>NSK</option><option>NTN</option><option>TIMKEN</option><option>SKF</option>
+          <option>FAG</option><option>INA</option><option>IKO</option><option>NACHI</option><option>KOYO</option>
+        </select>
+
+        <div class="dimension-row">
+          <div><label for="id">ID</label><input id="id" type="text" placeholder="AUTO OR MANUAL" /></div>
+          <div><label for="od">OD</label><input id="od" type="text" placeholder="MANUAL" /></div>
+          <div><label for="width">Width</label><input id="width" type="text" placeholder="MANUAL" /></div>
+        </div>
+
+        <label for="prefix">Prefix</label>
+        <input id="prefix" type="text" placeholder="AUTO-DETECTED WHERE POSSIBLE" />
+
+        <label for="baseCode">Base Code</label>
+        <input id="baseCode" type="text" placeholder="Example: 6205" />
+
+        <label for="suffix">Suffix</label>
+        <input id="suffix" type="text" placeholder="Example: DDUC3, 2RS1C3" />
+
+        <div class="button-row">
+          <button type="button" id="detectBtn">Auto Detect</button>
+          <button type="button" class="secondary" id="clearBtn">Clear</button>
+        </div>
+
+        <p class="hint">Basic detector only. Final version can use a proper lookup table for dimensions and brand-specific suffix rules.</p>
+      </section>
+
+      <section class="panel">
+        <h2>Decoded Layout Preview</h2>
+
+        <div class="result-card">
+          <h3>Part Profile</h3>
+          <div class="field-summary">
+            <strong>Part Number</strong><span id="summaryPart">Waiting for input</span>
+            <strong>Brand</strong><span id="summaryBrand">Waiting for input</span>
+            <strong>Dimensions</strong><span id="summaryDimensions">ID × OD × Width</span>
+            <strong>Prefix</strong><span id="summaryPrefix">Waiting for input</span>
+            <strong>Base Code</strong><span id="summaryBase">Waiting for input</span>
+            <strong>Suffix</strong><span id="summarySuffix">Waiting for input</span>
+          </div>
+        </div>
+
+        <div class="result-card">
+          <h3>Interpretation</h3>
+          <p id="interpretation" class="placeholder">Bearing type, bore code, seal type, clearance, cage and special features will display here.</p>
+          <div id="tags" class="tag-row"></div>
+        </div>
+
+        <div class="result-card">
+          <h3>Cross Brand Equivalents</h3>
+          <p id="equivalents" class="placeholder">Equivalent suffixes and comparable part numbers can be displayed here in a future version.</p>
+        </div>
+      </section>
+    </main>
+
+    <div class="footer">Designed and built by H. Fitzgerald</div>
+  </div>
+
+  <script>
+    const fields = {
+      part: document.getElementById("partNumber"),
+      brand: document.getElementById("brand"),
+      id: document.getElementById("id"),
+      od: document.getElementById("od"),
+      width: document.getElementById("width"),
+      prefix: document.getElementById("prefix"),
+      base: document.getElementById("baseCode"),
+      suffix: document.getElementById("suffix")
+    };
+
+    const bearingTypes = {
+      "6": "Deep groove ball bearing",
+      "7": "Angular contact ball bearing",
+      "1": "Self-aligning ball bearing",
+      "2": "Spherical roller / self-aligning series",
+      "3": "Tapered roller bearing",
+      "4": "Double row deep groove / special series",
+      "5": "Thrust ball bearing"
+    };
+
+    const prefixList = ["RNA", "NKI", "NUP", "NU", "NJ", "NA", "NK", "NF", "HR", "MR", "MF", "4T", "LM", "HM", "CF", "CFE", "KR", "KRV", "NUTR"];
+
+    const suffixMeanings = [
+      { code: "DDU", meaning: "NSK contact rubber seals both sides" },
+      { code: "VV", meaning: "NSK non-contact rubber seals both sides" },
+      { code: "LLU", meaning: "NTN contact rubber seals both sides" },
+      { code: "LLB", meaning: "NTN non-contact rubber seals both sides" },
+      { code: "2RS1", meaning: "SKF contact rubber seals both sides" },
+      { code: "2RSH", meaning: "SKF heavy-duty contact seals both sides" },
+      { code: "2RSL", meaning: "SKF low-friction seals both sides" },
+      { code: "2RSR", meaning: "FAG contact rubber seals both sides" },
+      { code: "2NSE", meaning: "Nachi contact seals both sides" },
+      { code: "2RD", meaning: "Koyo rubber seals both sides" },
+      { code: "UU", meaning: "IKO seals both sides" },
+      { code: "ZZ", meaning: "Metal shields both sides" },
+      { code: "2Z", meaning: "Metal shields both sides" },
+      { code: "Z", meaning: "Metal shield one side" },
+      { code: "C5", meaning: "Greater than C4 internal clearance" },
+      { code: "C4", meaning: "Greater than C3 internal clearance" },
+      { code: "C3", meaning: "Increased internal clearance" },
+      { code: "CM", meaning: "Electric motor clearance" },
+      { code: "NR", meaning: "Snap ring groove and snap ring" },
+      { code: "N", meaning: "Snap ring groove" },
+      { code: "K", meaning: "Tapered bore" },
+      { code: "TN9", meaning: "Polyamide cage" },
+      { code: "TVH", meaning: "Polyamide cage" },
+      { code: "XL", meaning: "Schaeffler X-life design" }
+    ];
+
+    function cleanPart(value) {
+      return value.toUpperCase().replace(/\s+/g, "").replace(/-/g, "");
+    }
+
+    function detectBore(baseCode) {
+      const match = baseCode.match(/(\d{2})$/);
+      if (!match) return "";
+      const boreCode = match[1];
+      const special = { "00": "10MM", "01": "12MM", "02": "15MM", "03": "17MM" };
+      if (special[boreCode]) return special[boreCode];
+      const numeric = parseInt(boreCode, 10);
+      if (numeric >= 4) return (numeric * 5) + "MM";
+      return "";
+    }
+
+    function findPrefix(part) {
+      return prefixList.sort((a, b) => b.length - a.length).find(prefix => part.startsWith(prefix)) || "";
+    }
+
+    function findBase(part, prefix) {
+      const remaining = prefix ? part.slice(prefix.length) : part;
+      const cyl = remaining.match(/^(NU|NJ|NUP|NF)\d{3,4}/);
+      if (cyl) return cyl[0];
+      const needle = remaining.match(/^(RNA|NA|NK|NKI)\d{2,5}/);
+      if (needle) return needle[0];
+      const standard = remaining.match(/^\d{4,5}/);
+      if (standard) return standard[0];
+      const timken = remaining.match(/^[A-Z]{0,2}\d{3,6}/);
+      if (timken) return timken[0];
+      return "";
+    }
+
+    function detectSuffix(part, prefix, base) {
+      const used = (prefix || "") + (base || "");
+      return part.startsWith(used) ? part.slice(used.length) : "";
+    }
+
+    function decodeSuffixes(suffix) {
+      if (!suffix) return [];
+      return suffixMeanings.filter(item => suffix.includes(item.code)).map(item => item.meaning);
+    }
+
+    function buildEquivalentHint(suffix) {
+      const s = suffix || "";
+      if (s.includes("DDU") || s.includes("LLU") || s.includes("2RS") || s.includes("2NSE") || s.includes("2RD") || s.includes("UU")) {
+        return "Seal equivalent family detected: NSK DDU / NTN LLU / SKF 2RS1 / FAG 2RSR / Nachi 2NSE / Koyo 2RD / IKO UU. Confirm contact type before substituting.";
+      }
+      if (s.includes("VV") || s.includes("LLB") || s.includes("2RSL")) {
+        return "Low-friction or non-contact seal family detected. Do not treat as a direct match to full contact 2RS/DDU/LLU without checking application.";
+      }
+      if (s.includes("ZZ") || s.includes("2Z")) {
+        return "Shielded bearing family detected. Common equivalents include ZZ and 2Z, depending on brand format.";
+      }
+      return "No cross-brand equivalent rule triggered yet.";
+    }
+
+    function autoDetect() {
+      const cleaned = cleanPart(fields.part.value);
+      fields.part.value = cleaned;
+
+      const prefix = findPrefix(cleaned);
+      const base = findBase(cleaned, prefix);
+      const suffix = detectSuffix(cleaned, prefix, base);
+
+      fields.prefix.value = prefix;
+      fields.base.value = base;
+      fields.suffix.value = suffix;
+
+      const detectedBore = detectBore(base);
+      if (detectedBore && !fields.id.value) fields.id.value = detectedBore;
+
+      updatePreview();
+    }
+
+    function updatePreview() {
+      Object.values(fields).forEach(field => {
+        if (field.tagName !== "SELECT") field.value = field.value.toUpperCase();
+      });
+
+      const dimensions = `${fields.id.value || "ID"} × ${fields.od.value || "OD"} × ${fields.width.value || "WIDTH"}`;
+
+      document.getElementById("summaryPart").textContent = fields.part.value || "Waiting for input";
+      document.getElementById("summaryBrand").textContent = fields.brand.value || "Waiting for input";
+      document.getElementById("summaryDimensions").textContent = dimensions;
+      document.getElementById("summaryPrefix").textContent = fields.prefix.value || "None / not detected";
+      document.getElementById("summaryBase").textContent = fields.base.value || "Waiting for input";
+      document.getElementById("summarySuffix").textContent = fields.suffix.value || "None / not detected";
+
+      const typeKey = fields.base.value ? fields.base.value.charAt(0) : "";
+      const typeText = bearingTypes[typeKey] || "Bearing type not detected yet";
+      const boreText = fields.id.value ? ` Bore appears to be ${fields.id.value}.` : "";
+      document.getElementById("interpretation").textContent = `${typeText}.${boreText}`;
+
+      const tagContainer = document.getElementById("tags");
+      tagContainer.innerHTML = "";
+      const decoded = decodeSuffixes(fields.suffix.value);
+
+      if (decoded.length) {
+        decoded.forEach(text => {
+          const tag = document.createElement("span");
+          tag.className = "tag";
+          tag.textContent = text;
+          tagContainer.appendChild(tag);
+        });
+      } else {
+        const tag = document.createElement("span");
+        tag.className = "tag warning";
+        tag.textContent = "No suffix rule detected";
+        tagContainer.appendChild(tag);
+      }
+
+      document.getElementById("equivalents").textContent = buildEquivalentHint(fields.suffix.value);
+    }
+
+    function clearAll() {
+      Object.values(fields).forEach(field => field.value = "");
+      updatePreview();
+    }
+
+    document.getElementById("detectBtn").addEventListener("click", autoDetect);
+    document.getElementById("clearBtn").addEventListener("click", clearAll);
+
+    Object.values(fields).forEach(field => {
+      field.addEventListener("input", updatePreview);
+      field.addEventListener("change", updatePreview);
+    });
+
+    fields.part.addEventListener("blur", autoDetect);
+
+    updatePreview();
+  </script>
+</body>
+</html>

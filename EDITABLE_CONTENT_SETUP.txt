@@ -1,0 +1,34 @@
+BW Dashboard editable content layer
+
+Roles:
+- viewer: can view
+- editor: can edit allowed page content
+- admin: can edit/manage all
+
+Static Web Apps role management:
+1. Azure Portal > Static Web App > Role management
+2. Invite users and assign viewer, editor, or admin.
+3. System role authenticated still works for login, but custom roles are now supported in staticwebapp.config.json.
+
+Storage setup required for cross-browser edits:
+1. Create an Azure Storage Account.
+2. In the Storage Account, copy the connection string.
+3. Azure Portal > Static Web App > Configuration > Application settings
+4. Add:
+   Name: BW_CONTENT_STORAGE_CONNECTION_STRING
+   Value: <your storage account connection string>
+5. Save, then redeploy/restart the Static Web App if prompted.
+
+API endpoint:
+- GET /api/content?key=...
+- POST /api/content { key, value } requires editor/admin
+- DELETE /api/content?key=... requires editor/admin
+
+Pages wired in this patch:
+- product-guide.html
+- faqs.html
+- sales.html
+- checklists.html
+
+Note:
+If storage is not configured, edit attempts will show a save warning and cache locally only.

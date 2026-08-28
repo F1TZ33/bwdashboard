@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<title>Individual Rack Builder</title>
+<link href="assets/css/style.css" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrious@4.0.2/dist/qrious.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/html-docx-js@0.3.1/dist/html-docx.js"></script>
+<style>
+  html{overflow-x:auto;overflow-y:auto;}
+  body{padding-top:max(0px, env(safe-area-inset-top));padding-bottom:max(28px, calc(env(safe-area-inset-bottom) + 18px));overflow-x:auto;overflow-y:auto;}
+  .container{max-width:1180px;width:min(100% - 32px, 1180px);}
+  .rackCard{background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.025));border:1px solid rgba(255,255,255,.10);border-radius:20px;padding:18px;box-shadow:0 14px 32px rgba(0,0,0,.16);overflow:visible;}
+  .rackGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;}
+  .field input{width:100%;height:48px;padding:0 14px;border-radius:12px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);color:var(--text);box-sizing:border-box;}
+  .btnRow{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px;}
+  .rackOutput{margin-top:18px;display:grid;gap:18px;min-width:0;}
+  .rackVisual{display:grid;gap:14px;padding:16px;border-radius:18px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.025);overflow-x:auto;overflow-y:visible;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;}
+  .shelf{border:1px solid rgba(255,255,255,.10);border-radius:14px;padding:12px;background:rgba(0,0,0,.10);width:max-content;min-width:100%;box-sizing:border-box;overflow:visible;}
+  .shelfTitle{font-weight:800;margin-bottom:10px;color:var(--text);}
+  .binRow{display:flex;flex-wrap:nowrap;gap:10px;align-items:center;justify-content:flex-start;width:max-content;min-width:max-content;padding:2px 4px 8px 0;}
+  .binTile{width:30px;height:30px;min-width:30px;min-height:30px;border:1px solid rgba(198,40,40,.28);border-radius:8px;display:flex;align-items:center;justify-content:center;text-align:center;padding:0;background:linear-gradient(180deg, rgba(198,40,40,.12), rgba(198,40,40,.06));color:var(--text);font-weight:900;font-size:12px;cursor:pointer;user-select:none;transition:transform .12s ease, border-color .12s ease, background .12s ease;}
+  .binTile:hover{transform:translateY(-1px);border-color:rgba(198,40,40,.55);background:linear-gradient(180deg, rgba(198,40,40,.18), rgba(198,40,40,.08));}
+  .binTileZero{opacity:.45;background:rgba(255,255,255,.025);border-color:rgba(255,255,255,.10);}
+  .binTileActive{outline:3px solid rgba(255,255,255,.92);border-color:rgba(198,40,40,.95);box-shadow:0 0 0 4px rgba(198,40,40,.30), 0 12px 26px rgba(0,0,0,.30);transform:translateY(-1px) scale(1.03);}
+  .rackTableWrap{overflow:auto;border-radius:16px;border:1px solid rgba(255,255,255,.08);-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;max-width:100%;}
+  .rackTable{width:100%;border-collapse:collapse;min-width:620px;background:rgba(255,255,255,.03);color:var(--text);}
+  .rackTable th,.rackTable td{padding:8px 10px;border:1px solid rgba(255,255,255,.08);color:var(--text);}
+  .rackTable th{font-weight:800;background:rgba(255,255,255,.06);text-align:left;}
+  .rackTable tr.shelfGap td{padding:14px 0 4px 0;border-left:0;border-right:0;background:rgba(255,255,255,.025);font-weight:900;color:var(--text);}
+  .rackTable input{width:100%;min-width:120px;height:34px;border-radius:9px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);color:var(--text);padding:0 9px;box-sizing:border-box;}
+  .rackTable input[data-key="part"]{text-transform:uppercase;}
+  .locationText{font-weight:800;white-space:nowrap;color:var(--text);}
+  .statusNote{margin-top:12px;color:var(--muted);font-size:13px;}
+  .positionSummary{margin-top:12px;padding:10px 12px;border-radius:14px;border:1px solid rgba(255,255,255,.10);background:rgba(255,255,255,.035);color:var(--text);font-weight:800;display:flex;gap:14px;flex-wrap:wrap;}
+  .positionSummary span{color:var(--muted);font-weight:700;}
+  .positionSummary strong{color:var(--text);}
+  .excessRow td{background:rgba(198,40,40,.08)!important;}
+  #csvUpload{display:none;}
+  .qrSection{margin-top:18px;display:none;}
+  .qrSection.active{display:block;}
+  .qrHeader{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px;}
+  .qrLabels{display:grid;grid-template-columns:repeat(auto-fill, minmax(210px, 1fr));gap:12px;}
+
+  .qrSelect{position:absolute;top:5px;right:5px;z-index:3;background:rgba(255,255,255,.88);border-radius:6px;padding:2px;line-height:1;}
+  .qrSelect input{width:16px;height:16px;margin:0;cursor:pointer;}
+  .qrLabel{position:relative;}
+  .qrLabel{width:64mm;min-height:33.8mm;display:grid;grid-template-columns:30mm minmax(0,1fr);gap:2.2mm;align-items:center;padding:1.7mm;box-sizing:border-box;border-radius:6px;border:1px solid rgba(255,255,255,.10);background:#fff;color:#111827;box-shadow:0 10px 22px rgba(0,0,0,.18);break-inside:avoid;page-break-inside:avoid;}
+  .qrCanvasWrap{width:30mm;height:30mm;display:flex;align-items:center;justify-content:center;background:#fff;}
+  .qrCanvasWrap canvas,.qrCanvasWrap img{width:30mm !important;height:30mm !important;}
+  .qrPart{font-size:9.5pt;line-height:1.05;font-weight:900;word-break:break-word;color:#111827;}
+  .qrDesc{margin-top:1.5mm;font-size:7pt;line-height:1.08;font-weight:700;color:#374151;word-break:break-word;}
+  .qrLoc{display:none;}
+  .qrLabel.smallLabel{width:61mm;min-height:22mm;grid-template-columns:19mm minmax(0,1fr);gap:1.4mm;padding:1.3mm;border-radius:5px;}
+  .qrLabel.smallLabel .qrCanvasWrap{width:19mm;height:19mm;}
+  .qrLabel.smallLabel .qrCanvasWrap canvas,.qrLabel.smallLabel .qrCanvasWrap img{width:19mm !important;height:19mm !important;}
+  .qrLabel.smallLabel .qrPart{font-size:7.2pt;line-height:1.03;}
+  .qrLabel.smallLabel .qrDesc{font-size:5.8pt;line-height:1.03;margin-top:.7mm;}
+  .qrLabel.mediumLabel{width:64mm;min-height:33.8mm;grid-template-columns:30mm minmax(0,1fr);gap:2.2mm;padding:1.7mm;}
+  .qrLabel.mediumLabel .qrCanvasWrap{width:30mm;height:30mm;}
+  .qrLabel.mediumLabel .qrCanvasWrap canvas,.qrLabel.mediumLabel .qrCanvasWrap img{width:30mm !important;height:30mm !important;}
+  @page{size:A4 portrait;margin:13.3mm 9mm;}
+  @media print{html,body{width:210mm;min-height:297mm;background:#fff !important;padding:0 !important;margin:0 !important;overflow:visible !important;}body *{visibility:hidden !important;}.qrSection,.qrSection *{visibility:visible !important;}.siteHeader,.topbar,.heroPanel,.rackCard>form,.rackVisual,.rackTableWrap,.statusNote,.qrHeader{display:none !important;}.container{max-width:none !important;width:192mm !important;padding:0 !important;margin:0 auto !important;}.rackCard{background:#fff !important;border:0 !important;box-shadow:none !important;padding:0 !important;margin:0 !important;}.rackOutput{display:block !important;margin:0 !important;}.qrSection{display:block !important;position:absolute !important;top:0 !important;left:0 !important;margin:0 !important;padding:0 !important;width:192mm !important;}.qrLabels{display:grid !important;gap:0 !important;align-items:start !important;justify-content:start !important;}.qrLabel{border:0 !important;border-radius:0 !important;box-shadow:none !important;overflow:hidden !important;break-inside:avoid !important;page-break-inside:avoid !important;}body.qr-print-medium .qrLabels{grid-template-columns:repeat(3,64mm) !important;grid-auto-rows:33.8mm !important;}body.qr-print-medium .qrLabel{width:64mm !important;height:33.8mm !important;min-height:33.8mm !important;padding:1.7mm !important;grid-template-columns:30mm minmax(0,1fr) !important;}body.qr-print-medium .qrCanvasWrap{width:30mm !important;height:30mm !important;}body.qr-print-medium .qrCanvasWrap canvas,body.qr-print-medium .qrCanvasWrap img{width:30mm !important;height:30mm !important;}body.qr-print-medium .qrPart{font-size:9pt !important;}body.qr-print-medium .qrDesc{font-size:6.8pt !important;}body.qr-print-small .qrLabels{grid-template-columns:repeat(3,61mm) !important;grid-auto-rows:22mm !important;}body.qr-print-small .qrLabel{width:61mm !important;height:22mm !important;min-height:22mm !important;padding:1.3mm !important;grid-template-columns:19mm minmax(0,1fr) !important;}body.qr-print-small .qrCanvasWrap{width:19mm !important;height:19mm !important;}body.qr-print-small .qrCanvasWrap canvas,body.qr-print-small .qrCanvasWrap img{width:19mm !important;height:19mm !important;}body.qr-print-small .qrPart{font-size:7.2pt !important;line-height:1.03 !important;}body.qr-print-small .qrDesc{font-size:5.7pt !important;line-height:1.03 !important;margin-top:.5mm !important;}}
+    @media (max-width:980px){.rackGrid{grid-template-columns:repeat(2,minmax(0,1fr));}}
+  @media (max-width:760px){.container{width:100%;max-width:100%;padding-left:14px;padding-right:14px;box-sizing:border-box;overflow-x:visible;}.rackCard{padding:14px;}.rackGrid{grid-template-columns:1fr;}.qrLabels{grid-template-columns:1fr;}.rackTable{min-width:520px;}}
+</style>
+</head>
+<body data-back="rack-builder.html">
+<div class="container"><div id="bw-global-header"></div>
+<section class="heroPanel"><h1>Individual Rack Builder</h1></section>
+<section class="rackCard">
+<form id="rackForm">
+<div class="rackGrid">
+<div class="field"><label>Customer / Site</label><input autocomplete="off" id="site"/></div>
+<div class="field"><label>Rack / Category</label><input autocomplete="off" id="category"/></div>
+<div class="field"><label>Rack Number</label><input autocomplete="off" id="rack"/></div>
+<div class="field"><label>Number of Shelves</label><input autocomplete="off" id="shelves" min="1" type="number"/></div>
+<div class="field"><label>Bins per Shelf</label><input autocomplete="off" id="bins" min="1" type="number"/></div>
+<div class="field"><label>Default Positions per Bin</label><input autocomplete="off" id="positions" min="1" type="number"/></div>
+</div>
+<div class="btnRow">
+<button class="btn" id="generateBtn" type="button">Build Rack</button>
+<button class="btn" id="downloadBtn" type="button">Download CSV</button>
+<button class="btn" id="uploadBtn" type="button">Upload CSV</button>
+<button class="btn" id="summaryBtn" type="button">Download PDF</button>
+<button class="btn" id="qrBtn" type="button">Generate QR Codes</button>
+<button class="btn" id="resetBtn" type="button">Reset</button>
+<input accept=".csv,text/csv" id="csvUpload" type="file"/>
+</div>
+<div class="positionSummary" id="positionSummary"><span>Rack Capacity:</span> <strong id="rackCapacity">0</strong> <span>Filled Rows:</span> <strong id="filledRows">0</strong> <span>Excess:</span> <strong id="excessRows">0</strong></div>
+<div class="statusNote" id="statusNote"></div>
+</form>
+<div class="rackOutput" id="output"></div>
+<section class="qrSection" id="qrSection"><div class="qrHeader"><h3>QR Labels</h3><button class="btn" id="selectAllQrBtn" type="button">Select All</button><button class="btn" id="clearQrBtn" type="button">Clear All</button><button class="btn" id="docxSmallBtn" type="button">Small DOCX</button><button class="btn" id="docxMediumBtn" type="button">Medium DOCX</button><button class="btn" id="docxLargeBtn" type="button">Large DOCX</button></div><div class="qrLabels" id="qrLabels"></div></section>
+</section></div>
+<script>
+(() => {
+  const output=document.getElementById('output'), statusNote=document.getElementById('statusNote'), uploadInput=document.getElementById('csvUpload'), qrSection=document.getElementById('qrSection'), qrLabels=document.getElementById('qrLabels'), rackCapacityEl=document.getElementById('rackCapacity'), filledRowsEl=document.getElementById('filledRows'), excessRowsEl=document.getElementById('excessRows');
+  let binMap=[], rackRows=[];
+  let currentQrLabelMode='medium';
+  const qrModes={small:{className:'smallLabel',qrPx:96},medium:{className:'mediumLabel',qrPx:152}};
+  const headers=['Customer / Site','Rack / Category','Rack Number','Number of Shelves','Bins per Shelf','Default Positions per Bin','Shelf','Bin','Position','Location','Positions per Bin','Part Number','Description'];
+  const val=id=>document.getElementById(id).value.trim();
+  const setVal=(id,value)=>{const el=document.getElementById(id); if(el && !el.value) el.value=value;};
+  const safeNumber=id=>{const n=parseInt(val(id),10);return Number.isFinite(n)&&n>0?n:0;};
+  const shelfLetter=i=>String.fromCharCode(64+i);
+  const csvEscape=v=>{const t=String(v??'');return /[",\n\r]/.test(t)?'"'+t.replace(/"/g,'""')+'"':t;};
+  const escapeHtml=v=>String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  const clean=str=>String(str||'').trim().replace(/[^a-z0-9]+/gi,'_').replace(/^_+|_+$/g,'') || 'NA';
+  const upperPart=v=>String(v??'').trim().toUpperCase();
+  const normalHeader=v=>String(v??'').replace(/^﻿/,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
+  function getRackCapacity(){return binMap.reduce((sum,bin)=>sum+(Number(bin.positions)||0),0) || (safeNumber('shelves')*safeNumber('bins')*safeNumber('positions'));}
+  function updatePositionSummary(){const capacity=getRackCapacity();const excess=rackRows.filter(r=>r.isExcess||String(r.location||'').toLowerCase()==='excess').length;const filled=rackRows.filter(r=>String(r.part||r.desc||'').trim()!=='' && !(r.isExcess||String(r.location||'').toLowerCase()==='excess')).length;if(rackCapacityEl)rackCapacityEl.textContent=String(capacity||0);if(filledRowsEl)filledRowsEl.textContent=String(filled||0);if(excessRowsEl)excessRowsEl.textContent=String(excess||0);}
+  function makeExcessRow(part='',desc='',n=1){const row={shelf:'EXCESS',shelfNumber:9999,binNumber:0,positionNumber:n,location:'Excess',binBase:'excess',part:upperPart(part),desc:desc||'',isExcess:true};row.qr=makeQrPayload(row);return row;}
+
+  function parseCsv(text){const rows=[];let row=[],field='',q=false;for(let i=0;i<text.length;i++){const ch=text[i],n=text[i+1];if(ch==='"'&&q&&n==='"'){field+='"';i++;}else if(ch==='"'){q=!q;}else if(ch===','&&!q){row.push(field);field='';}else if((ch==='\n'||ch==='\r')&&!q){if(ch==='\r'&&n==='\n')i++;row.push(field);if(row.some(c=>String(c).trim()!==''))rows.push(row);row=[];field='';}else field+=ch;}row.push(field);if(row.some(c=>String(c).trim()!==''))rows.push(row);return rows;}
+  function makeDisplayLocation(row){return `Shelf ${row.shelfNumber}, Bin ${row.binNumber}, Position ${row.positionNumber}`;}
+  function makeQrPayload(row){return upperPart(row.part||'');}
+  function rebuildRowsFromBinMap(){const oldByKey={};const oldExcess=[];rackRows.forEach(r=>{if(r.isExcess || String(r.location||'').toLowerCase()==='excess'){oldExcess.push(r);}else{oldByKey[`${r.shelfNumber}-${r.binNumber}-${r.positionNumber}`]=r;}});const rows=[];binMap.forEach(bin=>{for(let p=1;p<=bin.positions;p++){const key=`${bin.shelfNumber}-${bin.binNumber}-${p}`, old=oldByKey[key];const row={shelf:bin.shelf,shelfNumber:bin.shelfNumber,binNumber:bin.binNumber,positionNumber:p,part:old?.part||'',desc:old?.desc||''};row.location=makeDisplayLocation(row);row.binBase=`${row.shelfNumber}-${row.binNumber}`;row.qr=makeQrPayload(row);rows.push(row);}});oldExcess.forEach((r,i)=>rows.push(makeExcessRow(r.part||'',r.desc||'',i+1)));rackRows=rows;updatePositionSummary();}
+  function buildBinMap(){const site=val('site'),category=val('category'),rack=val('rack'),shelves=safeNumber('shelves'),bins=safeNumber('bins'),positions=safeNumber('positions');if(!shelves||!bins||!positions){alert('Enter shelves, bins per shelf, and default positions per bin before building the rack.');return false;}binMap=[];for(let s=1;s<=shelves;s++){for(let b=1;b<=bins;b++){binMap.push({site,category,rack,shelf:shelfLetter(s),shelfNumber:s,binNumber:b,positions,maxPositions:positions});}}rebuildRowsFromBinMap();return true;}
+  function render(){if(!binMap.length&&!rackRows.length){output.innerHTML='';qrSection.classList.remove('active');qrLabels.innerHTML='';return;}let visual='<div class="rackVisual">';const shelves={};binMap.forEach((bin,index)=>{if(!shelves[bin.shelfNumber])shelves[bin.shelfNumber]=[];shelves[bin.shelfNumber].push({bin,index});});Object.keys(shelves).sort((a,b)=>a-b).forEach(sn=>{const shelfBins=shelves[sn];visual+=`<div class="shelf"><div class="shelfTitle">Shelf ${sn}</div><div class="binRow">`;shelfBins.forEach(item=>{const z=item.bin.positions===0?' binTileZero':'';visual+=`<button type="button" class="binTile${z}" data-bin-index="${item.index}" data-bin-base="${item.bin.shelfNumber}-${item.bin.binNumber}" title="Tap to reduce positions">${item.bin.positions}</button>`;});visual+='</div></div>';});visual+='</div>';
+    let table='<div class="rackTableWrap"><table class="rackTable"><thead><tr><th>Location</th><th>Part Number</th><th>Description</th></tr></thead><tbody>';let lastShelf=null;rackRows.forEach((row,index)=>{const isExcess=row.isExcess||String(row.location||'').toLowerCase()==='excess';const groupLabel=isExcess?'Excess':`Shelf ${row.shelfNumber}`;if(groupLabel!==lastShelf){table+=`<tr class="shelfGap"><td colspan="3">${escapeHtml(groupLabel)}</td></tr>`;lastShelf=groupLabel;}table+=`<tr class="${isExcess?'excessRow':''}"><td class="locationText">${escapeHtml(row.location)}</td><td><input data-index="${index}" data-key="part" data-bin-base="${escapeHtml(row.binBase)}" value="${escapeHtml(upperPart(row.part))}"></td><td><input data-index="${index}" data-key="desc" data-bin-base="${escapeHtml(row.binBase)}" value="${escapeHtml(row.desc)}"></td></tr>`;});table+='</tbody></table></div>';output.innerHTML=visual+table;updatePositionSummary();
+    output.querySelectorAll('.binTile').forEach(btn=>btn.addEventListener('click',()=>{const index=Number(btn.dataset.binIndex), bin=binMap[index];if(!bin)return;const max=Number(bin.maxPositions)||safeNumber('positions')||1;bin.positions=bin.positions<=0?max:bin.positions-1;rebuildRowsFromBinMap();render();statusNote.textContent=`${rackRows.length} bin/position entries ready.`;}));
+    output.querySelectorAll('.rackTable input').forEach(input=>{input.addEventListener('focus',()=>highlightBin(input.dataset.binBase||''));input.addEventListener('input',()=>{const row=rackRows[Number(input.dataset.index)];if(!row)return;const cleanValue=input.dataset.key==='part'?String(input.value||'').toUpperCase():input.value;input.value=cleanValue;row[input.dataset.key]=cleanValue;row.qr=makeQrPayload(row);updatePositionSummary();qrSection.classList.remove('active');qrLabels.innerHTML='';});});}
+  function highlightBin(binBase){output.querySelectorAll('.binTile').forEach(tile=>tile.classList.toggle('binTileActive',tile.dataset.binBase===binBase));}
+  function buildRack(){if(!buildBinMap())return;render();statusNote.textContent=`${rackRows.length} bin/position entries ready.`;}
+  function getExportBaseName(){
+    const company=val('site')||'Company', category=val('category')||'Category', number=val('rack')||'Number', date=new Date().toISOString().slice(0,10);
+    return `${clean(company)}_${clean(category)}_${clean(number)}_${date}`;
+  }
+  function downloadCsvOnly(){
+    if(!rackRows.length){alert('Build or upload a rack before downloading.');return false;}
+    const meta={site:val('site')||'',category:val('category')||'',rack:val('rack')||'',shelves:val('shelves')||'',bins:val('bins')||'',positions:val('positions')||''};
+    const positionLookup={};
+    binMap.forEach(bin=>{positionLookup[`${bin.shelfNumber}-${bin.binNumber}`]=bin.positions;});
+    const lines=[headers.map(csvEscape).join(',')];
+    rackRows.forEach(row=>lines.push([
+      meta.site,
+      meta.category,
+      meta.rack,
+      meta.shelves,
+      meta.bins,
+      meta.positions,
+      row.isExcess?'EXCESS':(row.shelfNumber||''),
+      row.isExcess?'':(row.binNumber||''),
+      row.isExcess?'':(row.positionNumber||''),
+      row.location||'',
+      row.isExcess?'':(positionLookup[`${row.shelfNumber}-${row.binNumber}`] || ''),
+      upperPart(row.part||''),
+      row.desc||''
+    ].map(csvEscape).join(',')));
+    const blob=new Blob([lines.join('\n')],{type:'text/csv;charset=utf-8;'});
+    const a=document.createElement('a');
+    const href=URL.createObjectURL(blob);
+    a.href=href;
+    a.download=`${getExportBaseName()}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(()=>URL.revokeObjectURL(href),1500);
+    return true;
+  }
+  function downloadCsv(){
+    if(!downloadCsvOnly()) return;
+    setTimeout(downloadSummaryPdf,250);
+  }
+  function uploadCsv(file){
+    if(!file){alert('Choose a CSV file to upload.');return;}
+    const reader=new FileReader();
+    reader.onerror=()=>alert('Could not read the CSV file.');
+    reader.onload=e=>{
+      try{
+        const parsed=parseCsv(String(e.target.result||'').replace(/^\uFEFF/,''));
+        if(parsed.length<2){alert('Could not upload CSV: CSV has a header but no data rows.');uploadInput.value='';return;}
+        const headerRow=parsed[0].map(normalHeader);
+        const dataRows=parsed.slice(1).filter(row=>row.some(cell=>String(cell||'').trim()!==''));
+        if(!dataRows.length){alert('Could not upload CSV: CSV has a header but no data rows.');uploadInput.value='';return;}
+        const findIndex=names=>{for(const name of names){const idx=headerRow.indexOf(normalHeader(name));if(idx>=0)return idx;}return -1;};
+        const idxSite=findIndex(['customer / site','customer','site','company']);
+        const idxCategory=findIndex(['rack / category','category','rack category']);
+        const idxRack=findIndex(['rack number','rack','number']);
+        const idxShelves=findIndex(['number of shelves','shelves']);
+        const idxBins=findIndex(['bins per shelf','bins']);
+        const idxPositions=findIndex(['default positions per bin','positions','positions per bin default']);
+        const idxShelf=findIndex(['shelf']);
+        const idxBin=findIndex(['bin']);
+        const idxPosition=findIndex(['position']);
+        const idxLoc=findIndex(['location','full bin location','full location','bin location']);
+        const idxBinPositions=findIndex(['positions per bin','bin positions']);
+        const idxPart=findIndex(['part number','part','sku']);
+        const idxDesc=findIndex(['description','desc']);
+        const hasInternalStructure=idxShelf>=0 && idxBin>=0 && idxPosition>=0;
+        const hasLocation=idxLoc>=0;
+        const isSimplePrefill=!hasInternalStructure && !hasLocation;
+
+        if(isSimplePrefill){
+          if(!rackRows.length || !binMap.length){
+            document.getElementById('shelves').value=document.getElementById('shelves').value||'1';
+            document.getElementById('bins').value=document.getElementById('bins').value||String(dataRows.length);
+            document.getElementById('positions').value=document.getElementById('positions').value||'1';
+            if(!buildBinMap()){uploadInput.value='';return;}
+          }
+          rackRows=rackRows.filter(r=>!(r.isExcess || String(r.location||'').toLowerCase()==='excess'));
+          const normalRows=rackRows;
+          dataRows.forEach((row,i)=>{
+            const part=upperPart(idxPart>=0?row[idxPart]||'':row[0]||'');
+            const desc=idxDesc>=0?String(row[idxDesc]||'').trim():String(row[1]||'').trim();
+            if(!part && !desc) return;
+            if(i<normalRows.length){
+              normalRows[i].part=part;
+              normalRows[i].desc=desc;
+              normalRows[i].qr=makeQrPayload(normalRows[i]);
+            }else{
+              rackRows.push(makeExcessRow(part,desc,rackRows.filter(r=>r.isExcess).length+1));
+            }
+          });
+          render();
+          const excessCount=Math.max(0,dataRows.length-normalRows.length);
+          statusNote.textContent=`${dataRows.length} part entries uploaded into rack order${excessCount?` (${excessCount} excess).`:'.'}`;
+          uploadInput.value='';
+          return;
+        }
+
+        const first=dataRows[0]||[];
+        if(idxSite>=0) document.getElementById('site').value=first[idxSite]||'';
+        if(idxCategory>=0) document.getElementById('category').value=first[idxCategory]||'';
+        if(idxRack>=0) document.getElementById('rack').value=first[idxRack]||'';
+        if(idxShelves>=0) document.getElementById('shelves').value=first[idxShelves]||'';
+        if(idxBins>=0) document.getElementById('bins').value=first[idxBins]||'';
+        if(idxPositions>=0) document.getElementById('positions').value=first[idxPositions]||'';
+
+        rackRows=dataRows.map((row,i)=>{
+          let shelf=1,bin=1,pos=i+1,loc='';
+          const shelfCell=hasInternalStructure?String(row[idxShelf]||'').trim():'';
+          if(shelfCell.toUpperCase()==='EXCESS' || (idxLoc>=0 && String(row[idxLoc]||'').trim().toLowerCase()==='excess')){
+            return makeExcessRow(idxPart>=0?row[idxPart]||'':'',idxDesc>=0?row[idxDesc]||'':'',i+1);
+          }
+          if(hasInternalStructure){
+            shelf=parseInt(row[idxShelf],10)||1;
+            bin=parseInt(row[idxBin],10)||1;
+            pos=parseInt(row[idxPosition],10)||1;
+          } else {
+            loc=row[idxLoc]||'';
+            const m=String(loc).match(/shelf\s*(\d+)\s*,?\s*bin\s*(\d+)\s*,?\s*position\s*(\d+)/i);
+            if(m){shelf=parseInt(m[1],10);bin=parseInt(m[2],10);pos=parseInt(m[3],10);}
+          }
+          const item={
+            shelf:shelfLetter(shelf),
+            shelfNumber:shelf,
+            binNumber:bin,
+            positionNumber:pos,
+            location:loc||`Shelf ${shelf}, Bin ${bin}, Position ${pos}`,
+            binBase:`${shelf}-${bin}`,
+            part:upperPart(idxPart>=0?row[idxPart]||'':''),
+            desc:idxDesc>=0?row[idxDesc]||'':''
+          };
+          item.qr=makeQrPayload(item);
+          return item;
+        }).sort((a,b)=>{
+          const ax=a.isExcess?999999:a.shelfNumber, bx=b.isExcess?999999:b.shelfNumber;
+          return ax!==bx?ax-bx:a.binNumber!==b.binNumber?a.binNumber-b.binNumber:a.positionNumber-b.positionNumber;
+        });
+        rackRows.sort((a,b)=>{const ax=a.isExcess?999999:a.shelfNumber, bx=b.isExcess?999999:b.shelfNumber;return ax!==bx?ax-bx:a.binNumber!==b.binNumber?a.binNumber-b.binNumber:a.positionNumber-b.positionNumber;});
+        rebuildBinMapFromRows();
+        if(idxBinPositions>=0 && hasInternalStructure){
+          const posByBin={};
+          dataRows.forEach(row=>{
+            const shelf=parseInt(row[idxShelf],10)||null;
+            const bin=parseInt(row[idxBin],10)||null;
+            const count=parseInt(row[idxBinPositions],10)||0;
+            if(shelf&&bin&&count) posByBin[`${shelf}-${bin}`]=count;
+          });
+          binMap.forEach(bin=>{const count=posByBin[`${bin.shelfNumber}-${bin.binNumber}`];if(count){bin.positions=count;bin.maxPositions=Math.max(bin.maxPositions,count);}});
+        }
+        render();
+        statusNote.textContent=`${dataRows.length} part entries uploaded.`;
+        uploadInput.value='';
+      }catch(error){
+        console.error(error);
+        alert('Could not upload CSV. Check the file has Part Number and Description columns, or a full Rack Builder export.');
+        uploadInput.value='';
+      }
+    };
+    reader.readAsText(file);
+  }
+  function rebuildBinMapFromRows(){const grouped={};rackRows.forEach(row=>{if(row.isExcess || String(row.location||'').toLowerCase()==='excess')return;const key=`${row.shelfNumber}-${row.binNumber}`;if(!grouped[key])grouped[key]={site:'',category:'',rack:'',shelf:shelfLetter(row.shelfNumber),shelfNumber:row.shelfNumber,binNumber:row.binNumber,positions:0,maxPositions:1};grouped[key].positions=Math.max(grouped[key].positions,Number(row.positionNumber)||1);grouped[key].maxPositions=Math.max(grouped[key].maxPositions,grouped[key].positions);});binMap=Object.values(grouped).sort((a,b)=>a.shelfNumber!==b.shelfNumber?a.shelfNumber-b.shelfNumber:a.binNumber-b.binNumber);if(binMap.length){setVal('shelves',String(Math.max(...binMap.map(b=>b.shelfNumber),1)));setVal('bins',String(Math.max(...binMap.map(b=>b.binNumber),1)));setVal('positions',String(Math.max(...binMap.map(b=>b.positions),1)));}updatePositionSummary();}
+  function downloadSummaryPdf(){
+    if(!binMap.length&&!rackRows.length){alert('Build or upload a rack before downloading the summary PDF.');return;}
+    if(!window.jspdf || !window.jspdf.jsPDF){alert('PDF library could not load. Please check your internet connection and try again.');return;}
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+    const pageW=210, pageH=297, margin=12, usableW=pageW-(margin*2);
+    const company=val('site')||'Company', category=val('category')||'Category', rack=val('rack')||'Rack', date=new Date().toISOString().slice(0,10);
+    const shelves={};
+    binMap.forEach(bin=>{if(!shelves[bin.shelfNumber])shelves[bin.shelfNumber]=[];shelves[bin.shelfNumber].push(bin);});
+    function header(){
+      doc.setDrawColor(17,17,17);doc.setLineWidth(.6);
+      doc.setFont('helvetica','bold');doc.setFontSize(18);doc.text('BEARING WHOLESALERS',margin,18);
+      doc.setFontSize(10);doc.setFont('helvetica','bold');doc.text(company,pageW-margin,13,{align:'right'});
+      doc.setFont('helvetica','normal');doc.text(`${category}  |  Rack ${rack}`,pageW-margin,18,{align:'right'});doc.text(date,pageW-margin,23,{align:'right'});
+      doc.line(margin,28,pageW-margin,28);
+    }
+    function ensureSpace(y,needed){if(y+needed>pageH-margin){doc.addPage();header();return 38;}return y;}
+    header();
+    doc.setFont('helvetica','bold');doc.setFontSize(16);doc.text('Rack Map',margin,39);
+    let y=48;
+    Object.keys(shelves).sort((a,b)=>Number(a)-Number(b)).forEach(sn=>{
+      const bins=shelves[sn].sort((a,b)=>a.binNumber-b.binNumber);
+      const count=Math.max(bins.length,1);
+      const gap=3;
+      let cell=10;
+      const maxCell=(usableW-10-(gap*(count-1)))/count;
+      if(maxCell<cell) cell=Math.max(4,maxCell);
+      const rowW=(cell*count)+(gap*(count-1));
+      const boxW=rowW+10;
+      const boxH=cell+15;
+      y=ensureSpace(y,boxH+5);
+      const x=(pageW-boxW)/2;
+      doc.setDrawColor(17,17,17);doc.setLineWidth(.35);doc.roundedRect(x,y,boxW,boxH,2,2);
+      doc.setFont('helvetica','bold');doc.setFontSize(12);doc.text(`Shelf ${sn}`,x+5,y+7);
+      let cx=x+5, cy=y+10;
+      bins.forEach(bin=>{
+        doc.roundedRect(cx,cy,cell,cell,1.5,1.5);
+        doc.setFontSize(Math.max(6,Math.min(10,cell*.9)));doc.text(String(bin.positions||0),cx+(cell/2),cy+(cell/2)+1.5,{align:'center'});
+        cx+=cell+gap;
+      });
+      y+=boxH+5;
+    });
+    doc.addPage();header();
+    doc.setFont('helvetica','bold');doc.setFontSize(16);doc.text('Location List',margin,39);
+    y=49;
+    let currentShelf=null;
+    rackRows.forEach(row=>{
+      if(row.shelfNumber!==currentShelf){
+        y=ensureSpace(y,14);
+        doc.setFont('helvetica','bold');doc.setFontSize(13);doc.text(`Shelf ${row.shelfNumber}`,margin,y);
+        y+=7;currentShelf=row.shelfNumber;
+      }
+      y=ensureSpace(y,7);
+      doc.setFont('helvetica','normal');doc.setFontSize(10);
+      doc.text(String(row.location||''),margin,y);
+      doc.setDrawColor(220,220,220);doc.setLineWidth(.15);doc.line(margin,y+2,pageW-margin,y+2);
+      y+=6;
+    });
+    doc.save(`${getExportBaseName()}_summary.pdf`);
+  }
+  function printSummary(){downloadSummaryPdf();}
+  function drawBwLogoOnQr(canvas){
+    const ctx=canvas.getContext('2d');
+    const size=canvas.width;
+    const box=size*0.28;
+    const x=(size-box)/2;
+    const y=(size-box)/2;
+    const r=box/2;
+    ctx.save();
+    ctx.fillStyle='#ffffff';
+    ctx.beginPath();
+    ctx.arc(size/2,size/2,r,0,Math.PI*2);
+    ctx.fill();
+    ctx.lineWidth=Math.max(3,size*0.025);
+    ctx.strokeStyle='#d80b25';
+    ctx.beginPath();
+    ctx.arc(size/2,size/2,r*0.82,0,Math.PI*2);
+    ctx.stroke();
+    ctx.fillStyle='#0b2c6b';
+    ctx.font=`900 ${Math.round(box*0.34)}px Arial, Helvetica, sans-serif`;
+    ctx.textAlign='center';
+    ctx.textBaseline='middle';
+    ctx.fillText('BW',size/2,size/2+box*0.025);
+    ctx.restore();
+  }
+  function autoScaleQrLabel(label){
+    const part=label.querySelector('.qrPart');
+    const desc=label.querySelector('.qrDesc');
+    if(!part) return;
+    const len=(part.textContent||'').trim().length;
+    const small=label.classList.contains('smallLabel');
+    let partSize=small?7.2:9.5;
+    if(len>12) partSize=small?6.6:8.6;
+    if(len>16) partSize=small?6.0:7.8;
+    if(len>22) partSize=small?5.3:6.8;
+    if(len>30) partSize=small?4.7:5.9;
+    part.style.fontSize=partSize+'pt';
+    if(desc){
+      const dlen=(desc.textContent||'').trim().length;
+      let descSize=small?5.8:7.0;
+      if(dlen>24) descSize=small?5.1:6.4;
+      if(dlen>36) descSize=small?4.5:5.8;
+      desc.style.fontSize=descSize+'pt';
+    }
+  }
+  function toggleQrSelection(state){
+    qrLabels.querySelectorAll('.qrPrintSelect').forEach(cb=>cb.checked=state);
+  }
+  async function generateQrCodes(mode='medium'){
+    if(!rackRows.length){alert('Build or upload a rack before generating QR codes.');return false;}
+    currentQrLabelMode=mode;
+    const config=qrModes[mode]||qrModes.medium;
+    qrLabels.innerHTML='';
+    qrSection.classList.add('active');
+    qrLabels.classList.toggle('smallQrLabels',mode==='small');
+    qrLabels.classList.toggle('mediumQrLabels',mode!=='small');
+    for(const row of rackRows){
+      row.qr=makeQrPayload(row);
+      if(!row.qr) continue;
+      const label=document.createElement('div');
+      label.className=`qrLabel ${config.className}`;
+      label.dataset.part=String(row.part||'').trim();
+      label.dataset.desc=String(row.desc||'').trim();
+      const canvasWrap=document.createElement('div');
+      canvasWrap.className='qrCanvasWrap';
+      const text=document.createElement('div');
+      text.className='qrLabelText';
+      text.innerHTML=`<div class="qrPart">${escapeHtml(row.part||'')}</div><div class="qrDesc">${escapeHtml(row.desc||'')}</div>`;
+      const selector=document.createElement('label');
+      selector.className='qrSelect';
+      selector.innerHTML='<input type="checkbox" class="qrPrintSelect" checked title="Include in print">';
+      label.appendChild(selector);
+      label.appendChild(canvasWrap);
+      label.appendChild(text);
+      qrLabels.appendChild(label);
+      try{
+        const canvas=document.createElement('canvas');
+        canvasWrap.appendChild(canvas);
+        if(window.QRCode&&typeof window.QRCode.toCanvas==='function'){
+          await window.QRCode.toCanvas(canvas,row.qr,{width:config.qrPx,margin:1,errorCorrectionLevel:'H'});
+        } else if(window.QRious){
+          new QRious({element:canvas,value:row.qr,size:config.qrPx,padding:4,level:'H'});
+        } else {
+          throw new Error('No QR library');
+        }
+        drawBwLogoOnQr(canvas);
+      }catch(error){
+        const img=document.createElement('img');
+        img.width=config.qrPx;
+        img.height=config.qrPx;
+        img.alt='QR code';
+        img.src='https://api.qrserver.com/v1/create-qr-code/?size='+config.qrPx+'x'+config.qrPx+'&ecc=H&margin=1&data='+encodeURIComponent(row.qr);
+        canvasWrap.innerHTML='';
+        canvasWrap.appendChild(img);
+      }
+      autoScaleQrLabel(label);
+    }
+    statusNote.textContent=`${qrLabels.children.length} QR labels generated. Untick any labels you do not want to print.`;
+    return true;
+  }
+  function getSelectedQrLabelData(){
+    return Array.from(qrLabels.querySelectorAll('.qrLabel'))
+      .filter(label=>label.querySelector('.qrPrintSelect')?.checked)
+      .map(label=>{
+        const canvas=label.querySelector('canvas');
+        const img=label.querySelector('img');
+        let qrData='';
+        try{
+          qrData=canvas?canvas.toDataURL('image/png'):(img?img.src:'');
+        }catch(error){
+          qrData=img?img.src:'';
+        }
+        return {
+          part:upperPart(label.dataset.part||label.querySelector('.qrPart')?.textContent||''),
+          desc:String(label.dataset.desc||label.querySelector('.qrDesc')?.textContent||'').trim(),
+          qrData
+        };
+      })
+      .filter(row=>String(row.part||'').trim());
+  }
+
+  function labelSpec(mode){
+    if(mode==='small') return {name:'small', cols:3, widthMm:61, heightMm:22, qrMm:19, partPt:7.2, descPt:5.7, suffix:'small'};
+    if(mode==='large') return {name:'large', cols:2, widthMm:96, heightMm:50, qrMm:38, partPt:12, descPt:9, suffix:'large'};
+    return {name:'medium', cols:3, widthMm:64, heightMm:33.8, qrMm:30, partPt:9.5, descPt:7, suffix:'medium'};
+  }
+
+  async function downloadQrDocx(mode){
+    if(!rackRows.length){alert('Build or upload a rack before creating DOCX labels.');return;}
+    const genMode=(mode==='large')?'medium':mode;
+    if(!qrSection.classList.contains('active') || !qrLabels.children.length || currentQrLabelMode!==genMode){
+      await generateQrCodes(genMode);
+    }
+    const selected=getSelectedQrLabelData();
+    if(!selected.length){alert('Select at least one label first.');return;}
+    const spec=labelSpec(mode);
+    const title=`${val('site')||'Rack'} ${val('category')||''} ${val('rack')||''}`.trim();
+    const rows=[];
+    for(let i=0;i<selected.length;i+=spec.cols){rows.push(selected.slice(i,i+spec.cols));}
+    const cells=rows.map(row=>'<tr>'+row.map(item=>`
+      <td style="width:${spec.widthMm}mm;height:${spec.heightMm}mm;padding:1.5mm;border:0.2pt solid #d9d9d9;vertical-align:middle;box-sizing:border-box;">
+        <table style="width:100%;height:100%;border-collapse:collapse;table-layout:fixed;"><tr>
+          <td style="width:${spec.qrMm}mm;vertical-align:middle;text-align:center;"><img src="${item.qrData}" style="width:${spec.qrMm}mm;height:${spec.qrMm}mm;display:block;" /></td>
+          <td style="vertical-align:middle;padding-left:2mm;font-family:Arial,Helvetica,sans-serif;color:#111827;">
+            <div style="font-weight:900;font-size:${spec.partPt}pt;line-height:1.05;word-break:break-word;">${escapeHtml(item.part)}</div>
+            <div style="font-weight:700;font-size:${spec.descPt}pt;line-height:1.08;margin-top:1mm;color:#374151;word-break:break-word;">${escapeHtml(item.desc)}</div>
+          </td>
+        </tr></table>
+      </td>`).join('') + (row.length<spec.cols?'<td></td>'.repeat(spec.cols-row.length):'') + '</tr>').join('');
+    const html=`<!DOCTYPE html><html><head><meta charset="utf-8"><style>
+      @page{size:A4 portrait;margin:10mm;}
+      body{font-family:Arial,Helvetica,sans-serif;margin:0;padding:0;}
+      table.labels{border-collapse:collapse;table-layout:fixed;}
+      td{mso-cellspacing:0;mso-padding-alt:0;}
+    </style></head><body><table class="labels">${cells}</table></body></html>`;
+    let blob;
+    if(window.htmlDocx && typeof window.htmlDocx.asBlob==='function'){
+      blob=window.htmlDocx.asBlob(html);
+    }else{
+      blob=new Blob(['\ufeff'+html],{type:'application/msword'});
+    }
+    const a=document.createElement('a');
+    const href=URL.createObjectURL(blob);
+    a.href=href;
+    a.download=`${getExportBaseName()}_${spec.suffix}_qr_labels.docx`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(()=>URL.revokeObjectURL(href),1500);
+    statusNote.textContent=`${selected.length} ${spec.name} QR labels exported to DOCX.`;
+  }
+
+  async function printQrLabels(mode){
+    if(!rackRows.length){alert('Build or upload a rack before printing QR labels.');return;}
+    if(!qrSection.classList.contains('active') || !qrLabels.children.length){
+      await generateQrCodes(mode);
+    }
+    const selected=Array.from(qrLabels.querySelectorAll('.qrLabel'))
+      .filter(label=>label.querySelector('.qrPrintSelect')?.checked)
+      .map(label=>({part:label.dataset.part||'',desc:label.dataset.desc||''}))
+      .filter(row=>String(row.part||'').trim());
+    if(!selected.length){alert('Select at least one label to print.');return;}
+    const payload={mode,title:`${val('site')||'Rack'} ${val('category')||''} ${val('rack')||''}`.trim(),rows:selected};
+    try{sessionStorage.setItem('bwRackQrPrintData',JSON.stringify(payload));}
+    catch(error){alert('Could not prepare labels for printing in this browser.');return;}
+    const url=mode==='small'?'rack-labels-small.html':'rack-labels-medium.html';
+    window.open(url,'_blank');
+  }
+  function resetAll(){document.querySelectorAll('input').forEach(input=>{if(input.type!=='file')input.value='';});output.innerHTML='';statusNote.textContent='';qrLabels.innerHTML='';qrSection.classList.remove('active');binMap=[];rackRows=[];updatePositionSummary();}
+
+  function loadPrefillFromQuery(){
+    const params=new URLSearchParams(window.location.search);
+    if(!params.size) return;
+
+    function setField(id,value){
+      const el=document.getElementById(id);
+      if(el && value!==null && value!==undefined && value!==''){
+        el.value=value;
+        el.dispatchEvent(new Event('input',{bubbles:true}));
+        el.dispatchEvent(new Event('change',{bubbles:true}));
+      }
+    }
+
+    setField('site', params.get('customer') || params.get('site'));
+    setField('category', params.get('rackCategory') || params.get('category'));
+    setField('rack', params.get('rackNumber') || params.get('rack'));
+    setField('shelves', params.get('shelves'));
+    setField('bins', params.get('bins'));
+    setField('positions', params.get('positions'));
+
+    if(params.get('autobuild')==='1'){
+      setTimeout(()=>buildRack(),50);
+    }else if(params.has('rackCategory')||params.has('rackNumber')||params.has('category')||params.has('rack')){
+      statusNote.textContent='Prefilled from Warehouse Map. Enter/check bins and positions, then Build Rack.';
+    }
+  }
+  loadPrefillFromQuery();
+  ['shelves','bins','positions'].forEach(id=>{const el=document.getElementById(id);if(el)el.addEventListener('input',updatePositionSummary);});updatePositionSummary();
+  ['generateBtn','downloadBtn','uploadBtn','summaryBtn','qrBtn','selectAllQrBtn','clearQrBtn','resetBtn'].forEach(id=>{const el=document.getElementById(id);if(!el)return;});document.getElementById('generateBtn').addEventListener('click',buildRack);document.getElementById('downloadBtn').addEventListener('click',downloadCsv);document.getElementById('uploadBtn').addEventListener('click',()=>uploadInput.click());document.getElementById('summaryBtn').addEventListener('click',downloadSummaryPdf);document.getElementById('qrBtn').addEventListener('click',()=>generateQrCodes(currentQrLabelMode));document.getElementById('selectAllQrBtn').addEventListener('click',()=>toggleQrSelection(true));document.getElementById('clearQrBtn').addEventListener('click',()=>toggleQrSelection(false));const smallBtn=document.getElementById('printQrSmallBtn');if(smallBtn)smallBtn.addEventListener('click',()=>printQrLabels('small'));const mediumBtn=document.getElementById('printQrMediumBtn');if(mediumBtn)mediumBtn.addEventListener('click',()=>printQrLabels('medium'));document.getElementById('resetBtn').addEventListener('click',resetAll);const docxSmallBtn=document.getElementById('docxSmallBtn');if(docxSmallBtn)docxSmallBtn.addEventListener('click',()=>downloadQrDocx('small'));const docxMediumBtn=document.getElementById('docxMediumBtn');if(docxMediumBtn)docxMediumBtn.addEventListener('click',()=>downloadQrDocx('medium'));const docxLargeBtn=document.getElementById('docxLargeBtn');if(docxLargeBtn)docxLargeBtn.addEventListener('click',()=>downloadQrDocx('large'));window.addEventListener('afterprint',()=>document.body.classList.remove('qr-print-small','qr-print-medium'));uploadInput.addEventListener('change',()=>{const file=uploadInput.files&&uploadInput.files[0];if(file)uploadCsv(file);});
+})();
+</script>
+<script src="assets/js/bw-header.js"></script></body>
+</html>

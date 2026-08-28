@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<title>Rack Mapping</title>
+<link href="assets/css/style.css" rel="stylesheet"/>
+<style>
+body{padding-top:max(0px, env(safe-area-inset-top));padding-bottom:max(28px, calc(env(safe-area-inset-bottom) + 18px));}
+.container{max-width:1180px;width:min(100% - 32px,1180px);margin:0 auto;}
+.heroPanel{margin:18px 0 16px;padding:22px 20px;border-radius:22px;border:1px solid rgba(255,255,255,.10);background:linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.025));box-shadow:0 14px 32px rgba(0,0,0,.16);text-align:center;}
+.heroPanel h1{margin:0;font-size:clamp(28px,4vw,46px);line-height:1.05;color:var(--text,#fff);}
+.tileGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin-top:18px;}
+.mapTile{border-radius:22px;border:1px solid rgba(255,255,255,.10);background:linear-gradient(180deg, rgba(255,255,255,.055), rgba(255,255,255,.025));box-shadow:0 14px 32px rgba(0,0,0,.16);padding:22px;color:var(--text,#fff);text-decoration:none;min-height:180px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;}
+.mapTile:hover{background:rgba(255,255,255,.08);}
+.mapTile h2{margin:0 0 8px;font-size:26px;}
+.mapTile p{margin:0;color:var(--muted,rgba(255,255,255,.72));line-height:1.45;max-width:420px;}
+@media(max-width:760px){.tileGrid{grid-template-columns:1fr}.container{width:min(100% - 20px,1180px)}}
+</style>
+</head>
+<body>
+<div class="container">
+  <div id="bw-global-header"></div>
+  <section class="heroPanel"><h1>Rack Mapping</h1></section>
+  <section class="tileGrid">
+    <a class="mapTile" href="warehouse-map.html">
+      <h2>Warehouse Map</h2>
+      <p>Build or upload the full warehouse location list, then generate individual rack maps from each location.</p>
+    </a>
+    <a class="mapTile" href="rack-builder.html">
+      <h2>Individual Rack</h2>
+      <p>Go straight to the Rack Builder to build one rack, upload a rack CSV, or create QR labels.</p>
+    </a>
+  </section>
+</div>
+<script src="assets/js/bw-header.js"></script>
+</body>
+</html>

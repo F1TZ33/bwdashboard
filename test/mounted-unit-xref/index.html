@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Mounted Unit X-Ref</title>
+<link rel="stylesheet" href="styles.css" />
+
+<style id="playbook-tool-header-style">
+.playbookToolHeader{background:#071020;border-bottom:1px solid rgba(255,255,255,.14);padding:12px 18px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-family:Arial,Helvetica,sans-serif;position:relative;z-index:1000}
+.playbookToolHeader .brand{color:#fff;font-weight:900;margin-right:8px}
+.playbookToolHeader a{color:#fff!important;text-decoration:none!important;background:#111a2d;border:1px solid rgba(255,255,255,.18);border-radius:10px;padding:8px 12px;font-weight:800;line-height:1.1}
+.playbookToolHeader a:hover{border-color:rgba(239,68,68,.85);background:rgba(198,40,40,.25)}
+@media print{.playbookToolHeader{display:none!important}}
+</style>
+</head>
+<body>
+<div class="playbookToolHeader"><span class="brand">BW Playbook</span><a href="../../index.html">Dashboard</a><a href="../../resources-tools.html">Tools</a><a href="javascript:history.back()">Back</a></div>
+
+<div class="page">
+  <section class="hero">
+    <h1>Mounted Unit X-Ref</h1>
+    <p>Search direct table interchanges across AMI, Browning, Dodge, FYH, Hub City, INA, IPTCI, Link-Belt, MB, MRC/SKF, NTN, Sealmaster and Timken.</p>
+  </section>
+
+  <section class="controls">
+    <input id="search" type="search" placeholder="Search any part number, e.g. P2B-SC-100, NP-16, UCP205-16" />
+    <select id="brand">
+      <option value="">All brands</option>
+    </select>
+    <select id="section">
+      <option value="">All unit types</option>
+    </select>
+    <button id="clearBtn" type="button">Clear</button>
+  </section>
+
+  <p id="resultCount" class="status"></p>
+
+  <main id="results"></main>
+
+  <div class="footer">Designed and built by H. Fitzgerald</div>
+</div>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

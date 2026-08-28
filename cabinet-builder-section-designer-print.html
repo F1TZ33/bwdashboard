@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Cabinet Builder - Section Designer</title>
+<link rel="stylesheet" href="assets/css/style.css" />
+<style>
+:root{--bg:#101216;--panel:#181b22;--panel2:#202530;--text:#f5f7fb;--muted:#aeb6c3;--red:#c62828;--line:rgba(255,255,255,.12);--blue:#1179c9;--green:#145a32;--green2:#1e7d46;--cell:#252b35;--cell2:#303845;}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,Segoe UI,Arial,sans-serif}.container{width:min(1220px,calc(100% - 28px));margin:0 auto;padding:18px 0 40px}.top{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:14px}.logo{height:68px;object-fit:contain}.nav{display:flex;gap:10px;flex-wrap:wrap}.btn{border:1px solid rgba(198,40,40,.75);background:rgba(198,40,40,.12);color:var(--text);border-radius:12px;padding:10px 14px;font-weight:800;cursor:pointer;box-shadow:0 8px 18px rgba(0,0,0,.22)}.btn:hover{background:rgba(198,40,40,.22)}.btn.secondary{border-color:var(--line);background:rgba(255,255,255,.05)}.btn.locked{border-color:rgba(30,125,70,.9);background:rgba(30,125,70,.24)}h1{font-size:32px;margin:0 0 6px}p{color:var(--muted);margin:0;line-height:1.45}.hero,.card{border:1px solid var(--line);background:linear-gradient(180deg,rgba(255,255,255,.055),rgba(255,255,255,.025));border-radius:22px;padding:18px;box-shadow:0 16px 34px rgba(0,0,0,.22);margin-bottom:16px}.gridFields{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px}.field label{display:block;color:var(--muted);font-weight:800;font-size:12px;margin:0 0 6px}.field input{width:100%;height:42px;border-radius:12px;border:1px solid var(--line);background:rgba(255,255,255,.06);color:var(--text);padding:0 11px}.field.wide{grid-column:span 2}.work{display:grid;grid-template-columns:300px minmax(0,1fr);gap:16px;align-items:start}.cabinet{border:1px solid var(--line);background:#dfe5ec;border-radius:12px;padding:12px;box-shadow:inset 0 0 0 6px #2c79bd,0 18px 36px rgba(0,0,0,.24)}.cabTitle{color:#16202c;font-weight:900;text-align:center;margin:0 0 10px}.drawer{height:58px;border-radius:6px;background:linear-gradient(#f5f6f8,#d3d8df);border:1px solid #aeb6c1;margin:8px 0;position:relative;color:#17202c;font-weight:900;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform .15s ease,box-shadow .15s ease}.drawer:hover{transform:scale(1.04);box-shadow:0 12px 22px rgba(0,0,0,.2)}.drawer.active{outline:4px solid var(--red);transform:scale(1.05)}.drawerHandle{position:absolute;left:18px;right:18px;bottom:8px;height:7px;border-radius:99px;background:#b8c0ca}.drawerMeta{font-size:11px;color:#344055;position:absolute;right:10px;top:8px}.drawerView{min-height:590px;overflow:auto;padding:16px;border:1px solid var(--line);border-radius:18px;background:rgba(255,255,255,.025)}.drawerHeader{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:14px}.drawerHeader h2{margin:0;font-size:22px}.pill{display:inline-flex;border-radius:999px;padding:6px 9px;background:rgba(255,255,255,.08);font-weight:900;font-size:12px;color:var(--muted)}.pill.good{background:rgba(30,125,70,.2);color:#bff5d3}.hint{margin:0 0 12px;color:var(--muted);font-size:13px}.drawerGridWrap{position:relative;display:inline-block;min-width:680px;padding:10px;background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:16px}.drawerGrid{display:grid;grid-template-columns:repeat(var(--cols),54px);grid-template-rows:repeat(var(--rows),44px);gap:6px;position:relative}.cell{border:1px dashed rgba(255,255,255,.18);border-radius:8px;background:linear-gradient(180deg,var(--cell2),var(--cell));cursor:pointer;transition:background .12s ease,transform .12s ease,box-shadow .12s ease}.cell:hover{background:#3a4657;transform:scale(1.03)}.cell.selecting{background:rgba(198,40,40,.35);box-shadow:inset 0 0 0 2px rgba(255,255,255,.42)}.cell.used{opacity:.28;pointer-events:none}.sectionLayer{position:absolute;left:10px;top:10px;display:grid;grid-template-columns:repeat(var(--cols),54px);grid-template-rows:repeat(var(--rows),44px);gap:6px;pointer-events:none}.section{pointer-events:auto;border-radius:10px;border:2px solid rgba(255,255,255,.82);background:linear-gradient(180deg,var(--green2),var(--green));color:white;font-weight:900;display:flex;align-items:center;justify-content:center;box-shadow:inset 0 -10px 0 rgba(0,0,0,.18),0 12px 24px rgba(0,0,0,.28);cursor:pointer;transition:transform .16s ease,box-shadow .16s ease,filter .16s ease;position:relative;overflow:hidden}.section:hover{transform:scale(1.06);z-index:10;box-shadow:0 22px 46px rgba(0,0,0,.42);filter:saturate(1.15)}.section small{display:block;font-size:10px;color:rgba(255,255,255,.82);font-weight:800}.section.filled:after{content:"PART";position:absolute;right:5px;bottom:4px;font-size:9px;color:#d8ffe6}.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0}.listWrap{overflow:auto;border-radius:16px;border:1px solid var(--line);max-height:520px}.table{width:100%;border-collapse:collapse;min-width:980px;background:rgba(255,255,255,.025)}.table th,.table td{border-bottom:1px solid rgba(255,255,255,.08);padding:8px 10px;text-align:left;font-size:13px}.table th{position:sticky;top:0;background:#222733;z-index:2}.status{display:flex;gap:12px;flex-wrap:wrap;margin-top:12px;color:var(--muted);font-size:13px}.dialogBack{display:none;position:fixed;inset:0;background:rgba(0,0,0,.68);z-index:9999;align-items:center;justify-content:center;padding:18px}.dialogBack.active{display:flex}.dialog{width:min(520px,100%);background:#171b23;border:1px solid var(--line);border-radius:20px;padding:18px;box-shadow:0 30px 80px rgba(0,0,0,.55)}.dialog h3{margin:0 0 8px}.dialog .loc{color:var(--muted);font-weight:800;margin-bottom:12px}.dialog label{display:block;color:var(--muted);font-weight:800;font-size:13px;margin:12px 0 6px}.dialog input{width:100%;height:44px;border-radius:12px;border:1px solid var(--line);background:rgba(255,255,255,.06);color:var(--text);padding:0 12px}.dialog input#part{text-transform:uppercase}.actions{display:flex;justify-content:flex-end;gap:10px;margin-top:16px}.footer{text-align:center;color:rgba(255,255,255,.45);font-size:12px;margin-top:24px}.warn{color:#ffd2d2;font-weight:800;font-size:13px;margin-top:8px}@media(max-width:980px){.gridFields{grid-template-columns:repeat(2,1fr)}.field.wide{grid-column:span 1}.work{grid-template-columns:1fr}.cabinet{max-width:420px}.drawerView{overflow:auto}}@media(max-width:640px){.gridFields{grid-template-columns:1fr}.top{display:block}.logo{height:58px;margin-bottom:10px}}
+</style>
+</head>
+<body data-back="rack-builder.html">
+<div class="container">
+  <div class="top">
+    <img class="logo" src="assets/img/logo-cropped-white.png" alt="Bearing Wholesalers" onerror="this.style.display='none'" />
+    <div class="nav"><button class="btn secondary" onclick="history.back()">Back</button><button class="btn secondary" onclick="location.href='index.html'">Dashboard</button></div>
+  </div>
+
+  <section class="hero">
+    <h1>Cabinet Builder</h1>
+    <p>Drawer section designer. Set rows and columns, lock the grid, then hold Shift and click cells to create a drawer section. Sections are numbered top-left to bottom-right and can be assigned parts.</p>
+  </section>
+
+  <section class="card">
+    <div class="gridFields">
+      <div class="field wide"><label>Customer / Site</label><input id="site" placeholder="Customer or branch" /></div>
+      <div class="field"><label>Cabinet ID</label><input id="cabinet" value="C01" /></div>
+      <div class="field"><label>Drawers</label><input id="drawers" type="number" min="1" value="1" /></div>
+      <div class="field"><label>Rows / Drawer</label><input id="rows" type="number" min="1" max="30" value="10" /></div>
+      <div class="field"><label>Columns / Drawer</label><input id="cols" type="number" min="1" max="30" value="10" /></div>
+    </div>
+    <div class="toolbar">
+      <button class="btn" id="buildBtn">Build / Refresh Cabinet</button>
+      <button class="btn secondary" id="lockBtn">Lock Grid</button>
+      <button class="btn secondary" id="exportBtn">Export CSV</button>
+      <button class="btn secondary" id="printBtn">Print PDF</button>
+      <button class="btn secondary" id="clearDrawerBtn">Clear Current Drawer</button>
+      <button class="btn secondary" id="clearPartsBtn">Clear Parts Only</button>
+    </div>
+    <div class="warn" id="msg"></div>
+  </section>
+
+  <section class="work">
+    <div class="card"><div id="cabinetView" class="cabinet"></div></div>
+    <div class="card"><div id="drawerView" class="drawerView"></div></div>
+  </section>
+
+  <section class="card">
+    <h2 style="margin:0 0 12px">Drawer Section List</h2>
+    <div class="listWrap"><table class="table" id="locTable"></table></div>
+    <div class="status" id="status"></div>
+  </section>
+
+  <div class="footer">Designed and built by H. Fitzgerald</div>
+</div>
+
+<div class="dialogBack" id="dialogBack">
+  <div class="dialog">
+    <h3>Edit Drawer Section</h3><div class="loc" id="editLoc"></div>
+    <label>Part Number</label><input id="part" autocomplete="off" />
+    <label>Description</label><input id="desc" autocomplete="off" />
+    <div class="actions"><button class="btn secondary" id="deleteBtn">Clear Part</button><button class="btn secondary" id="cancelBtn">Cancel</button><button class="btn" id="saveBtn">Save</button></div>
+  </div>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const S = { activeDrawer:1, locked:false, layouts:{}, selecting:new Set(), shift:false, current:null };
+function pad(n){return String(n).padStart(2,'0')}
+function cfg(){return { site:$('site').value.trim(), cabinet:($('cabinet').value.trim()||'C01').toUpperCase(), drawers:+$('drawers').value||1, rows:+$('rows').value||10, cols:+$('cols').value||10 }}
+function key(d,r,c){return `${d}:${r}:${c}`}
+function drawerSections(d=S.activeDrawer){return S.layouts[d] ||= []}
+function msg(t){$('msg').textContent=t||''; if(t) setTimeout(()=>{if($('msg').textContent===t)$('msg').textContent=''},3600)}
+function sectionCode(sec){const c=cfg(); return `${c.cabinet}-D${pad(sec.drawer)}-S${pad(sec.section)}`}
+function build(){const c=cfg(); if(S.activeDrawer>c.drawers) S.activeDrawer=1; for(const d of Object.keys(S.layouts)){ if(+d>c.drawers) delete S.layouts[d]; } renumberAll(); renderAll();}
+function lockGrid(){S.locked=!S.locked; $('lockBtn').classList.toggle('locked',S.locked); $('lockBtn').textContent=S.locked?'Grid Locked':'Lock Grid'; renderDrawer();}
+function usedCells(d=S.activeDrawer){const used=new Set(); drawerSections(d).forEach(sec=>{for(let r=sec.startRow;r<sec.startRow+sec.rowSpan;r++)for(let c=sec.startCol;c<sec.startCol+sec.colSpan;c++)used.add(key(d,r,c))}); return used;}
+function renumberAll(){Object.values(S.layouts).forEach(list=>list.sort((a,b)=>a.startRow-b.startRow || a.startCol-b.startCol).forEach((s,i)=>s.section=i+1));}
+function currentRows(){const out=[]; const c=cfg(); Object.values(S.layouts).flat().forEach(sec=>out.push({StorageType:'Drawer Cabinet',Site:c.site,Cabinet:c.cabinet,Drawer:`D${pad(sec.drawer)}`,Section:`S${pad(sec.section)}`,StartRow:sec.startRow,StartColumn:sec.startCol,RowSpan:sec.rowSpan,ColumnSpan:sec.colSpan,LocationCode:sectionCode(sec),PartNumber:sec.partNumber||'',Description:sec.description||''})); return out.sort((a,b)=>a.Drawer.localeCompare(b.Drawer)||a.Section.localeCompare(b.Section));}
+function renderCabinet(){const c=cfg(); let html=`<div class="cabTitle">${c.cabinet} — Drawer Cabinet</div>`; for(let d=1;d<=c.drawers;d++){const list=drawerSections(d); const filled=list.filter(x=>x.partNumber).length; html+=`<div class="drawer ${d===S.activeDrawer?'active':''}" data-d="${d}">Drawer ${pad(d)}<span class="drawerMeta">${list.length} sections / ${filled} filled</span><span class="drawerHandle"></span></div>`} $('cabinetView').innerHTML=html; document.querySelectorAll('.drawer').forEach(el=>el.onclick=()=>{finishSelection();S.activeDrawer=+el.dataset.d; renderAll()})}
+function renderDrawer(){const c=cfg(); const used=usedCells(); let html=`<div class="drawerHeader"><h2>${c.cabinet} / Drawer ${pad(S.activeDrawer)}</h2><span class="pill ${S.locked?'good':''}">${S.locked?'grid locked - hold Shift and click cells':'set rows/columns, then lock grid'}</span></div>`;
+html+=`<p class="hint">Create each drawer section by holding Shift, clicking the required grid squares, then releasing Shift. Click a green section to enter part details.</p>`;
+html+=`<div class="drawerGridWrap"><div class="drawerGrid" style="--rows:${c.rows};--cols:${c.cols}">`;
+for(let r=1;r<=c.rows;r++)for(let col=1;col<=c.cols;col++){const k=key(S.activeDrawer,r,col); html+=`<div class="cell ${S.selecting.has(k)?'selecting':''} ${used.has(k)?'used':''}" data-r="${r}" data-c="${col}" title="R${r} C${col}"></div>`}
+html+=`</div><div class="sectionLayer" style="--rows:${c.rows};--cols:${c.cols}">`;
+drawerSections().forEach(sec=>{html+=`<div class="section ${sec.partNumber?'filled':''}" data-id="${sec.id}" style="grid-row:${sec.startRow}/span ${sec.rowSpan};grid-column:${sec.startCol}/span ${sec.colSpan}"><div>S${pad(sec.section)}<small>${sec.rowSpan}×${sec.colSpan}</small></div></div>`});
+html+=`</div></div>`; $('drawerView').innerHTML=html;
+document.querySelectorAll('.cell').forEach(cell=>cell.onclick=e=>selectCell(+cell.dataset.r,+cell.dataset.c));
+document.querySelectorAll('.section').forEach(sec=>sec.onclick=e=>openEdit(sec.dataset.id));
+}
+function selectCell(r,c){if(!S.locked){msg('Lock the grid before creating sections.');return} if(!S.shift){msg('Hold Shift while clicking cells to build a section.');return} const k=key(S.activeDrawer,r,c); if(usedCells().has(k)){msg('That cell is already allocated to a section.');return} if(S.selecting.has(k)) S.selecting.delete(k); else S.selecting.add(k); renderDrawer();}
+function finishSelection(){ if(!S.selecting.size) return; const d=S.activeDrawer; const cells=[...S.selecting].filter(x=>x.startsWith(d+':')).map(x=>{const [,r,c]=x.split(':').map(Number); return {r,c}}); S.selecting.clear(); if(!cells.length){renderDrawer();return} const minR=Math.min(...cells.map(x=>x.r)), maxR=Math.max(...cells.map(x=>x.r)), minC=Math.min(...cells.map(x=>x.c)), maxC=Math.max(...cells.map(x=>x.c)); const used=usedCells(d); for(let r=minR;r<=maxR;r++)for(let c=minC;c<=maxC;c++){if(used.has(key(d,r,c))){msg('Selection overlaps an existing section, so it was not created.'); renderDrawer(); return;}}
+ const sec={id:crypto.randomUUID?crypto.randomUUID():String(Date.now()+Math.random()), drawer:d, section:0, startRow:minR, startCol:minC, rowSpan:maxR-minR+1, colSpan:maxC-minC+1, partNumber:'', description:''}; drawerSections(d).push(sec); renumberAll(); renderAll(); }
+function openEdit(id){const sec=Object.values(S.layouts).flat().find(x=>x.id===id); if(!sec) return; S.current=id; $('editLoc').textContent=`${sectionCode(sec)} — Drawer ${pad(sec.drawer)}, Section ${pad(sec.section)} (${sec.rowSpan}×${sec.colSpan})`; $('part').value=sec.partNumber||''; $('desc').value=sec.description||''; $('dialogBack').classList.add('active'); setTimeout(()=>$('part').focus(),20)}
+function closeEdit(){S.current=null; $('dialogBack').classList.remove('active')}
+function saveEdit(){const sec=Object.values(S.layouts).flat().find(x=>x.id===S.current); if(sec){sec.partNumber=$('part').value.trim().toUpperCase(); sec.description=$('desc').value.trim()} closeEdit(); renderAll()}
+function clearEdit(){const sec=Object.values(S.layouts).flat().find(x=>x.id===S.current); if(sec){sec.partNumber=''; sec.description=''} closeEdit(); renderAll()}
+function renderTable(){const rows=currentRows(); let html='<thead><tr><th>Location</th><th>Cabinet</th><th>Drawer</th><th>Section</th><th>Start Row</th><th>Start Column</th><th>Row Span</th><th>Column Span</th><th>Part Number</th><th>Description</th></tr></thead><tbody>'; rows.forEach(x=>{html+=`<tr><td><b>${x.LocationCode}</b></td><td>${x.Cabinet}</td><td>${x.Drawer}</td><td>${x.Section}</td><td>${x.StartRow}</td><td>${x.StartColumn}</td><td>${x.RowSpan}</td><td>${x.ColumnSpan}</td><td>${x.PartNumber}</td><td>${x.Description}</td></tr>`}); html+='</tbody>'; $('locTable').innerHTML=html; const filled=rows.filter(x=>x.PartNumber).length; $('status').innerHTML=`<span>Drawers: <b>${cfg().drawers}</b></span><span>Sections: <b>${rows.length}</b></span><span>Filled: <b>${filled}</b></span><span>Grid: <b>${cfg().rows} × ${cfg().cols}</b></span>`}
+function renderAll(){renderCabinet(); renderDrawer(); renderTable()}
+function csvEscape(v){v=String(v??''); return /[",\n]/.test(v)?`"${v.replace(/"/g,'""')}"`:v}
+
+function escHtml(v){return String(v??'').replace(/[&<>\"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;'}[m]))}
+function printPdf(){
+  finishSelection();
+  const c=cfg();
+  const today=new Date().toLocaleDateString('en-AU');
+  let pages='';
+  for(let d=1; d<=c.drawers; d++){
+    const sections=drawerSections(d).slice().sort((a,b)=>a.section-b.section);
+    let layer='';
+    sections.forEach(sec=>{
+      const loc=`${c.cabinet}-D${pad(sec.drawer)}-S${pad(sec.section)}`;
+      const meta=sec.partNumber ? `<div class="pPart">${escHtml(sec.partNumber)}</div>` : '';
+      layer += `<div class="pSection" style="grid-row:${sec.startRow}/span ${sec.rowSpan};grid-column:${sec.startCol}/span ${sec.colSpan}"><div class="pSecNo">S${pad(sec.section)}</div><div class="pLoc">${escHtml(loc)}</div>${meta}</div>`;
+    });
+    let cells='';
+    for(let r=1;r<=c.rows;r++) for(let col=1;col<=c.cols;col++) cells += '<div class="pCell"></div>';
+    let list=sections.map(sec=>`<tr><td>S${pad(sec.section)}</td><td>${escHtml(`${c.cabinet}-D${pad(sec.drawer)}-S${pad(sec.section)}`)}</td><td>${sec.startRow}</td><td>${sec.startCol}</td><td>${sec.rowSpan}×${sec.colSpan}</td><td>${escHtml(sec.partNumber||'')}</td><td>${escHtml(sec.description||'')}</td></tr>`).join('');
+    if(!list) list='<tr><td colspan="7">No sections created for this drawer.</td></tr>';
+    pages += `<section class="page"><div class="head"><div><h1>${escHtml(c.cabinet)} — Drawer ${pad(d)}</h1><p>${escHtml(c.site||'No site entered')} • ${today}</p></div><div class="brand">Cabinet Builder</div></div><div class="gridBox" style="--rows:${c.rows};--cols:${c.cols}"><div class="printGrid">${cells}</div><div class="printLayer">${layer}</div></div><h2>Drawer Sections</h2><table><thead><tr><th>Section</th><th>Location</th><th>Row</th><th>Column</th><th>Size</th><th>Part Number</th><th>Description</th></tr></thead><tbody>${list}</tbody></table></section>`;
+  }
+  const html=`<!doctype html><html><head><meta charset="utf-8"><title>${escHtml(c.cabinet)} Cabinet Layout</title><style>@page{size:A4 landscape;margin:10mm} *{box-sizing:border-box} body{font-family:Arial,sans-serif;color:#111;margin:0;background:white}.page{page-break-after:always;padding:0}.page:last-child{page-break-after:auto}.head{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:3px solid #c62828;padding-bottom:8px;margin-bottom:10px}h1{margin:0;font-size:22px}p{margin:4px 0 0;color:#555}.brand{font-weight:900;color:#c62828}.gridBox{position:relative;display:inline-block;padding:6px;border:2px solid #222;background:#f3f5f7;max-width:100%;overflow:hidden}.printGrid,.printLayer{display:grid;grid-template-columns:repeat(var(--cols),34px);grid-template-rows:repeat(var(--rows),26px);gap:3px}.printLayer{position:absolute;left:6px;top:6px;pointer-events:none}.pCell{border:1px dashed #b7c0cc;background:#e8edf3;border-radius:4px}.pSection{border:2px solid #111;background:#16723d;color:white;border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;font-weight:900;overflow:hidden;padding:2px}.pSecNo{font-size:12px}.pLoc{font-size:7px;opacity:.9}.pPart{font-size:8px;margin-top:2px;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}h2{font-size:15px;margin:10px 0 4px}table{width:100%;border-collapse:collapse;font-size:10px}th,td{border:1px solid #bbb;padding:4px;text-align:left;vertical-align:top}th{background:#222;color:white}.footer{position:fixed;bottom:4mm;right:10mm;font-size:9px;color:#777}@media print{button{display:none}}</style></head><body>${pages}<div class="footer">Designed and built by H. Fitzgerald</div><script>window.onload=()=>setTimeout(()=>window.print(),250)<\/script></body></html>`;
+  const w=window.open('','_blank');
+  if(!w){msg('Popup blocked. Please allow popups to print the PDF.'); return;}
+  w.document.open(); w.document.write(html); w.document.close();
+}
+
+function exportCsv(){const rows=currentRows(); const headers=['StorageType','Site','Cabinet','Drawer','Section','StartRow','StartColumn','RowSpan','ColumnSpan','LocationCode','PartNumber','Description']; const lines=[headers.join(',')].concat(rows.map(r=>headers.map(h=>csvEscape(r[h])).join(','))); const blob=new Blob([lines.join('\n')],{type:'text/csv'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`cabinet-builder-${cfg().cabinet}.csv`; a.click(); URL.revokeObjectURL(a.href)}
+$('buildBtn').onclick=build; $('lockBtn').onclick=lockGrid; $('exportBtn').onclick=exportCsv; $('printBtn').onclick=printPdf;
+$('clearDrawerBtn').onclick=()=>{if(confirm('Clear the current drawer layout?')){S.layouts[S.activeDrawer]=[];S.selecting.clear();renderAll()}};
+$('clearPartsBtn').onclick=()=>{if(confirm('Clear part numbers and descriptions only?')){Object.values(S.layouts).flat().forEach(x=>{x.partNumber='';x.description=''}) ;renderAll()}};
+$('saveBtn').onclick=saveEdit; $('cancelBtn').onclick=closeEdit; $('deleteBtn').onclick=clearEdit; $('dialogBack').addEventListener('click',e=>{if(e.target.id==='dialogBack')closeEdit()});
+document.addEventListener('keydown',e=>{if(e.key==='Shift')S.shift=true; if(e.key==='Escape'){S.selecting.clear(); closeEdit(); renderDrawer()} if(e.key==='Enter'&&$('dialogBack').classList.contains('active'))saveEdit()});
+document.addEventListener('keyup',e=>{if(e.key==='Shift'){S.shift=false; finishSelection()}});
+['site','cabinet','drawers','rows','cols'].forEach(id=>$(id).addEventListener('change',()=>{S.selecting.clear();build()}));
+build();
+</script>
+</body>
+</html>
