@@ -270,7 +270,7 @@ document.addEventListener('DOMContentLoaded',()=>{globalInit();setupSearch();if(
     if(loginBtn){
       loginBtn.addEventListener('click', () => {
         const entered = (pw && pw.value) ? pw.value : '';
-        if(entered === 'Bearing1!'){
+        if(entered === 'Admin1234!'){
           setAdmin(true);
           requireAdminOrShow();
           // Clear password field
