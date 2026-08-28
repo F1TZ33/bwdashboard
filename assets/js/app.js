@@ -11,7 +11,7 @@ const BW_KEYS={settings:'bwproguide.settings',editorMode:'bwproguide.editorMode'
   };
 })();
 function nowISO(){const d=new Date();const p=n=>String(n).padStart(2,'0');return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`;}
-function loadSettings(){const defaults={toEmail:'sales@bearingwholesalers.com.au',subjectTag:'[bwproguide-edit]',version:'v3',lastUpdated:'',adminPassword:'Bearing1!',allowLocalAdds:true,allowUploadImages:true};
+function loadSettings(){const defaults={toEmail:'sales@bearingwholesalers.com.au',subjectTag:'[bwproguide-edit]',version:'v3',lastUpdated:'',adminPassword:'Admin1234!',allowLocalAdds:true,allowUploadImages:true};
 try{const raw=localStorage.getItem(BW_KEYS.settings);const parsed=raw?JSON.parse(raw):{};return {...defaults,...parsed};}catch(e){return defaults;}}
 function saveSettings(s){localStorage.setItem(BW_KEYS.settings,JSON.stringify(s));}
 function setEditorMode(on){localStorage.setItem(BW_KEYS.editorMode,on?'1':'0');document.documentElement.dataset.editorMode=on?'1':'0';
@@ -501,7 +501,7 @@ document.addEventListener('DOMContentLoaded',()=>{globalInit();setupSearch();if(
 
   function getAdminPassword(){
     const s = getSettings();
-    return s.adminPassword || 'Bearing1!';
+    return s.adminPassword || 'Admin1234!';
   }
 
   function isAdmin(){
